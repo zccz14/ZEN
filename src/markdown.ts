@@ -186,6 +186,11 @@ export class MarkdownConverter {
           continue;
         }
 
+        // 忽略 .github 目录
+        if (entry.name === '.github') {
+          continue;
+        }
+
         if (entry.isDirectory()) {
           await scanDirectory(fullPath);
         } else if (entry.isFile() && entry.name.endsWith('.md')) {

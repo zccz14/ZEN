@@ -19,6 +19,9 @@ demo/dist/
 .DS_Store
 Thumbs.db
 
+# GitHub files
+.github/
+
 # Logs
 *.log
 npm-debug.log*

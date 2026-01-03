@@ -161,11 +161,12 @@ export class ZenBuilder {
       return new RegExp(`(^|[\\/\\\\])${regexPattern}([\\/\\\\].*)?$`);
     });
 
-    // 设置文件监听，忽略隐藏文件、.zen 目录和 .gitignore 中的文件
+    // 设置文件监听，忽略隐藏文件、.zen 目录、.github 目录和 .gitignore 中的文件
     const watcher = chokidar.watch(srcDir, {
       ignored: [
         /(^|[\/\\])\../, // 忽略隐藏文件
         /(^|[\/\\])\.zen($|[\/\\])/, // 忽略 .zen 目录
+        /(^|[\/\\])\.github($|[\/\\])/, // 忽略 .github 目录
         ...gitignoreRegexes // 忽略 .gitignore 中的文件
       ],
       persistent: true,
