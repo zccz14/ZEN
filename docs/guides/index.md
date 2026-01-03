@@ -12,12 +12,17 @@
 ## 快速开始
 
 ```bash
-# 安装 zengen
-npm install -g zengen
+# 使用 npx 构建文档（推荐）
+npx zengen build
 
-# 构建文档
-zengen ./docs --out ./dist
+# 实时预览（监听文件变化）
+npx zengen build --watch
+
+# 查看更多参数或帮助
+npx zengen
 ```
+
+**注意**：ZEN 强制使用当前目录作为源目录，输出到 `.zen/dist` 目录。不再支持指定源目录和输出目录参数。
 
 ## 代码示例
 
@@ -27,8 +32,8 @@ const zen = require('zengen');
 
 async function buildDocs() {
   await zen.build({
-    srcDir: './docs',
-    outDir: './dist'
+    // ZEN 现在强制使用当前目录作为源目录
+    // 输出到 .zen/dist 目录
   });
 }
 ```

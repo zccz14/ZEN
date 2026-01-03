@@ -9,18 +9,25 @@
 ```
 project/
 ├── docs/                    # 文档源文件
-│   ├── getting-started.md   # 入门指南
-│   ├── api/                 # API 文档目录
+│   ├── index.md            # 首页
+│   ├── getting-started.md  # 入门指南
+│   ├── api/                # API 文档目录
 │   │   ├── overview.md
 │   │   ├── core-api.md
 │   │   └── plugins.md
-│   ├── guides/              # 指南目录
+│   ├── guides/             # 指南目录
 │   │   ├── installation.md
 │   │   └── configuration.md
-│   └── resources/           # 资源文件
+│   └── resources/          # 资源文件
 │       └── images/
-├── zen.config.js            # ZEN 配置文件
 └── package.json
+```
+
+**注意**: ZEN 强制使用当前目录作为源目录，所以应该切换到 `docs/` 目录下运行构建命令：
+
+```bash
+cd docs
+npx zengen build
 ```
 
 ### 命名约定
@@ -100,6 +107,18 @@ docs/
 └── glossary.json       # 术语表
 ```
 
+### 配置示例
+
+```json
+{
+  "i18n": {
+    "sourceLang": "zh-CN",
+    "targetLangs": ["en-US", "ja-JP"],
+    "apiKey": "your-openai-api-key"
+  }
+}
+```
+
 ## 性能优化
 
 ### 构建优化
@@ -108,52 +127,84 @@ docs/
 2. **缓存利用**: ZEN 会自动缓存处理结果
 3. **并行处理**: 多核 CPU 自动并行处理文件
 
-### 输出优化
-
-1. **压缩 HTML**: 生产环境启用 HTML 压缩
-2. **资源优化**: 图片压缩和 CSS/JS 合并
-3. **CDN 部署**: 静态文件使用 CDN 加速
-
-## 部署策略
-
-### 本地预览
+### 开发工作流
 
 ```bash
 # 开发时监听变化
-zengen ./docs --out ./dist --watch
+cd docs
+npx zengen build --watch
 
-# 启动本地服务器
-npx serve ./dist
+# 启动开发服务器
+npx zengen build --watch --serve
+
+# 生产构建
+npx zengen build --clean
 ```
+
+## 部署策略
 
 ### CI/CD 集成
 
+#### GitHub Actions 示例
+
 ```yaml
-# GitHub Actions 示例
-name: Build and Deploy
+name: Build and Deploy Documentation
 on:
   push:
     branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - run: npm ci
-      - run: npx zengen ./docs --out ./dist
-      - uses: peaceiris/actions-gh-pages@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Build documentation
+        run: |
+          cd docs
+          npx zengen build --clean --base-url /my-docs
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: docs/.zen/dist
 ```
 
-### 云部署
+#### 自定义部署脚本
 
+```bash
+#!/bin/bash
+# deploy-docs.sh
+
+# 切换到文档目录
+cd docs
+
+# 清理并构建
+npx zengen build --clean
+
+# 同步到服务器
+rsync -avz .zen/dist/ user@server:/var/www/docs/
+
+# 清理缓存
+rm -rf .zen/cache
+```
+
+### 云部署选项
+
+- **GitHub Pages**: 免费托管文档
 - **Vercel**: 自动部署静态站点
 - **Netlify**: 支持表单处理和重定向
-- **GitHub Pages**: 免费托管文档
-- **AWS S3**: 企业级静态托管
+- **AWS S3 + CloudFront**: 企业级静态托管
 
 ## 维护建议
 
@@ -176,8 +227,9 @@ jobs:
 
 **解决方案:**
 - 减少不必要的图片和资源
-- 使用 `--incremental` 模式
+- 使用 `--watch` 模式进行增量开发
 - 拆分大型文档为多个小文件
+- 禁用不需要的处理器
 
 ### 翻译质量不高
 
@@ -185,6 +237,7 @@ jobs:
 - 提供上下文给 AI 翻译
 - 建立术语表提高一致性
 - 人工校对关键内容
+- 调整翻译提示词
 
 ### 导航结构复杂
 
@@ -192,3 +245,35 @@ jobs:
 - 保持扁平化目录结构
 - 使用清晰的标题层级
 - 提供搜索功能
+- 合理使用侧边栏导航
+
+### 内存使用过高
+
+**解决方案:**
+- 减少同时处理的文件数量
+- 禁用缓存（不推荐）
+- 增加系统内存
+- 分批处理大型文档
+
+## 高级技巧
+
+### 自定义模板技巧
+
+1. **响应式设计**: 确保模板在移动设备上正常显示
+2. **主题切换**: 实现深色/浅色主题
+3. **代码高亮**: 集成 highlight.js 或其他高亮库
+4. **搜索功能**: 添加客户端搜索
+
+### 集成其他工具
+
+1. **图片优化**: 使用 sharp 或 imagemin 优化图片
+2. **SEO 优化**: 添加 meta 标签和结构化数据
+3. **分析集成**: 集成 Google Analytics 或 Plausible
+4. **CDN 加速**: 使用 CDN 加速静态资源
+
+### 监控和日志
+
+1. **构建日志**: 使用 `--verbose` 查看详细日志
+2. **错误监控**: 设置错误监控和告警
+3. **性能监控**: 监控构建时间和资源使用
+4. **用户分析**: 分析文档使用情况
