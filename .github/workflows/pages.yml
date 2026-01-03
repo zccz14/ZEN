@@ -46,37 +46,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build zengen package
-        run: npm run build
-
-      - name: Install zengen globally (from local build)
+      - name: Test npx zengen
         run: |
-          # 从本地构建安装 zengen
-          npm install -g .
-          # 验证安装
-          zengen --version
-
-      - name: Test zengen CLI
-        run: |
-          # 测试 CLI 命令
-          echo "Testing zengen CLI..."
-          zengen --help
-          zengen build --help
+          # 测试 npx zengen 命令
+          echo "Testing npx zengen..."
+          npx zengen --version
+          npx zengen --help
 
       - name: Create documentation site
         run: |
-          # 使用 zengen 构建文档站点
-          echo "Building documentation site from demo/src..."
+          # 使用 npx zengen 构建文档站点
+          echo "Building documentation site from demo/src using npx zengen..."
 
-          # 首先清理可能存在的旧输出（保留 dist 目录中的 CLI 文件）
+          # 清理旧输出
           rm -rf docs-dist
-          # 只删除 dist 目录中的 HTML 文件，保留 CLI 文件
-          find dist -name "*.html" -delete 2>/dev/null || true
-          find dist -name "*.json" -delete 2>/dev/null || true
-          find dist -name "*.xml" -delete 2>/dev/null || true
 
-          # 使用 zengen 构建
-          zengen build demo/src --out docs-dist --clean --verbose
+          # 使用 npx zengen 构建
+          npx zengen build demo/src --out docs-dist --clean --verbose
 
           # 检查构建结果
           echo "Checking build output..."
@@ -84,15 +70,8 @@ jobs:
             echo "✅ Build successful - docs-dist directory exists with index.html"
             ls -la docs-dist/
           else
-            echo "⚠️ Build may have output to dist directory instead"
-            if [ -d "dist" ] && [ -f "dist/index.html" ]; then
-              echo "Found output in dist directory, copying to docs-dist"
-              cp -r dist docs-dist
-              ls -la docs-dist/
-            else
-              echo "❌ Build failed - no output found"
-              exit 1
-            fi
+            echo "❌ Build failed - no output found"
+            exit 1
           fi
 
           # 创建 CNAME 文件（如果需要自定义域名）
