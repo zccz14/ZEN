@@ -3,16 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-    paths:
-      - 'demo/src/**'
-      - 'package.json'
-      - '.github/workflows/pages.yml'
   pull_request:
     branches: [main]
-    paths:
-      - 'demo/src/**'
-      - 'package.json'
-      - '.github/workflows/pages.yml'
   workflow_dispatch:  # 允许手动触发
 
 # 设置 GITHUB_TOKEN 的权限以允许部署到 GitHub Pages
