@@ -43,8 +43,11 @@ jobs:
           node-version: '20.x'
           cache: 'npm'
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Create documentation site
-        run: npx zengen build demo/src --out docs-dist
+        run: npx --no-install zengen build demo/src --out docs-dist
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
