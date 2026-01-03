@@ -31,22 +31,15 @@
 1. 确保在 GitHub 仓库设置中启用了 OIDC
 2. 配置 npm 以信任 GitHub Actions 的 OIDC 令牌
 
-### 2. 配置 GitHub Secrets
-
-在 GitHub 仓库中设置以下 secrets：
-
-1. **`NPM_TOKEN`** - npm 认证令牌
-   - 前往仓库 Settings → Secrets and variables → Actions
-   - 点击 "New repository secret"
-   - Name: `NPM_TOKEN`
-   - Value: 粘贴你的 npm 令牌
-
-### 3. 启用 GitHub Actions 权限
+### 2. 配置 GitHub Actions 权限
 
 确保仓库有以下权限设置：
 - Settings → Actions → General
 - Workflow permissions: 选择 "Read and write permissions"
-- 启用 "Allow GitHub Actions to create and approve pull requests"
+- 确保启用了 OIDC 支持
+
+**注意**：对于 npm OIDC 发布，不需要配置 `NPM_TOKEN` secret。GitHub Actions 会自动使用 OIDC 令牌进行认证。
+
 
 ## 工作流程
 
@@ -103,9 +96,9 @@
 ### 常见问题
 
 1. **认证失败**：
-   - 检查 NPM_TOKEN secret 是否正确
-   - 验证令牌是否有发布权限
-   - 确保令牌未过期
+   - 确保仓库启用了 OIDC 支持
+   - 检查 workflow 中设置了 `permissions: id-token: write`
+   - 验证 npm 版本是否支持 OIDC（需要 npm 9.0.0+）
 
 2. **版本检测失败**：
    - 确保 `fetch-depth: 0` 以获取完整历史
