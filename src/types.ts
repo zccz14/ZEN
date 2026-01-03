@@ -7,6 +7,7 @@ export interface BuildOptions {
   serve?: boolean;
   port?: number;
   host?: string;
+  baseUrl?: string;
 }
 
 export interface FileInfo {
@@ -42,6 +43,7 @@ export interface ZenConfig {
   srcDir?: string;
   outDir?: string;
   template?: string;
+  baseUrl?: string;
   i18n?: {
     sourceLang: string;
     targetLangs: string[];

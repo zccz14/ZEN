@@ -18,7 +18,7 @@ export class ZenBuilder {
     this.config = config;
     this.markdownConverter = new MarkdownConverter(config.processors || []);
     this.templateEngine = new TemplateEngine();
-    this.navigationGenerator = new NavigationGenerator();
+    this.navigationGenerator = new NavigationGenerator(config.baseUrl);
   }
 
   /**
@@ -26,12 +26,14 @@ export class ZenBuilder {
    */
   async build(options: BuildOptions): Promise<void> {
     const startTime = Date.now();
-    const { srcDir, outDir, template, verbose = false } = options;
+    const { srcDir, outDir, template, verbose = false, baseUrl } = options;
 
     if (verbose) {
       console.log(`🚀 Starting ZEN build...`);
       console.log(`📁 Source: ${srcDir}`);
       console.log(`📁 Output: ${outDir}`);
+      console.log(`🔗 Base URL: ${baseUrl || '(not set)'}`);
+      console.log(`🔍 Verbose mode enabled`);
     }
 
     // 验证源目录
@@ -54,6 +56,15 @@ export class ZenBuilder {
     }
 
     if (verbose) console.log(`✅ Found ${files.length} Markdown files`);
+
+    // 更新导航生成器的 baseUrl（优先使用命令行参数）
+    if (baseUrl !== undefined) {
+      if (verbose) console.log(`🔗 Using baseUrl: ${baseUrl}`);
+      this.navigationGenerator.setBaseUrl(baseUrl);
+    } else if (this.config.baseUrl) {
+      if (verbose) console.log(`🔗 Using config baseUrl: ${this.config.baseUrl}`);
+      this.navigationGenerator.setBaseUrl(this.config.baseUrl);
+    }
 
     // 生成导航
     if (verbose) console.log(`🗺️ Generating navigation...`);
@@ -113,7 +124,7 @@ export class ZenBuilder {
    * 监听文件变化并自动重建
    */
   async watch(options: BuildOptions): Promise<void> {
-    const { srcDir, outDir, template, verbose = false, serve = false, port = 3000, host = 'localhost' } = options;
+    const { srcDir, outDir, template, verbose = false, serve = false, port = 3000, host = 'localhost', baseUrl } = options;
 
     console.log(`👀 Watching for changes in ${srcDir}...`);
     console.log(`Press Ctrl+C to stop watching`);
@@ -242,7 +253,7 @@ export class ZenBuilder {
    */
   private async generateSitemap(files: FileInfo[], outDir: string): Promise<void> {
     try {
-      const sitemapXml = this.navigationGenerator.generateSitemap(files);
+      const sitemapXml = this.navigationGenerator.generateSitemap(files, this.config.baseUrl);
       const sitemapPath = path.join(outDir, 'sitemap.xml');
       await fs.writeFile(sitemapPath, sitemapXml, 'utf-8');
     } catch (error) {

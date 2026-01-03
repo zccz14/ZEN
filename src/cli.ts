@@ -34,6 +34,7 @@ program
   .option('--host <host>', 'HTTP server host', 'localhost')
   .option('-v, --verbose', 'Show detailed output')
   .option('-c, --config <file>', 'Configuration file')
+  .option('--base-url <url>', 'Base URL for generated links (e.g., https://example.com/docs)')
   .option('--clean', 'Clean output directory before building')
   .action(async (srcDir, options) => {
     try {
@@ -59,7 +60,8 @@ program
         serve: options.serve,
         port: parseInt(options.port, 10),
         host: options.host,
-        verbose: options.verbose
+        verbose: options.verbose,
+        baseUrl: options.baseUrl || config.baseUrl
       };
 
 
@@ -284,6 +286,7 @@ program
   .option('-p, --port <number>', 'HTTP server port', '3000')
   .option('--host <host>', 'HTTP server host', 'localhost')
   .option('-v, --verbose', 'Show detailed output')
+  .option('--base-url <url>', 'Base URL for generated links (e.g., https://example.com/docs)')
   .action(async (srcDir, options) => {
     if (!srcDir) {
       program.help();
@@ -301,7 +304,8 @@ program
         serve: options.serve,
         port: parseInt(options.port, 10),
         host: options.host,
-        verbose: options.verbose
+        verbose: options.verbose,
+        baseUrl: options.baseUrl
       };
 
       // 警告 --serve 选项需要 --watch 选项

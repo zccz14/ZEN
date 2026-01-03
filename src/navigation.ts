@@ -2,6 +2,19 @@ import { NavigationItem, FileInfo } from './types';
 import * as path from 'path';
 
 export class NavigationGenerator {
+  private baseUrl: string;
+
+  constructor(baseUrl: string = '') {
+    this.baseUrl = baseUrl;
+  }
+
+  /**
+   * 更新 baseUrl
+   */
+  setBaseUrl(baseUrl: string): void {
+    this.baseUrl = baseUrl;
+  }
+
   /**
    * 从文件信息生成导航结构
    */
@@ -40,9 +53,10 @@ export class NavigationGenerator {
       const title = file.metadata?.title || this.formatTitle(displayName);
 
       // 生成路径
-      const itemPath = isMarkdownFile
+      const rawPath = isMarkdownFile
         ? `/${file.relativePath.replace(/\.md$/, '.html')}`
         : `/${parts.slice(0, i + 1).join('/')}`;
+      const itemPath = this.generatePath(rawPath);
 
       if (isLastPart) {
         // 添加文件节点
@@ -77,6 +91,21 @@ export class NavigationGenerator {
   }
 
   /**
+   * 生成带 baseUrl 的路径
+   */
+  private generatePath(path: string): string {
+    if (!this.baseUrl) {
+      return path;
+    }
+
+    // 确保 baseUrl 不以斜杠结尾，路径以斜杠开头
+    const cleanBaseUrl = this.baseUrl.replace(/\/$/, '');
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+
+    return `${cleanBaseUrl}${cleanPath}`;
+  }
+
+  /**
    * 格式化标题（将连字符/下划线转换为空格并首字母大写）
    */
   private formatTitle(name: string): string {
@@ -99,7 +128,8 @@ export class NavigationGenerator {
   generateFlat(files: FileInfo[]): NavigationItem[] {
     return files.map(file => {
       const title = file.metadata?.title || this.formatTitle(file.name);
-      const itemPath = `/${file.relativePath.replace(/\.md$/, '.html')}`;
+      const rawPath = `/${file.relativePath.replace(/\.md$/, '.html')}`;
+      const itemPath = this.generatePath(rawPath);
 
       return {
         title,
@@ -162,13 +192,14 @@ export class NavigationGenerator {
   /**
    * 生成站点地图 XML
    */
-  generateSitemap(files: FileInfo[], baseUrl: string = 'https://example.com'): string {
+  generateSitemap(files: FileInfo[], baseUrl?: string): string {
+    const effectiveBaseUrl = baseUrl || this.baseUrl || 'https://example.com';
     const urls = files.map(file => {
       const path = `/${file.relativePath.replace(/\.md$/, '.html')}`;
       const lastmod = file.metadata?.last_modified || file.metadata?.date || new Date().toISOString().split('T')[0];
 
       return `  <url>
-    <loc>${baseUrl}${path}</loc>
+    <loc>${effectiveBaseUrl}${path}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
