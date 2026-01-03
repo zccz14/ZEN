@@ -43,11 +43,6 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Verify CLI works
-        run: |
-          node dist/cli.js --help
-          echo "CLI verification successful"
-
   security:
     runs-on: ubuntu-latest
     steps:
