@@ -171,6 +171,11 @@ export class MarkdownConverter {
       for (const entry of entries) {
         const fullPath = path.join(currentPath, entry.name);
 
+        // 忽略 .zen 目录
+        if (entry.name === '.zen') {
+          continue;
+        }
+
         if (entry.isDirectory()) {
           await scanDirectory(fullPath);
         } else if (entry.isFile() && entry.name.endsWith('.md')) {

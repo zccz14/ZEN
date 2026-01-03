@@ -139,9 +139,12 @@ export class ZenBuilder {
       console.log(`🌐 HTTP server started at http://${host}:${port}`);
     }
 
-    // 设置文件监听
+    // 设置文件监听，忽略隐藏文件和 .zen 目录
     const watcher = chokidar.watch(srcDir, {
-      ignored: /(^|[\/\\])\../, // 忽略隐藏文件
+      ignored: [
+        /(^|[\/\\])\../, // 忽略隐藏文件
+        /(^|[\/\\])\.zen($|[\/\\])/ // 忽略 .zen 目录
+      ],
       persistent: true,
       ignoreInitial: true
     });
