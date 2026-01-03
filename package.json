@@ -8,7 +8,7 @@
     "zengen": "dist/cli.js"
   },
   "scripts": {
-    "build": "node -e \"const fs = require('fs'); if (fs.existsSync('dist')) fs.rmSync('dist', { recursive: true, force: true }); console.log('🧹 Cleaned dist directory');\" && tsc",
+    "build": "npx rimraf dist && tsc",
     "dev": "ts-node src/cli.ts",
     "test": "npm run test:types && npm run test:build && npm run test:cli",
     "test:types": "tsc --noEmit",
