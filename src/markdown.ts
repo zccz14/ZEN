@@ -4,6 +4,7 @@ import { FileInfo, MarkdownProcessor } from './types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as yaml from 'yaml';
+import { GitIgnoreProcessor } from './gitignore';
 
 // 配置 marked 使用 highlight.js 进行代码高亮
 marked.setOptions({
@@ -165,13 +166,22 @@ export class MarkdownConverter {
   async convertDirectory(dirPath: string): Promise<FileInfo[]> {
     const files: FileInfo[] = [];
 
+    // 创建 GitIgnoreProcessor 并加载 .gitignore 文件
+    const gitignoreProcessor = new GitIgnoreProcessor(dirPath);
+    await gitignoreProcessor.loadFromFile();
+
     async function scanDirectory(currentPath: string) {
       const entries = await fs.readdir(currentPath, { withFileTypes: true });
 
       for (const entry of entries) {
         const fullPath = path.join(currentPath, entry.name);
 
-        // 忽略 .zen 目录
+        // 检查是否应该被 .gitignore 忽略
+        if (gitignoreProcessor.shouldIgnore(fullPath)) {
+          continue;
+        }
+
+        // 忽略 .zen 目录（保持向后兼容）
         if (entry.name === '.zen') {
           continue;
         }
