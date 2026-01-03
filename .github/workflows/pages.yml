@@ -36,6 +36,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build zengen
+        run: npm run build
+
       - name: Create documentation site
         run: |
           cd demo/src
