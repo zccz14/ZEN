@@ -51,18 +51,22 @@ zengen init
 
 2. **构建文档站点**：
 ```bash
-zengen build ./docs
+cd /path/to/your/markdown/files
+zengen build
 ```
 
 3. **实时预览（监听文件变化）**：
 ```bash
-zengen build ./docs --watch
+cd /path/to/your/markdown/files
+zengen build --watch
 ```
 
 4. **查看帮助**：
 ```bash
 zengen --help
 ```
+
+**注意**：ZEN 现在强制使用当前目录作为源目录，输出到 `.zen/dist` 目录。不再支持指定源目录和输出目录参数。
 
 ---
 

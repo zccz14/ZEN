@@ -21,7 +21,7 @@
 4. **构建 zengen**：构建本地 zengen 包
 5. **安装 zengen**：将本地构建的 zengen 安装为全局工具
 6. **测试 zengen CLI**：验证 CLI 工具正常工作
-7. **构建文档站点**：使用 `zengen build demo/src --out docs-dist` 构建文档，包含自动回退机制
+7. **构建文档站点**：使用 `cd demo/src && zengen build` 构建文档，输出到 `.zen/dist` 目录
 7. **配置 Pages**：设置 GitHub Pages
 8. **上传制品**：将构建的文档站点上传为 Pages 制品
 9. **部署到 GitHub Pages**：自动部署到 GitHub Pages
@@ -50,7 +50,8 @@ echo "docs.example.com" > docs-dist/CNAME
 当前使用的构建命令：
 
 ```bash
-zengen build demo/src --out docs-dist --clean --verbose
+cd demo/src
+zengen build --clean --verbose
 ```
 
 可用的选项：
@@ -73,12 +74,12 @@ zengen build demo/src --out docs-dist --clean --verbose
 1. **检查 Node.js 版本**：确保使用支持的 Node.js 版本
 2. **验证依赖安装**：确保 `npm ci` 成功执行
 3. **检查构建输出**：查看 `zengen build` 的详细输出
-4. **CLI 输出目录问题**：如果 `--out` 参数未生效，构建可能输出到 `dist` 目录而不是指定目录。工作流程包含自动检测和修复机制。
+4. **CLI 输出目录问题**：ZEN 现在强制输出到 `.zen/dist` 目录，不再支持 `--out` 参数。
 
 ### 部署失败
 
 1. **检查权限**：确保工作流程有正确的 Pages 写入权限
-2. **验证制品**：确保 `docs-dist` 目录包含有效的 HTML 文件
+2. **验证制品**：确保 `.zen/dist` 目录包含有效的 HTML 文件
 3. **查看日志**：检查 GitHub Actions 日志获取详细错误信息
 
 ### 文档未更新

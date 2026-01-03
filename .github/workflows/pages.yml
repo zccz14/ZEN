@@ -47,7 +47,9 @@ jobs:
         run: npm ci
 
       - name: Create documentation site
-        run: npx --no-install zengen build demo/src --out docs-dist
+        run: |
+          cd demo/src
+          npx --no-install zengen build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -55,7 +57,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './docs-dist'
+          path: './demo/src/.zen/dist'
 
   deploy:
     environment:
