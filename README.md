@@ -1,6 +1,6 @@
 # ZEN - 简洁的 Markdown 文档站点构建工具
 
-> 📖 **阅读提示**: 本 README 采用中英文分离排版。中文版本在上方，英文版本在下方分隔线之后。
+> 📖 **阅读提示**: 本 README 为中文版本。英文版本将由 AI 自动翻译生成。
 
 ## 项目初衷
 
@@ -66,73 +66,4 @@ zengen --help
 
 ---
 
-# ZEN - A minimalist Markdown documentation site builder
-
-> 📖 **Reading Note**: This README uses separated Chinese/English layout. Chinese version is above, English version is below the separator line.
-
-## Project Philosophy
-
-### Return to Content
-I enjoy contemplation, but don't want complex build tools, complicated documentation configurations, or intricate structures.
-
-### Return to Native Language
-Life is short, I use AI translation. Stay connected with the world.
-
-## Core Features
-
-1. **Static Site Generation**
-   - Build any folder containing Markdown files into a static HTML site
-
-2. **Smart Navigation**
-   - Generate sitemap and navigation without preserving the original Markdown directory structure
-
-3. **Incremental i18n Translation**
-   - Use LLM for incremental i18n translation, allowing users to write Markdown in their native language while supporting multilingual audiences
-
-## Design Principles
-
-- **Minimalism**: Minimum configuration, maximum flexibility
-- **Content First**: Focus on writing, not tool configuration
-- **AI Empowered**: Leverage AI for translation and content organization
-- **Cross-Language**: Support multilingual content creation and presentation
-
-## Quick Start
-
-### Installation
-
-```bash
-npm install -g zengen
-```
-
-Or install as a project dependency:
-
-```bash
-npm install zengen
-```
-
-### Usage
-
-1. **Initialize a project**:
-```bash
-zengen init
-```
-
-2. **Build documentation site**:
-```bash
-zengen build ./docs
-```
-
-3. **Live preview (watch for changes)**:
-```bash
-zengen build ./docs --watch
-```
-
-4. **View help**:
-```bash
-zengen --help
-```
-
----
-
 **ZEN** - 让文档回归本质，让写作回归宁静。
-**ZEN** - Return documentation to its essence, return writing to tranquility.
