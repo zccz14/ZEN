@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
+import { Cli, Command, Option } from 'clipanion';
 import { ZenBuilder } from './builder';
 import { ZenConfig } from './types';
 import * as path from 'path';
@@ -9,121 +9,176 @@ import * as fsSync from 'fs';
 import * as url from 'url';
 
 // 获取版本号 - 从 package.json 读取
-// 注意：在构建时，版本号会被替换为当前 package.json 中的版本
 function getVersion(): string {
-  return '0.1.2'; // 这个值会在构建时被替换
+  try {
+    const packageJsonPath = path.join(__dirname, '..', 'package.json');
+    const packageJson = JSON.parse(fsSync.readFileSync(packageJsonPath, 'utf-8'));
+    return packageJson.version;
+  } catch {
+    return '0.1.32';
+  }
 }
 
-const program = new Command();
+// 基础命令类
+abstract class BaseCommand extends Command {
+  protected async loadConfig(configPath?: string): Promise<ZenConfig> {
+    if (!configPath) {
+      return {};
+    }
 
-program
-  .name('zengen')
-  .description('ZEN - A minimalist Markdown documentation site builder')
-  .version(getVersion());
+    try {
+      const resolvedPath = path.resolve(configPath);
+      const configContent = await fs.readFile(resolvedPath, 'utf-8');
+      return JSON.parse(configContent);
+    } catch (error) {
+      this.context.stderr.write(`❌ Failed to load config file: ${error}\n`);
+      throw error;
+    }
+  }
 
-// 构建命令
-program
-  .command('build')
-  .description('Build documentation site from Markdown files in current directory')
-  .option('-t, --template <file>', 'Custom template file')
-  .option('-w, --watch', 'Watch for changes and rebuild automatically')
-  .option('-s, --serve', 'Start HTTP server for preview (requires --watch)')
-  .option('-p, --port <number>', 'HTTP server port', '3000')
-  .option('--host <host>', 'HTTP server host', 'localhost')
-  .option('-v, --verbose', 'Show detailed output')
-  .option('-c, --config <file>', 'Configuration file')
-  .option('--base-url <url>', 'Base URL for generated links (e.g., https://example.com/docs)')
-  .option('--clean', 'Clean output directory before building')
-  .action(async (options) => {
+  protected getOutDir(): string {
+    const currentDir = process.cwd();
+    return path.join(currentDir, '.zen', 'dist');
+  }
+}
+
+// Build 命令
+class BuildCommand extends BaseCommand {
+  static paths = [['build']];
+
+  template = Option.String('-t,--template');
+  watch = Option.Boolean('-w,--watch');
+  serve = Option.Boolean('-s,--serve');
+  port = Option.String('-p,--port', '3000');
+  host = Option.String('--host', 'localhost');
+  verbose = Option.Boolean('-v,--verbose');
+  config = Option.String('-c,--config');
+  baseUrl = Option.String('--base-url');
+  clean = Option.Boolean('--clean');
+
+  static usage = Command.Usage({
+    description: 'Build documentation site from Markdown files in current directory',
+    details: `
+      This command builds a documentation site from Markdown files in the current directory.
+      The output will be placed in the .zen/dist directory.
+
+      Examples:
+        $ zengen build
+        $ zengen build --watch
+        $ zengen build --watch --serve
+        $ zengen build --watch --serve --port 8080
+        $ zengen build --config zen.config.json
+        $ zengen build --clean
+    `,
+  });
+
+  async execute() {
     try {
       // 加载配置文件
-      let config: ZenConfig = {};
-      if (options.config) {
-        try {
-          const configPath = path.resolve(options.config);
-          const configContent = await fs.readFile(configPath, 'utf-8');
-          config = JSON.parse(configContent);
-        } catch (error) {
-          console.error(`❌ Failed to load config file:`, error);
-          process.exit(1);
-        }
-      }
+      const config = await this.loadConfig(this.config);
 
       // 强制使用当前目录作为 src 目录，输出到 .zen/dist 目录
       const currentDir = process.cwd();
-      const outDir = path.join(currentDir, '.zen', 'dist');
+      const outDir = this.getOutDir();
 
       // 合并命令行参数和配置
       const buildOptions = {
         srcDir: currentDir,
         outDir: outDir,
-        template: options.template ? path.resolve(options.template) : undefined,
-        watch: options.watch,
-        serve: options.serve,
-        port: parseInt(options.port, 10),
-        host: options.host,
-        verbose: options.verbose,
-        baseUrl: options.baseUrl || config.baseUrl
+        template: this.template ? path.resolve(this.template) : undefined,
+        watch: this.watch,
+        serve: this.serve,
+        port: parseInt(this.port, 10),
+        host: this.host,
+        verbose: this.verbose,
+        baseUrl: this.baseUrl || config.baseUrl
       };
-
 
       const builder = new ZenBuilder(config);
 
       // 验证配置
       const errors = builder.validateConfig(config);
       if (errors.length > 0) {
-        console.error('❌ Configuration errors:');
-        errors.forEach(error => console.error(`  - ${error}`));
-        process.exit(1);
+        this.context.stderr.write('❌ Configuration errors:\n');
+        errors.forEach(error => this.context.stderr.write(`  - ${error}\n`));
+        return 1;
       }
 
       // 警告 --serve 选项需要 --watch 选项
-      if (options.serve && !options.watch) {
-        console.warn('⚠️ Warning: --serve option requires --watch option, ignoring --serve');
+      if (this.serve && !this.watch) {
+        this.context.stdout.write('⚠️ Warning: --serve option requires --watch option, ignoring --serve\n');
         buildOptions.serve = false;
       }
 
       // 清理输出目录
-      if (options.clean) {
+      if (this.clean) {
         await builder.clean(buildOptions.outDir);
       }
 
       // 构建或监听
-      if (options.watch) {
+      if (this.watch) {
         await builder.watch(buildOptions);
       } else {
         await builder.build(buildOptions);
       }
+
+      return 0;
     } catch (error) {
-      console.error('❌ Build failed:', error);
-      process.exit(1);
+      this.context.stderr.write(`❌ Build failed: ${error}\n`);
+      return 1;
     }
+  }
+}
+
+// Clean 命令
+class CleanCommand extends BaseCommand {
+  static paths = [['clean']];
+
+  static usage = Command.Usage({
+    description: 'Clean .zen/dist output directory',
+    details: `
+      This command removes the .zen/dist directory and all its contents.
+
+      Example:
+        $ zengen clean
+    `,
   });
 
-// 清理命令
-program
-  .command('clean')
-  .description('Clean .zen/dist output directory')
-  .action(async () => {
+  async execute() {
     try {
       const builder = new ZenBuilder();
-      const currentDir = process.cwd();
-      const outDir = path.join(currentDir, '.zen', 'dist');
+      const outDir = this.getOutDir();
       await builder.clean(outDir);
+      this.context.stdout.write('✅ Clean completed successfully\n');
+      return 0;
     } catch (error) {
-      console.error('❌ Clean failed:', error);
-      process.exit(1);
+      this.context.stderr.write(`❌ Clean failed: ${error}\n`);
+      return 1;
     }
+  }
+}
+
+// Init 命令
+class InitCommand extends BaseCommand {
+  static paths = [['init']];
+
+  dir = Option.String('-d,--dir', '.');
+
+  static usage = Command.Usage({
+    description: 'Initialize a new ZEN project',
+    details: `
+      This command initializes a new ZEN project with example documentation,
+      configuration files, and directory structure.
+
+      Example:
+        $ zengen init
+        $ zengen init --dir ./my-docs
+    `,
   });
 
-// 初始化命令
-program
-  .command('init')
-  .description('Initialize a new ZEN project')
-  .option('-d, --dir <directory>', 'Target directory', '.')
-  .action(async (options) => {
+  async execute() {
     try {
-      const targetDir = path.resolve(options.dir);
+      const targetDir = path.resolve(this.dir);
 
       // 创建目录结构
       await fs.mkdir(path.join(targetDir, 'static'), { recursive: true });
@@ -213,7 +268,7 @@ console.log('Hello ZEN!');
         );
       }
 
-      console.log(`
+      this.context.stdout.write(`
 🎉 ZEN project initialized successfully!
 
 Next steps:
@@ -229,23 +284,38 @@ ${targetDir}/
 ├── zen.config.json # Configuration file
 └── package.json    # npm scripts
 
-For more information, visit: https://github.com/yourusername/zen
+For more information, visit: https://github.com/zccz14/ZEN
       `);
+
+      return 0;
     } catch (error) {
-      console.error('❌ Initialization failed:', error);
-      process.exit(1);
+      this.context.stderr.write(`❌ Initialization failed: ${error}\n`);
+      return 1;
     }
+  }
+}
+
+// Info 命令
+class InfoCommand extends BaseCommand {
+  static paths = [['info']];
+
+  static usage = Command.Usage({
+    description: 'Show information about ZEN',
+    details: `
+      This command displays information about ZEN, including version,
+      features, and available commands.
+
+      Example:
+        $ zengen info
+    `,
   });
 
-// 信息命令
-program
-  .command('info')
-  .description('Show information about ZEN')
-  .action(() => {
-    console.log(`
+  async execute() {
+    const version = getVersion();
+    this.context.stdout.write(`
 🤖 ZEN - A minimalist Markdown documentation site builder
 
-Version: 0.1.0
+Version: ${version}
 Description: Build beautiful documentation sites from Markdown files
 
 Features:
@@ -273,17 +343,28 @@ Examples:
 
 For more help, run: zengen --help
     `);
-  });
 
-
-// 错误处理
-program.showHelpAfterError();
-program.showSuggestionAfterError();
-
-// 解析命令行参数
-program.parse(process.argv);
-
-// 如果没有参数，显示帮助
-if (process.argv.length <= 2) {
-  program.help();
+    return 0;
+  }
 }
+
+// 创建 CLI 应用
+const cli = new Cli({
+  binaryName: 'zengen',
+  binaryLabel: 'ZEN - A minimalist Markdown documentation site builder',
+  binaryVersion: getVersion(),
+});
+
+// 注册命令
+cli.register(BuildCommand);
+cli.register(CleanCommand);
+cli.register(InitCommand);
+cli.register(InfoCommand);
+
+// 运行 CLI
+cli.runExit(process.argv.slice(2), {
+  ...Cli.defaultContext,
+  stdin: process.stdin,
+  stdout: process.stdout,
+  stderr: process.stderr,
+});

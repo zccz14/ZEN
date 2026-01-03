@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "chokidar": "^5.0.0",
-    "commander": "^14.0.2",
+    "clipanion": "^4.0.0-rc.4",
     "express": "^4.21.2",
     "highlight.js": "^11.11.1",
     "marked": "^17.0.1",
