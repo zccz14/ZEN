@@ -5,13 +5,21 @@ import { ZenBuilder } from './builder';
 import { ZenConfig } from './types';
 import * as path from 'path';
 import * as fs from 'fs/promises';
+import * as fsSync from 'fs';
+import * as url from 'url';
+
+// 获取版本号 - 从 package.json 读取
+// 注意：在构建时，版本号会被替换为当前 package.json 中的版本
+function getVersion(): string {
+  return '0.1.2'; // 这个值会在构建时被替换
+}
 
 const program = new Command();
 
 program
   .name('zengen')
   .description('ZEN - A minimalist Markdown documentation site builder')
-  .version('0.1.0');
+  .version(getVersion());
 
 // 构建命令
 program

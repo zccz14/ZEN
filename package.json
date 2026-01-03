@@ -1,6 +1,6 @@
 {
   "name": "zengen",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "ZEN - A minimalist Markdown documentation site builder",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -40,6 +40,7 @@
     "chokidar": "^5.0.0",
     "commander": "^14.0.2",
     "highlight.js": "^11.11.1",
-    "marked": "^17.0.1"
+    "marked": "^17.0.1",
+    "yaml": "^1.10.2"
   }
 }
