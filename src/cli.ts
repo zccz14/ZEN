@@ -62,6 +62,7 @@ program
         verbose: options.verbose
       };
 
+
       const builder = new ZenBuilder(config);
 
       // 验证配置
