@@ -1,0 +1,292 @@
+import { BuildOptions, FileInfo, NavigationItem, ZenConfig } from './types';
+import { MarkdownConverter } from './markdown';
+import { TemplateEngine } from './template';
+import { NavigationGenerator } from './navigation';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import * as chokidar from 'chokidar';
+
+export class ZenBuilder {
+  private markdownConverter: MarkdownConverter;
+  private templateEngine: TemplateEngine;
+  private navigationGenerator: NavigationGenerator;
+  private config: ZenConfig = {};
+
+  constructor(config: ZenConfig = {}) {
+    this.config = config;
+    this.markdownConverter = new MarkdownConverter(config.processors || []);
+    this.templateEngine = new TemplateEngine();
+    this.navigationGenerator = new NavigationGenerator();
+  }
+
+  /**
+   * 构建文档站点
+   */
+  async build(options: BuildOptions): Promise<void> {
+    const startTime = Date.now();
+    const { srcDir, outDir, template, verbose = false } = options;
+
+    if (verbose) {
+      console.log(`🚀 Starting ZEN build...`);
+      console.log(`📁 Source: ${srcDir}`);
+      console.log(`📁 Output: ${outDir}`);
+    }
+
+    // 验证源目录
+    try {
+      await fs.access(srcDir);
+    } catch (error) {
+      throw new Error(`Source directory does not exist: ${srcDir}`);
+    }
+
+    // 确保输出目录存在
+    await fs.mkdir(outDir, { recursive: true });
+
+    // 读取并转换 Markdown 文件
+    if (verbose) console.log(`📄 Reading Markdown files...`);
+    const files = await this.markdownConverter.convertDirectory(srcDir);
+
+    if (files.length === 0) {
+      console.warn(`⚠️ No Markdown files found in ${srcDir}`);
+      return;
+    }
+
+    if (verbose) console.log(`✅ Found ${files.length} Markdown files`);
+
+    // 生成导航
+    if (verbose) console.log(`🗺️ Generating navigation...`);
+    const navigation = this.navigationGenerator.generate(files);
+
+    // 处理每个文件
+    if (verbose) console.log(`⚡ Processing files...`);
+    let processedCount = 0;
+
+    for (const file of files) {
+      try {
+        // 生成模板数据
+        const templateData = this.templateEngine.generateTemplateData(file, navigation);
+
+        // 渲染模板
+        const html = await this.templateEngine.render(templateData, template);
+
+        // 生成输出路径
+        const outputPath = this.templateEngine.getOutputPath(file, outDir);
+
+        // 保存文件
+        await this.templateEngine.saveToFile(html, outputPath);
+
+        processedCount++;
+
+        if (verbose && processedCount % 10 === 0) {
+          console.log(`  Processed ${processedCount}/${files.length} files...`);
+        }
+      } catch (error) {
+        console.error(`❌ Failed to process ${file.relativePath}:`, error);
+      }
+    }
+
+    // 生成站点地图
+    if (verbose) console.log(`🗺️ Generating sitemap...`);
+    await this.generateSitemap(files, outDir);
+
+    // 生成导航 JSON 文件
+    if (verbose) console.log(`📊 Generating navigation data...`);
+    await this.generateNavigationJson(files, outDir);
+
+    // 复制静态资源（如果存在）
+    await this.copyStaticAssets(srcDir, outDir);
+
+    const duration = Date.now() - startTime;
+    if (verbose) {
+      console.log(`🎉 Build completed!`);
+      console.log(`   Files processed: ${processedCount}/${files.length}`);
+      console.log(`   Duration: ${duration}ms`);
+      console.log(`   Output directory: ${outDir}`);
+    } else {
+      console.log(`✅ Built ${processedCount} files to ${outDir} in ${duration}ms`);
+    }
+  }
+
+  /**
+   * 监听文件变化并自动重建
+   */
+  async watch(options: BuildOptions): Promise<void> {
+    const { srcDir, outDir, template, verbose = false } = options;
+
+    console.log(`👀 Watching for changes in ${srcDir}...`);
+    console.log(`Press Ctrl+C to stop watching`);
+
+    // 初始构建
+    await this.build(options);
+
+    // 设置文件监听
+    const watcher = chokidar.watch(srcDir, {
+      ignored: /(^|[\/\\])\../, // 忽略隐藏文件
+      persistent: true,
+      ignoreInitial: true
+    });
+
+    let isBuilding = false;
+    let buildQueue: string[] = [];
+
+    const debouncedBuild = async () => {
+      if (isBuilding) {
+        return;
+      }
+
+      isBuilding = true;
+      const changedFiles = [...buildQueue];
+      buildQueue = [];
+
+      try {
+        if (verbose) {
+          console.log(`\n🔄 Rebuilding due to changes in: ${changedFiles.join(', ')}`);
+        } else {
+          console.log(`\n🔄 Rebuilding...`);
+        }
+
+        await this.build(options);
+        console.log(`✅ Rebuild complete. Watching for changes...`);
+      } catch (error) {
+        console.error(`❌ Rebuild failed:`, error);
+      } finally {
+        isBuilding = false;
+
+        // 如果队列中有新文件，立即处理
+        if (buildQueue.length > 0) {
+          setTimeout(debouncedBuild, 100);
+        }
+      }
+    };
+
+    watcher
+      .on('add', (filePath: string) => {
+        if (filePath.endsWith('.md')) {
+          if (verbose) console.log(`📄 File added: ${filePath}`);
+          buildQueue.push(filePath);
+          setTimeout(debouncedBuild, 300);
+        }
+      })
+      .on('change', (filePath: string) => {
+        if (filePath.endsWith('.md')) {
+          if (verbose) console.log(`📄 File changed: ${filePath}`);
+          buildQueue.push(filePath);
+          setTimeout(debouncedBuild, 300);
+        }
+      })
+      .on('unlink', (filePath: string) => {
+        if (filePath.endsWith('.md')) {
+          if (verbose) console.log(`📄 File removed: ${filePath}`);
+          buildQueue.push(filePath);
+          setTimeout(debouncedBuild, 300);
+        }
+      })
+      .on('error', (error: Error) => {
+        console.error(`❌ Watcher error:`, error);
+      });
+
+    // 处理退出信号
+    process.on('SIGINT', () => {
+      console.log(`\n👋 Stopping watcher...`);
+      watcher.close();
+      process.exit(0);
+    });
+  }
+
+  /**
+   * 生成站点地图
+   */
+  private async generateSitemap(files: FileInfo[], outDir: string): Promise<void> {
+    try {
+      const sitemapXml = this.navigationGenerator.generateSitemap(files);
+      const sitemapPath = path.join(outDir, 'sitemap.xml');
+      await fs.writeFile(sitemapPath, sitemapXml, 'utf-8');
+    } catch (error) {
+      console.warn(`⚠️ Failed to generate sitemap:`, error);
+    }
+  }
+
+  /**
+   * 生成导航 JSON 文件
+   */
+  private async generateNavigationJson(files: FileInfo[], outDir: string): Promise<void> {
+    try {
+      const navigationJson = this.navigationGenerator.generateJsonNavigation(files);
+      const navPath = path.join(outDir, 'navigation.json');
+      await fs.writeFile(navPath, navigationJson, 'utf-8');
+    } catch (error) {
+      console.warn(`⚠️ Failed to generate navigation JSON:`, error);
+    }
+  }
+
+  /**
+   * 复制静态资源
+   */
+  private async copyStaticAssets(srcDir: string, outDir: string): Promise<void> {
+    const staticDir = path.join(srcDir, 'static');
+
+    try {
+      await fs.access(staticDir);
+
+      // 简单的递归复制
+      async function copyDir(source: string, target: string) {
+        await fs.mkdir(target, { recursive: true });
+        const entries = await fs.readdir(source, { withFileTypes: true });
+
+        for (const entry of entries) {
+          const srcPath = path.join(source, entry.name);
+          const destPath = path.join(target, entry.name);
+
+          if (entry.isDirectory()) {
+            await copyDir(srcPath, destPath);
+          } else {
+            await fs.copyFile(srcPath, destPath);
+          }
+        }
+      }
+
+      await copyDir(staticDir, path.join(outDir, 'static'));
+    } catch (error) {
+      // 静态目录不存在是正常的，忽略错误
+    }
+  }
+
+  /**
+   * 清理输出目录
+   */
+  async clean(outDir: string): Promise<void> {
+    try {
+      await fs.rm(outDir, { recursive: true, force: true });
+      console.log(`🧹 Cleaned output directory: ${outDir}`);
+    } catch (error) {
+      console.error(`❌ Failed to clean output directory:`, error);
+    }
+  }
+
+  /**
+   * 验证配置
+   */
+  validateConfig(config: ZenConfig): string[] {
+    const errors: string[] = [];
+
+    if (config.srcDir && !path.isAbsolute(config.srcDir)) {
+      errors.push('srcDir must be an absolute path');
+    }
+
+    if (config.outDir && !path.isAbsolute(config.outDir)) {
+      errors.push('outDir must be an absolute path');
+    }
+
+    if (config.i18n) {
+      if (!config.i18n.sourceLang) {
+        errors.push('i18n.sourceLang is required');
+      }
+
+      if (!config.i18n.targetLangs || config.i18n.targetLangs.length === 0) {
+        errors.push('i18n.targetLangs must have at least one language');
+      }
+    }
+
+    return errors;
+  }
+}
