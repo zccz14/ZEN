@@ -334,10 +334,10 @@ export class TemplateEngine {
    */
   generateTemplateData(fileInfo: FileInfo, navigation: NavigationItem[]): TemplateData {
     return {
-      title: fileInfo.name, // 直接使用文件名作为标题
+      title: fileInfo.metadata?.title || fileInfo.name, // 优先使用提取的标题，如果没有则使用文件名
       content: fileInfo.html || '',
       navigation,
-      metadata: fileInfo.metadata, // 保留但不再使用
+      metadata: fileInfo.metadata,
       currentPath: `/${fileInfo.relativePath.replace(/\.md$/, '.html')}`,
     };
   }
