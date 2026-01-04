@@ -250,6 +250,7 @@ export class TemplateEngine {
   </nav>
 
   <main class="content">
+    {{#if hasMetadata}}
     <header class="content-header">
       <h1>{{title}}</h1>
       {{#if metadata}}
@@ -259,6 +260,7 @@ export class TemplateEngine {
       </div>
       {{/if}}
     </header>
+    {{/if}}
 
     <article class="content-body">
       {{{content}}}
@@ -312,7 +314,13 @@ export class TemplateEngine {
     result = result.replace('{{title}}', data.title || 'Untitled');
     result = result.replace('{{{content}}}', data.content || '');
 
-    // 处理 metadata
+    // 检查是否有 metadata（metadata 存在且不为空对象）
+    const hasMetadata = data.metadata && Object.keys(data.metadata).length > 0;
+
+    // 处理条件语句
+    result = this.processConditionalBlocks(result, data);
+
+    // 处理 metadata 变量替换
     if (data.metadata) {
       // 简单的 metadata 替换逻辑
       for (const [key, value] of Object.entries(data.metadata)) {
@@ -332,6 +340,47 @@ export class TemplateEngine {
     result = result.replace(/\{\{metadata\.[^}]*\}\}/g, '');
 
     return result;
+  }
+
+  /**
+   * 处理模板中的条件语句块
+   */
+  private processConditionalBlocks(template: string, data: TemplateData): string {
+    let result = template;
+
+    // 定义条件变量
+    const conditions: Record<string, boolean> = {
+      hasMetadata: !!(data.metadata && Object.keys(data.metadata).length > 0),
+      metadata: !!data.metadata,
+      'metadata.author': !!(data.metadata && data.metadata.author),
+      'metadata.date': !!(data.metadata && data.metadata.date),
+    };
+
+    // 递归处理所有条件语句块
+    let changed;
+    do {
+      changed = false;
+      for (const [condition, value] of Object.entries(conditions)) {
+        const oldResult = result;
+        result = this.processIfBlock(result, condition, value);
+        if (oldResult !== result) {
+          changed = true;
+        }
+      }
+    } while (changed);
+
+    return result;
+  }
+
+  /**
+   * 处理单个条件语句块
+   */
+  private processIfBlock(template: string, condition: string, value: boolean): string {
+    const ifPattern = new RegExp(`\\{\\{#if ${condition}\\}\\}([\\s\\S]*?)\\{\\{/if\\}\\}`, 'g');
+
+    return template.replace(ifPattern, (match, content) => {
+      return value ? content : '';
+    });
   }
 
   /**
