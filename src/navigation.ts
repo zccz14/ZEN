@@ -47,8 +47,8 @@ export class NavigationGenerator {
       // 如果是 Markdown 文件，移除扩展名
       const displayName = isMarkdownFile ? part.replace(/\.md$/, '') : part;
 
-      // 生成标题（使用文件名或 metadata 中的标题）
-      const title = file.metadata?.title || this.formatTitle(displayName);
+      // 生成标题（使用文件名）
+      const title = this.formatTitle(displayName);
 
       // 生成路径
       const rawPath = isMarkdownFile
@@ -133,7 +133,7 @@ export class NavigationGenerator {
   generateFlat(files: FileInfo[]): NavigationItem[] {
     return files
       .map(file => {
-        const title = file.metadata?.title || this.formatTitle(file.name);
+        const title = this.formatTitle(file.name);
         const rawPath = `/${file.relativePath.replace(/\.md$/, '.html')}`;
         const itemPath = this.generatePath(rawPath);
 
@@ -207,10 +207,7 @@ export class NavigationGenerator {
     const urls = files
       .map(file => {
         const path = `/${file.relativePath.replace(/\.md$/, '.html')}`;
-        const lastmod =
-          file.metadata?.last_modified ||
-          file.metadata?.date ||
-          new Date().toISOString().split('T')[0];
+        const lastmod = new Date().toISOString().split('T')[0];
 
         return `  <url>
     <loc>${effectiveBaseUrl}${path}</loc>

@@ -252,12 +252,6 @@ export class TemplateEngine {
   <main class="content">
     <header class="content-header">
       <h1>{{title}}</h1>
-      {{#if metadata}}
-      <div class="meta">
-        {{#if metadata.author}}By {{metadata.author}} • {{/if}}
-        {{#if metadata.date}}{{metadata.date}}{{/if}}
-      </div>
-      {{/if}}
     </header>
 
     <article class="content-body">
@@ -308,28 +302,9 @@ export class TemplateEngine {
     const navigationHtml = this.generateNavigationHtml(data.navigation, data.currentPath);
     result = result.replace('{{navigation}}', navigationHtml);
 
-    // 替换其他变量
-    result = result.replace('{{title}}', data.title || 'Untitled');
-    result = result.replace('{{{content}}}', data.content || '');
-
-    // 处理 metadata
-    if (data.metadata) {
-      // 简单的 metadata 替换逻辑
-      for (const [key, value] of Object.entries(data.metadata)) {
-        const placeholder = `{{metadata.${key}}}`;
-        if (result.includes(placeholder)) {
-          result = result.replace(new RegExp(placeholder, 'g'), String(value));
-        }
-      }
-
-      // 替换 metadata 对象为 JSON（如果需要）
-      if (result.includes('{{metadata}}')) {
-        result = result.replace('{{metadata}}', JSON.stringify(data.metadata));
-      }
-    }
-
-    // 移除未使用的 metadata 占位符
-    result = result.replace(/\{\{metadata\.[^}]*\}\}/g, '');
+    // 替换其他变量 - 使用全局替换
+    result = result.replace(/{{title}}/g, data.title || 'Untitled');
+    result = result.replace(/{{{content}}}/g, data.content || '');
 
     return result;
   }
@@ -359,10 +334,10 @@ export class TemplateEngine {
    */
   generateTemplateData(fileInfo: FileInfo, navigation: NavigationItem[]): TemplateData {
     return {
-      title: fileInfo.metadata?.title || fileInfo.name,
+      title: fileInfo.name, // 直接使用文件名作为标题
       content: fileInfo.html || '',
       navigation,
-      metadata: fileInfo.metadata,
+      metadata: fileInfo.metadata, // 保留但不再使用
       currentPath: `/${fileInfo.relativePath.replace(/\.md$/, '.html')}`,
     };
   }

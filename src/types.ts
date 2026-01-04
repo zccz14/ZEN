@@ -17,7 +17,7 @@ export interface FileInfo {
   ext: string;
   content: string;
   html?: string;
-  metadata?: Record<string, any>;
+  metadata?: { title: string }; // 简化，只保留标题
 }
 
 export interface NavigationItem {
@@ -30,7 +30,7 @@ export interface TemplateData {
   title: string;
   content: string;
   navigation: NavigationItem[];
-  metadata?: Record<string, any>;
+  metadata?: { title: string }; // 简化，只保留标题
   currentPath?: string;
 }
 

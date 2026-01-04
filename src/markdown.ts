@@ -3,7 +3,6 @@ import hljs from 'highlight.js';
 import { FileInfo, MarkdownProcessor } from './types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import * as yaml from 'yaml';
 import { GitIgnoreProcessor } from './gitignore';
 
 // 配置 marked 使用 highlight.js 进行代码高亮
@@ -42,30 +41,6 @@ export class MarkdownConverter {
   }
 
   /**
-   * 解析 YAML frontmatter
-   */
-  private parseFrontmatter(content: string): {
-    metadata: Record<string, any>;
-    content: string;
-  } {
-    const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n/;
-    const match = content.match(frontmatterRegex);
-
-    if (!match) {
-      return { metadata: {}, content };
-    }
-
-    try {
-      const metadata = yaml.parse(match[1]) || {};
-      const remainingContent = content.slice(match[0].length);
-      return { metadata, content: remainingContent };
-    } catch (error) {
-      console.warn('Failed to parse frontmatter:', error);
-      return { metadata: {}, content };
-    }
-  }
-
-  /**
    * 从内容中提取标题
    */
   private extractTitle(content: string): string {
@@ -88,7 +63,7 @@ export class MarkdownConverter {
    * 转换 Markdown 文件
    */
   async convert(fileInfo: FileInfo): Promise<FileInfo> {
-    let { content, metadata } = this.parseFrontmatter(fileInfo.content);
+    let content = fileInfo.content;
 
     // 应用前置处理器
     for (const processor of this.processors) {
@@ -107,16 +82,14 @@ export class MarkdownConverter {
       }
     }
 
-    // 提取标题（如果 metadata 中没有）
-    if (!metadata.title) {
-      metadata.title = this.extractTitle(content);
-    }
+    // 提取标题
+    const title = this.extractTitle(content);
 
     return {
       ...fileInfo,
       content,
       html,
-      metadata,
+      metadata: { title }, // 只保留标题作为 metadata
     };
   }
 
