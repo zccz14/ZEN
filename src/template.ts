@@ -10,82 +10,41 @@ export class TemplateEngine {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{title}}</title>
   <style>
+    /* Critical CSS for initial render */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       line-height: 1.6;
-      color: #333;
-      background: #f8f9fa;
+      color: #1e293b;
+      background: #f8fafc;
       display: flex;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .sidebar {
       width: 280px;
-      background: #fff;
-      border-right: 1px solid #e9ecef;
+      background: #ffffff;
+      border-right: 1px solid #e2e8f0;
       padding: 2rem 1rem;
       overflow-y: auto;
       position: fixed;
       height: 100vh;
       left: 0;
       top: 0;
-    }
-
-    .sidebar-header {
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #e9ecef;
-    }
-
-    .sidebar-header h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #212529;
-    }
-
-    .sidebar-header p {
-      color: #6c757d;
-      font-size: 0.875rem;
-      margin-top: 0.5rem;
-    }
-
-    .nav-list {
-      list-style: none;
-    }
-
-    .nav-item {
-      margin-bottom: 0.5rem;
-    }
-
-    .nav-link {
-      display: block;
-      padding: 0.5rem 1rem;
-      color: #495057;
-      text-decoration: none;
-      border-radius: 4px;
-      transition: all 0.2s;
-    }
-
-    .nav-link:hover {
-      background: #e9ecef;
-      color: #212529;
-    }
-
-    .nav-link.active {
-      background: #007bff;
-      color: white;
-    }
-
-    .nav-submenu {
-      list-style: none;
-      margin-left: 1rem;
-      margin-top: 0.25rem;
+      z-index: 10;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     }
 
     .content {
@@ -93,130 +52,7 @@ export class TemplateEngine {
       margin-left: 280px;
       padding: 3rem 4rem;
       max-width: 900px;
-    }
-
-    .content-header {
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #e9ecef;
-    }
-
-    .content-header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #212529;
-      margin-bottom: 0.5rem;
-    }
-
-    .content-header .meta {
-      color: #6c757d;
-      font-size: 0.875rem;
-    }
-
-    .content-body {
-      font-size: 1.125rem;
-      line-height: 1.8;
-    }
-
-    .content-body h1 {
-      font-size: 2rem;
-      margin: 2rem 0 1rem;
-      color: #212529;
-    }
-
-    .content-body h2 {
-      font-size: 1.75rem;
-      margin: 1.75rem 0 0.875rem;
-      color: #343a40;
-    }
-
-    .content-body h3 {
-      font-size: 1.5rem;
-      margin: 1.5rem 0 0.75rem;
-      color: #495057;
-    }
-
-    .content-body p {
-      margin: 1rem 0;
-    }
-
-    .content-body ul, .content-body ol {
-      margin: 1rem 0 1rem 2rem;
-    }
-
-    .content-body li {
-      margin: 0.5rem 0;
-    }
-
-    .content-body blockquote {
-      border-left: 4px solid #007bff;
-      padding: 0.5rem 1rem;
-      margin: 1rem 0;
-      background: #f8f9fa;
-      color: #495057;
-    }
-
-    .content-body code {
-      background: #f8f9fa;
-      padding: 0.2rem 0.4rem;
-      border-radius: 3px;
-      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-      font-size: 0.875em;
-    }
-
-    .content-body pre {
-      background: #f8f9fa;
-      padding: 1rem;
-      border-radius: 6px;
-      overflow-x: auto;
-      margin: 1rem 0;
-    }
-
-    .content-body pre code {
-      background: none;
-      padding: 0;
-    }
-
-    .content-body table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1rem 0;
-    }
-
-    .content-body th, .content-body td {
-      border: 1px solid #dee2e6;
-      padding: 0.75rem;
-      text-align: left;
-    }
-
-    .content-body th {
-      background: #f8f9fa;
-      font-weight: 600;
-    }
-
-    .content-body img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 6px;
-      margin: 1rem 0;
-    }
-
-    .content-body a {
-      color: #007bff;
-      text-decoration: none;
-    }
-
-    .content-body a:hover {
-      text-decoration: underline;
-    }
-
-    .footer {
-      margin-top: 3rem;
-      padding-top: 2rem;
-      border-top: 1px solid #e9ecef;
-      color: #6c757d;
-      font-size: 0.875rem;
-      text-align: center;
+      min-height: 100vh;
     }
 
     @media (max-width: 768px) {
@@ -229,7 +65,8 @@ export class TemplateEngine {
         height: auto;
         position: static;
         border-right: none;
-        border-bottom: 1px solid #e9ecef;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 1.5rem 1rem;
       }
 
       .content {
@@ -239,6 +76,7 @@ export class TemplateEngine {
     }
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css">
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <nav class="sidebar">
@@ -247,19 +85,63 @@ export class TemplateEngine {
       <p>A minimalist Markdown documentation site builder</p>
     </div>
     {{navigation}}
+    <div class="sidebar-footer">
+      <div class="theme-toggle">
+        <button class="theme-toggle-btn" aria-label="Toggle dark mode">
+          <svg class="theme-icon-light" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 12C10.2091 12 12 10.2091 12 8C12 5.79086 10.2091 4 8 4C5.79086 4 4 5.79086 4 8C4 10.2091 5.79086 12 8 12Z" fill="currentColor"/>
+            <path d="M8 2V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8 13V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M2 8H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M13 8H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M3.51465 3.51465L4.22183 4.22183" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M11.7782 11.7782L12.4854 12.4854" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M3.51465 12.4854L4.22183 11.7782" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M11.7782 4.22183L12.4854 3.51465" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <svg class="theme-icon-dark" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    </div>
   </nav>
 
   <main class="content">
     <header class="content-header">
       <h1>{{title}}</h1>
+      <div class="meta">
+        <span class="last-updated">Last updated: <time datetime="{{metadata.lastUpdated}}">{{metadata.lastUpdated}}</time></span>
+        <span class="reading-time">Reading time: {{metadata.readingTime}} min</span>
+      </div>
     </header>
 
     <article class="content-body">
       {{{content}}}
     </article>
 
+    <div class="content-navigation">
+      <div class="prev-next">
+        <a href="{{prevLink}}" class="nav-btn prev-btn" {{prevLinkDisabled}}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Previous</span>
+        </a>
+        <a href="{{nextLink}}" class="nav-btn next-btn" {{nextLinkDisabled}}>
+          <span>Next</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
     <footer class="footer">
-      <p>Generated by <strong>ZEN</strong> • <a href="https://github.com/zccz14/ZEN" target="_blank">View on GitHub</a></p>
+      <div class="footer-content">
+        <p>Generated by <strong>ZEN</strong> • <a href="https://github.com/zccz14/ZEN" target="_blank" rel="noopener">View on GitHub</a></p>
+        <p class="footer-meta">Version {{metadata.version}} • Built on {{metadata.buildDate}}</p>
+      </div>
     </footer>
   </main>
 
@@ -306,6 +188,25 @@ export class TemplateEngine {
     result = result.replace(/{{title}}/g, data.title || 'Untitled');
     result = result.replace(/{{{content}}}/g, data.content || '');
 
+    // 替换元数据变量
+    if (data.metadata) {
+      result = result.replace(/{{metadata\.lastUpdated}}/g, data.metadata.lastUpdated || '');
+      result = result.replace(
+        /{{metadata\.readingTime}}/g,
+        data.metadata.readingTime?.toString() || ''
+      );
+      result = result.replace(/{{metadata\.version}}/g, data.metadata.version || '');
+      result = result.replace(/{{metadata\.buildDate}}/g, data.metadata.buildDate || '');
+    }
+
+    // 替换导航链接
+    result = result.replace(/{{prevLink}}/g, data.prevLink || '');
+    result = result.replace(/{{nextLink}}/g, data.nextLink || '');
+
+    // 处理条件变量（如果链接不存在，添加disabled属性）
+    result = result.replace(/{{prevLinkDisabled}}/g, data.prevLink ? '' : 'disabled');
+    result = result.replace(/{{nextLinkDisabled}}/g, data.nextLink ? '' : 'disabled');
+
     return result;
   }
 
@@ -333,12 +234,23 @@ export class TemplateEngine {
    * 从文件信息生成模板数据
    */
   generateTemplateData(fileInfo: FileInfo, navigation: NavigationItem[]): TemplateData {
+    const now = new Date();
+    const defaultMetadata = {
+      title: fileInfo.name,
+      lastUpdated: now.toISOString().split('T')[0], // YYYY-MM-DD格式
+      readingTime: Math.ceil((fileInfo.content.length || 0) / 1000), // 粗略估计：每1000字符约1分钟
+      version: '1.0.0',
+      buildDate: now.toLocaleDateString('zh-CN'),
+    };
+
     return {
       title: fileInfo.metadata?.title || fileInfo.name, // 优先使用提取的标题，如果没有则使用文件名
       content: fileInfo.html || '',
       navigation,
-      metadata: fileInfo.metadata,
+      metadata: { ...defaultMetadata, ...fileInfo.metadata },
       currentPath: `/${fileInfo.relativePath.replace(/\.md$/, '.html')}`,
+      prevLink: '',
+      nextLink: '',
     };
   }
 

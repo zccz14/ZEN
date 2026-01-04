@@ -17,7 +17,14 @@ export interface FileInfo {
   ext: string;
   content: string;
   html?: string;
-  metadata?: { title: string }; // 简化，只保留标题
+  metadata?: {
+    title: string;
+    lastUpdated?: string;
+    readingTime?: number;
+    version?: string;
+    buildDate?: string;
+    [key: string]: any;
+  };
 }
 
 export interface NavigationItem {
@@ -30,8 +37,17 @@ export interface TemplateData {
   title: string;
   content: string;
   navigation: NavigationItem[];
-  metadata?: { title: string }; // 简化，只保留标题
+  metadata?: {
+    title: string;
+    lastUpdated?: string;
+    readingTime?: number;
+    version?: string;
+    buildDate?: string;
+    [key: string]: any;
+  };
   currentPath?: string;
+  prevLink?: string;
+  nextLink?: string;
 }
 
 export interface MarkdownProcessor {

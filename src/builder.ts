@@ -342,6 +342,26 @@ export class ZenBuilder {
     } catch (error) {
       // 静态目录不存在是正常的，忽略错误
     }
+
+    // 复制内置样式文件
+    await this.copyBuiltinAssets(outDir);
+  }
+
+  /**
+   * 复制内置资源（如样式文件）
+   */
+  private async copyBuiltinAssets(outDir: string): Promise<void> {
+    try {
+      // 复制样式文件
+      const stylesPath = path.join(__dirname, 'styles.css');
+      const destStylesPath = path.join(outDir, 'styles.css');
+
+      // 检查样式文件是否存在
+      await fs.access(stylesPath);
+      await fs.copyFile(stylesPath, destStylesPath);
+    } catch (error) {
+      // 样式文件可能不存在，忽略错误
+    }
   }
 
   /**
