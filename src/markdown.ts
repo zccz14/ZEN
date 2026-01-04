@@ -8,7 +8,7 @@ import { GitIgnoreProcessor } from './gitignore';
 
 // 配置 marked 使用 highlight.js 进行代码高亮
 marked.setOptions({
-  highlight: function(code: string, lang: string) {
+  highlight: function (code: string, lang: string) {
     if (lang && hljs.getLanguage(lang)) {
       try {
         return hljs.highlight(code, { language: lang }).value;
@@ -24,7 +24,7 @@ marked.setOptions({
   sanitize: false,
   smartLists: true,
   smartypants: false,
-  xhtml: false
+  xhtml: false,
 } as any);
 
 export class MarkdownConverter {
@@ -116,7 +116,7 @@ export class MarkdownConverter {
       ...fileInfo,
       content,
       html,
-      metadata
+      metadata,
     };
   }
 
@@ -154,7 +154,7 @@ export class MarkdownConverter {
       relativePath,
       name,
       ext,
-      content
+      content,
     };
 
     return this.convert(fileInfo);
@@ -199,7 +199,7 @@ export class MarkdownConverter {
             relativePath,
             name,
             ext,
-            content
+            content,
           });
         }
       }

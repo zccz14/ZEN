@@ -20,9 +20,7 @@ export class NavigationGenerator {
    */
   generate(files: FileInfo[]): NavigationItem[] {
     // 按路径排序
-    const sortedFiles = [...files].sort((a, b) =>
-      a.relativePath.localeCompare(b.relativePath)
-    );
+    const sortedFiles = [...files].sort((a, b) => a.relativePath.localeCompare(b.relativePath));
 
     // 构建树形结构
     const root: NavigationItem[] = [];
@@ -62,20 +60,18 @@ export class NavigationGenerator {
         // 添加文件节点
         currentLevel.push({
           title,
-          path: itemPath
+          path: itemPath,
         });
       } else {
         // 查找或创建目录节点
         // 首先尝试通过路径查找（最准确）
-        let dirItem = currentLevel.find(item =>
-          item.path === itemPath
-        );
+        let dirItem = currentLevel.find(item => item.path === itemPath);
 
         // 如果没找到，尝试通过格式化后的标题查找
         if (!dirItem) {
           const formattedTitle = this.formatTitle(displayName);
-          dirItem = currentLevel.find(item =>
-            item.title === formattedTitle && item.children !== undefined
+          dirItem = currentLevel.find(
+            item => item.title === formattedTitle && item.children !== undefined
           );
         }
 
@@ -83,7 +79,7 @@ export class NavigationGenerator {
           dirItem = {
             title: this.formatTitle(displayName),
             path: itemPath,
-            children: []
+            children: [],
           };
           currentLevel.push(dirItem);
         }
@@ -135,16 +131,18 @@ export class NavigationGenerator {
    * 生成扁平化导航（所有页面在同一层级）
    */
   generateFlat(files: FileInfo[]): NavigationItem[] {
-    return files.map(file => {
-      const title = file.metadata?.title || this.formatTitle(file.name);
-      const rawPath = `/${file.relativePath.replace(/\.md$/, '.html')}`;
-      const itemPath = this.generatePath(rawPath);
+    return files
+      .map(file => {
+        const title = file.metadata?.title || this.formatTitle(file.name);
+        const rawPath = `/${file.relativePath.replace(/\.md$/, '.html')}`;
+        const itemPath = this.generatePath(rawPath);
 
-      return {
-        title,
-        path: itemPath
-      };
-    }).sort((a, b) => a.title.localeCompare(b.title));
+        return {
+          title,
+          path: itemPath,
+        };
+      })
+      .sort((a, b) => a.title.localeCompare(b.title));
   }
 
   /**
@@ -166,7 +164,7 @@ export class NavigationGenerator {
       if (foundItem) {
         breadcrumbs.push({
           title: foundItem.title,
-          path: foundItem.path
+          path: foundItem.path,
         });
 
         if (foundItem.children && !isLast) {
@@ -181,7 +179,10 @@ export class NavigationGenerator {
   /**
    * 在导航树中查找项目
    */
-  private findNavigationItem(navigation: NavigationItem[], searchPath: string): NavigationItem | null {
+  private findNavigationItem(
+    navigation: NavigationItem[],
+    searchPath: string
+  ): NavigationItem | null {
     for (const item of navigation) {
       if (item.path === searchPath) {
         return item;
@@ -203,17 +204,22 @@ export class NavigationGenerator {
    */
   generateSitemap(files: FileInfo[], baseUrl?: string): string {
     const effectiveBaseUrl = baseUrl || this.baseUrl || 'https://example.com';
-    const urls = files.map(file => {
-      const path = `/${file.relativePath.replace(/\.md$/, '.html')}`;
-      const lastmod = file.metadata?.last_modified || file.metadata?.date || new Date().toISOString().split('T')[0];
+    const urls = files
+      .map(file => {
+        const path = `/${file.relativePath.replace(/\.md$/, '.html')}`;
+        const lastmod =
+          file.metadata?.last_modified ||
+          file.metadata?.date ||
+          new Date().toISOString().split('T')[0];
 
-      return `  <url>
+        return `  <url>
     <loc>${effectiveBaseUrl}${path}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`;
-    }).join('\n');
+      })
+      .join('\n');
 
     return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

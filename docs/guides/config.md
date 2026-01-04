@@ -36,24 +36,25 @@ npx zengen
 ```
 
 **重要说明：**
+
 - ZEN 强制使用当前目录作为源目录，输出到 `.zen/dist` 目录
 - 不再支持通过命令行参数指定源目录和输出目录
 - 使用 `--watch` 模式时，修改文件会自动重建
 
 ### 命令行选项
 
-| 选项 | 简写 | 描述 | 默认值 |
-|------|------|------|--------|
-| `--watch` | `-w` | 监听文件变化并自动重建 | `false` |
-| `--serve` | `-s` | 启动开发服务器（需要 `--watch`） | `false` |
-| `--port` | `-p` | 开发服务器端口 | `3000` |
-| `--host` | | 开发服务器主机 | `localhost` |
-| `--template` | `-t` | 自定义模板文件路径 | 内置模板 |
-| `--config` | `-c` | 配置文件路径 | 无 |
-| `--verbose` | `-v` | 显示详细日志 | `false` |
-| `--clean` | | 清理输出目录 | `false` |
-| `--base-url` | | 站点基础 URL | 无 |
-| `--help` | `-h` | 显示帮助信息 | 无 |
+| 选项         | 简写 | 描述                             | 默认值      |
+| ------------ | ---- | -------------------------------- | ----------- |
+| `--watch`    | `-w` | 监听文件变化并自动重建           | `false`     |
+| `--serve`    | `-s` | 启动开发服务器（需要 `--watch`） | `false`     |
+| `--port`     | `-p` | 开发服务器端口                   | `3000`      |
+| `--host`     |      | 开发服务器主机                   | `localhost` |
+| `--template` | `-t` | 自定义模板文件路径               | 内置模板    |
+| `--config`   | `-c` | 配置文件路径                     | 无          |
+| `--verbose`  | `-v` | 显示详细日志                     | `false`     |
+| `--clean`    |      | 清理输出目录                     | `false`     |
+| `--base-url` |      | 站点基础 URL                     | 无          |
+| `--help`     | `-h` | 显示帮助信息                     | 无          |
 
 ## 配置文件
 
@@ -78,16 +79,19 @@ npx zengen
 ### 配置项说明
 
 #### `template`
+
 - **类型**: `string`
 - **描述**: 自定义模板文件路径
 - **示例**: `"./templates/custom.html"`
 
 #### `baseUrl`
+
 - **类型**: `string`
 - **描述**: 站点基础 URL，用于生成绝对路径
 - **示例**: `"/docs"`, `"/my-project"`
 
 #### `i18n`
+
 - **类型**: `object`
 - **描述**: 多语言翻译配置
 - **字段**:
@@ -96,12 +100,14 @@ npx zengen
   - `apiKey`: OpenAI API 密钥（可选，从环境变量读取）
 
 #### `includePattern`
+
 - **类型**: `string`
 - **描述**: 包含的文件模式（glob 语法）
 - **默认**: `"**/*.md"`
 - **示例**: `"**/*.{md,markdown}"`
 
 #### `excludePattern`
+
 - **类型**: `string`
 - **描述**: 排除的文件模式（glob 语法）
 - **默认**: 无
@@ -112,6 +118,7 @@ npx zengen
 ### 默认模板
 
 ZEN 使用内置的极简模板，包含：
+
 - 响应式布局
 - 代码高亮（使用 highlight.js）
 - 导航菜单
@@ -124,35 +131,31 @@ ZEN 使用内置的极简模板，包含：
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{title}}</title>
-  <link rel="stylesheet" href="/styles.css">
-</head>
-<body>
-  <nav class="sidebar">
-    {{navigation}}
-  </nav>
-  <main class="content">
-    {{content}}
-  </main>
-  <footer>
-    <p>由 ZEN 生成</p>
-  </footer>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <nav class="sidebar">{{navigation}}</nav>
+    <main class="content">{{content}}</main>
+    <footer>
+      <p>由 ZEN 生成</p>
+    </footer>
+  </body>
 </html>
 ```
 
 **可用模板变量:**
 
-| 变量 | 描述 |
-|------|------|
-| `{{title}}` | 页面标题 |
-| `{{content}}` | 转换后的 HTML 内容 |
-| `{{navigation}}` | 导航菜单 HTML |
-| `{{metadata}}` | 页面元数据（JSON 字符串） |
-| `{{currentPath}}` | 当前页面路径 |
+| 变量              | 描述                      |
+| ----------------- | ------------------------- |
+| `{{title}}`       | 页面标题                  |
+| `{{content}}`     | 转换后的 HTML 内容        |
+| `{{navigation}}`  | 导航菜单 HTML             |
+| `{{metadata}}`    | 页面元数据（JSON 字符串） |
+| `{{currentPath}}` | 当前页面路径              |
 
 ### 模板位置
 

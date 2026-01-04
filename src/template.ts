@@ -344,7 +344,10 @@ export class TemplateEngine {
       try {
         template = await fs.readFile(templatePath, 'utf-8');
       } catch (error) {
-        console.warn(`Failed to load custom template from ${templatePath}, using default template:`, error);
+        console.warn(
+          `Failed to load custom template from ${templatePath}, using default template:`,
+          error
+        );
       }
     }
 
@@ -360,7 +363,7 @@ export class TemplateEngine {
       content: fileInfo.html || '',
       navigation,
       metadata: fileInfo.metadata,
-      currentPath: `/${fileInfo.relativePath.replace(/\.md$/, '.html')}`
+      currentPath: `/${fileInfo.relativePath.replace(/\.md$/, '.html')}`,
     };
   }
 

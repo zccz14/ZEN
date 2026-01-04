@@ -8,7 +8,7 @@ export type {
   NavigationItem,
   TemplateData,
   MarkdownProcessor,
-  ZenConfig
+  ZenConfig,
 } from './types';
 
 /**
@@ -36,5 +36,5 @@ export default {
   Builder: ZenBuilder,
   MarkdownConverter: MarkdownConverter,
   TemplateEngine: TemplateEngine,
-  NavigationGenerator: NavigationGenerator
+  NavigationGenerator: NavigationGenerator,
 };

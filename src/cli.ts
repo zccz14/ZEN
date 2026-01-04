@@ -91,7 +91,7 @@ class BuildCommand extends BaseCommand {
         port: parseInt(this.port, 10),
         host: this.host,
         verbose: this.verbose,
-        baseUrl: this.baseUrl || config.baseUrl
+        baseUrl: this.baseUrl || config.baseUrl,
       };
 
       const builder = new ZenBuilder(config);
@@ -106,7 +106,9 @@ class BuildCommand extends BaseCommand {
 
       // 警告 --serve 选项需要 --watch 选项
       if (this.serve && !this.watch) {
-        this.context.stdout.write('⚠️ Warning: --serve option requires --watch option, ignoring --serve\n');
+        this.context.stdout.write(
+          '⚠️ Warning: --serve option requires --watch option, ignoring --serve\n'
+        );
         buildOptions.serve = false;
       }
 
@@ -129,9 +131,6 @@ class BuildCommand extends BaseCommand {
     }
   }
 }
-
-
-
 
 // 创建 CLI 应用
 const cli = new Cli({

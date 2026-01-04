@@ -9,6 +9,7 @@
 此工作流程会自动构建 ZEN 项目的文档站点并部署到 GitHub Pages。
 
 **触发条件：**
+
 - 推送到 `main` 分支（当 `demo/src/`、`package.json` 或工作流程文件发生变化时）
 - 针对 `main` 分支的 Pull Request
 - 手动触发
@@ -22,9 +23,9 @@
 5. **安装 zengen**：将本地构建的 zengen 安装为全局工具
 6. **测试 zengen CLI**：验证 CLI 工具正常工作
 7. **构建文档站点**：使用 `cd demo/src && zengen build` 构建文档，输出到 `.zen/dist` 目录
-7. **配置 Pages**：设置 GitHub Pages
-8. **上传制品**：将构建的文档站点上传为 Pages 制品
-9. **部署到 GitHub Pages**：自动部署到 GitHub Pages
+8. **配置 Pages**：设置 GitHub Pages
+9. **上传制品**：将构建的文档站点上传为 Pages 制品
+10. **部署到 GitHub Pages**：自动部署到 GitHub Pages
 
 ## 访问文档站点
 
@@ -55,6 +56,7 @@ zengen build --clean --verbose
 ```
 
 可用的选项：
+
 - `--clean`：在构建前清理输出目录
 - `--verbose`：显示详细输出
 - `--watch`：监听模式（不适用于 CI/CD）
@@ -64,6 +66,7 @@ zengen build --clean --verbose
 ### 环境变量
 
 工作流程使用以下环境变量：
+
 - `GITHUB_TOKEN`：自动提供的 GitHub 令牌
 - `NODE_VERSION`：Node.js 版本（默认为 20.x）
 

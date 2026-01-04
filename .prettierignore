@@ -1,0 +1,14 @@
+# Ignore artifacts
+dist/
+node_modules/
+coverage/
+
+# Ignore demo files
+demo/
+
+# Ignore package lock
+package-lock.json
+
+# Ignore Prettier config itself
+.prettierrc.json
+.prettierignore

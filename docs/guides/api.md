@@ -21,6 +21,7 @@ constructor(config: ZenConfig = {})
 ```
 
 **参数:**
+
 - `config`: 可选的配置对象
 
 #### `build(options: BuildOptions): Promise<void>`
@@ -28,6 +29,7 @@ constructor(config: ZenConfig = {})
 构建文档站点的主要方法。
 
 **参数:**
+
 - `options.srcDir`: 源 Markdown 文件目录
 - `options.outDir`: 输出 HTML 文件目录
 - `options.template?`: 自定义模板路径（可选）
@@ -39,6 +41,7 @@ constructor(config: ZenConfig = {})
 - `options.baseUrl?`: 站点基础 URL（可选）
 
 **示例:**
+
 ```typescript
 import { ZenBuilder } from 'zengen';
 
@@ -48,7 +51,7 @@ await builder.build({
   srcDir: './docs',
   outDir: './dist',
   template: './custom-template.html',
-  verbose: true
+  verbose: true,
 });
 ```
 
@@ -59,12 +62,13 @@ await builder.build({
 **参数:** 与 `build` 方法相同
 
 **示例:**
+
 ```typescript
 await builder.watch({
   srcDir: './docs',
   outDir: './dist',
   serve: true,
-  port: 8080
+  port: 8080,
 });
 ```
 
@@ -154,6 +158,7 @@ interface MarkdownProcessor {
 ```
 
 **示例:**
+
 ```typescript
 const myProcessor: MarkdownProcessor = {
   beforeParse(content, fileInfo) {
@@ -164,11 +169,11 @@ const myProcessor: MarkdownProcessor = {
   afterParse(html, fileInfo) {
     // 后处理 HTML 内容
     return html.replace(/<h2>/g, '<h2 class="custom">');
-  }
+  },
 };
 
 const builder = new ZenBuilder({
-  processors: [myProcessor]
+  processors: [myProcessor],
 });
 ```
 
@@ -223,7 +228,7 @@ async function buildDocumentation() {
   await builder.build({
     srcDir: './my-docs',
     outDir: './public',
-    verbose: true
+    verbose: true,
   });
 
   console.log('Documentation built successfully!');
@@ -243,7 +248,7 @@ async function startDevServer() {
     outDir: './dist',
     serve: true,
     port: 3000,
-    verbose: true
+    verbose: true,
   });
 
   console.log('Dev server started at http://localhost:3000');
@@ -252,7 +257,7 @@ async function startDevServer() {
 
 ### 自定义处理器
 
-```typescript
+````typescript
 import { ZenBuilder } from 'zengen';
 
 const codeBlockProcessor = {
@@ -263,10 +268,10 @@ const codeBlockProcessor = {
       const numberedCode = lines.map((line, i) => `${i + 1}. ${line}`).join('\n');
       return `\`\`\`${lang}\n${numberedCode}\n\`\`\``;
     });
-  }
+  },
 };
 
 const builder = new ZenBuilder({
-  processors: [codeBlockProcessor]
+  processors: [codeBlockProcessor],
 });
-```
+````

@@ -129,7 +129,16 @@ export class ZenBuilder {
    * 监听文件变化并自动重建
    */
   async watch(options: BuildOptions): Promise<void> {
-    const { srcDir, outDir, template, verbose = false, serve = false, port = 3000, host = 'localhost', baseUrl } = options;
+    const {
+      srcDir,
+      outDir,
+      template,
+      verbose = false,
+      serve = false,
+      port = 3000,
+      host = 'localhost',
+      baseUrl,
+    } = options;
 
     console.log(`👀 Watching for changes in ${srcDir}...`);
     console.log(`Press Ctrl+C to stop watching`);
@@ -166,10 +175,10 @@ export class ZenBuilder {
       ignored: [
         /(^|[\/\\])\../, // 忽略隐藏文件
         /(^|[\/\\])\.zen($|[\/\\])/, // 忽略 .zen 目录
-        ...gitignoreRegexes // 忽略 .gitignore 中的文件
+        ...gitignoreRegexes, // 忽略 .gitignore 中的文件
       ],
       persistent: true,
-      ignoreInitial: true
+      ignoreInitial: true,
     });
 
     let isBuilding = false;
@@ -346,14 +355,14 @@ export class ZenBuilder {
         const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
         // 检查当前目录是否有 index.html
-        const hasIndexHtml = entries.some(entry =>
-          entry.isFile() && entry.name === 'index.html'
-        );
+        const hasIndexHtml = entries.some(entry => entry.isFile() && entry.name === 'index.html');
 
         if (!hasIndexHtml) {
           // 查找当前目录下的第一个 .html 文件（不包括 index.html）
           const htmlFiles = entries
-            .filter(entry => entry.isFile() && entry.name.endsWith('.html') && entry.name !== 'index.html')
+            .filter(
+              entry => entry.isFile() && entry.name.endsWith('.html') && entry.name !== 'index.html'
+            )
             .map(entry => entry.name)
             .sort();
 
