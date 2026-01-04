@@ -10,7 +10,7 @@
   "scripts": {
     "build": "npx rimraf dist && tsc",
     "dev": "ts-node src/cli.ts",
-    "test": "npm run test:types && npm run test:build && npm run test:cli",
+    "test": "npm run build && node --test dist/**/*.test.js",
     "test:types": "tsc --noEmit",
     "test:build": "npm run build && test -f dist/index.js && test -f dist/cli.js",
     "test:cli": "node -e \"const pkg = require('./package.json'); console.log('Package:', pkg.name, 'v' + pkg.version)\"",
