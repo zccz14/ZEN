@@ -47,5 +47,26 @@
     "targetLang": "en-US",
     "translatedContent": "# ZEN Documentation Site Example\n\nWelcome to the ZEN documentation builder! This is a minimalist Markdown documentation site generator.\n\n## Features\n\n- **Minimal Configuration**: No complex configuration files required\n- **Content-First**: Focus on writing, not tool configuration\n- **Smart Navigation**: Automatically generates site maps and navigation\n- **Multi-Language Support**: Supports incremental i18n translation\n\n## Quick Start\n\n```bash\n# Build documentation using npx (recommended)\nnpx zengen build\n\n# Live preview (watch for file changes)\nnpx zengen build --watch\n\n# View more parameters or help\nnpx zengen\n```\n\n**Note**: ZEN enforces the use of the current directory as the source directory and outputs to the `.zen/dist` directory. Specifying source and output directory parameters is no longer supported.\n\n## Code Examples\n\n```javascript\n// This is a JavaScript example\nconst zen = require('zengen');\n\nasync function buildDocs() {\n  await zen.build({\n    // ZEN now enforces using the current directory as the source\n    // Outputs to the .zen/dist directory\n  });\n}\n```\n\n```python\n# This is a Python example\ndef hello_world():\n    print(\"Hello from ZEN!\")\n```\n\n## Next Steps\n\n1. Read the [API Documentation](./api.md)\n2. Check the [Configuration Guide](./config.md)\n3. Learn about [Best Practices](./best-practices.md)",
     "lastUpdated": "2026-01-05T14:14:00.234Z"
+  },
+  {
+    "sourceHash": "abc123",
+    "sourceLang": "zh-Hans",
+    "targetLang": "en-US",
+    "translatedContent": "Please translate the following zh-Hans text into en-US. Keep the Markdown format unchanged, only translate the text content:\n\nTranslation result (maintain original format):",
+    "lastUpdated": "2026-01-05T18:19:26.228Z"
+  },
+  {
+    "sourceHash": "def456",
+    "sourceLang": "zh-Hans",
+    "targetLang": "en-US",
+    "translatedContent": "Please translate the following zh-Hans text into en-US. Keep the Markdown format unchanged, only translate the text content:\n\nTranslation result (maintain original format):",
+    "lastUpdated": "2026-01-05T18:19:28.535Z"
+  },
+  {
+    "sourceHash": "6124ea88edec5bde737b26b21f71ecfeffe4e73151784856edf813ee231a4baa",
+    "sourceLang": "en-US",
+    "targetLang": "zh-Hans",
+    "translatedContent": "# 测试文档",
+    "lastUpdated": "2026-01-05T18:21:38.537Z"
   }
 ]

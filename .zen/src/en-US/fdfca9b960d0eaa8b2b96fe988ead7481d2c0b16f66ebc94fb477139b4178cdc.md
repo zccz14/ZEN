@@ -1,0 +1,51 @@
+# ZEN Documentation Site Example
+
+Welcome to the ZEN documentation builder! This is a minimalist Markdown documentation site generator.
+
+## Features
+
+- **Minimal Configuration**: No complex configuration files required
+- **Content-First**: Focus on writing, not tool configuration
+- **Smart Navigation**: Automatically generates site maps and navigation
+- **Multi-Language Support**: Supports incremental i18n translation
+
+## Quick Start
+
+```bash
+# Build documentation using npx (recommended)
+npx zengen build
+
+# Live preview (watch for file changes)
+npx zengen build --watch
+
+# View more parameters or help
+npx zengen
+```
+
+**Note**: ZEN enforces the use of the current directory as the source directory and outputs to the `.zen/dist` directory. Specifying source and output directory parameters is no longer supported.
+
+## Code Examples
+
+```javascript
+// This is a JavaScript example
+const zen = require('zengen');
+
+async function buildDocs() {
+  await zen.build({
+    // ZEN now enforces using the current directory as the source
+    // Outputs to the .zen/dist directory
+  });
+}
+```
+
+```python
+# This is a Python example
+def hello_world():
+    print("Hello from ZEN!")
+```
+
+## Next Steps
+
+1. Read the [API Documentation](./api.md)
+2. Check the [Configuration Guide](./config.md)
+3. Learn about [Best Practices](./best-practices.md)
