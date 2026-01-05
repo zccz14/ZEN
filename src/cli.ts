@@ -42,6 +42,57 @@ abstract class BaseCommand extends Command {
   }
 }
 
+// Scan 命令
+class ScanCommand extends BaseCommand {
+  static paths = [['scan']];
+
+  scanDir = Option.String('--scan-dir');
+  verbose = Option.Boolean('-v,--verbose');
+  config = Option.String('-c,--config');
+
+  static usage = Command.Usage({
+    description: 'Scan Markdown files in current directory and save to scan directory',
+    details: `
+      This command scans all Markdown files in the current directory and saves the results
+      to a scan directory (default: .zen/src). This enables incremental builds and better
+      build performance.
+
+      Examples:
+        $ zengen scan
+        $ zengen scan --verbose
+        $ zengen scan --scan-dir .zen/cache
+        $ zengen scan --config zen.config.json
+    `,
+  });
+
+  async execute() {
+    try {
+      // 加载配置文件
+      const config = await this.loadConfig(this.config);
+
+      // 强制使用当前目录作为 src 目录
+      const currentDir = process.cwd();
+
+      // 合并命令行参数和配置
+      const scanOptions = {
+        srcDir: currentDir,
+        scanDir: this.scanDir || config.scanDir,
+        verbose: this.verbose,
+      };
+
+      const builder = new ZenBuilder(config);
+
+      // 执行扫描
+      await builder.scan(scanOptions);
+
+      return 0;
+    } catch (error) {
+      this.context.stderr.write(`❌ Scan failed: ${error}\n`);
+      return 1;
+    }
+  }
+}
+
 // Build 命令
 class BuildCommand extends BaseCommand {
   static paths = [['build']];
@@ -61,6 +112,9 @@ class BuildCommand extends BaseCommand {
     details: `
       This command builds a documentation site from Markdown files in the current directory.
       The output will be placed in the .zen/dist directory.
+
+      The build process now uses a scan directory (.zen/src by default) for better performance
+      and incremental builds. You can run 'zengen scan' first to populate the scan directory.
 
       Examples:
         $ zengen build
@@ -140,6 +194,7 @@ const cli = new Cli({
 });
 
 // 注册命令
+cli.register(ScanCommand);
 cli.register(BuildCommand);
 
 // 运行 CLI

@@ -52,4 +52,5 @@ export interface ZenConfig {
   processors?: MarkdownProcessor[];
   includePattern?: string;
   excludePattern?: string;
+  scanDir?: string;
 }

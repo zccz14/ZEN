@@ -3,6 +3,7 @@ import { MarkdownConverter } from './markdown';
 import { TemplateEngine } from './template';
 import { NavigationGenerator } from './navigation';
 import { GitIgnoreProcessor } from './gitignore';
+import { FileScanner, ScanOptions } from './scanner';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
@@ -13,6 +14,7 @@ export class ZenBuilder {
   private markdownConverter: MarkdownConverter;
   private templateEngine: TemplateEngine;
   private navigationGenerator: NavigationGenerator;
+  private fileScanner: FileScanner;
   private config: ZenConfig = {};
 
   constructor(config: ZenConfig = {}) {
@@ -20,6 +22,71 @@ export class ZenBuilder {
     this.markdownConverter = new MarkdownConverter(config.processors || []);
     this.templateEngine = new TemplateEngine();
     this.navigationGenerator = new NavigationGenerator(config.baseUrl);
+    this.fileScanner = new FileScanner();
+  }
+
+  /**
+   * 扫描源文件
+   */
+  async scan(options: ScanOptions): Promise<void> {
+    const { srcDir, scanDir, verbose = false } = options;
+
+    if (verbose) {
+      console.log(`🔍 Starting ZEN scan...`);
+      console.log(`📁 Source: ${srcDir}`);
+      console.log(`📁 Scan directory: ${scanDir || path.join(srcDir, '.zen', 'src')}`);
+      console.log(`🔍 Verbose mode enabled`);
+    }
+
+    // 验证源目录
+    try {
+      await fs.access(srcDir);
+    } catch (error) {
+      throw new Error(`Source directory does not exist: ${srcDir}`);
+    }
+
+    // 执行扫描
+    const scanResult = await this.fileScanner.scan({
+      srcDir,
+      scanDir,
+      verbose,
+    });
+
+    if (verbose) {
+      console.log(`✅ Scan completed!`);
+      console.log(`   Files scanned: ${scanResult.files.length}`);
+      console.log(`   Scan directory: ${scanResult.scanDir}`);
+      console.log(`   Timestamp: ${new Date(scanResult.timestamp).toISOString()}`);
+    } else {
+      console.log(`✅ Scanned ${scanResult.files.length} files to ${scanResult.scanDir}`);
+    }
+  }
+
+  /**
+   * 从扫描目录加载文件
+   */
+  private async loadFilesFromScan(srcDir: string, verbose: boolean): Promise<FileInfo[]> {
+    const scanDir = this.config.scanDir || path.join(srcDir, '.zen', 'src');
+
+    try {
+      // 检查扫描目录是否存在
+      await fs.access(scanDir);
+
+      if (verbose) console.log(`📄 Loading files from scan directory: ${scanDir}`);
+      const scanResult = await this.fileScanner.loadScanResult(scanDir);
+
+      if (verbose) console.log(`✅ Loaded ${scanResult.files.length} files from scan`);
+      return scanResult.files;
+    } catch (error) {
+      // 扫描目录不存在，回退到传统扫描
+      if (verbose) console.log(`📄 Scan directory not found, scanning source directory...`);
+      const scanResult = await this.fileScanner.scan({
+        srcDir,
+        scanDir,
+        verbose,
+      });
+      return scanResult.files;
+    }
   }
 
   /**
@@ -47,16 +114,20 @@ export class ZenBuilder {
     // 确保输出目录存在
     await fs.mkdir(outDir, { recursive: true });
 
-    // 读取并转换 Markdown 文件
-    if (verbose) console.log(`📄 Reading Markdown files...`);
-    const files = await this.markdownConverter.convertDirectory(srcDir);
+    // 加载文件（从扫描目录或直接扫描）
+    if (verbose) console.log(`📄 Loading Markdown files...`);
+    const rawFiles = await this.loadFilesFromScan(srcDir, verbose);
 
-    if (files.length === 0) {
+    if (rawFiles.length === 0) {
       console.warn(`⚠️ No Markdown files found in ${srcDir}`);
       return;
     }
 
-    if (verbose) console.log(`✅ Found ${files.length} Markdown files`);
+    if (verbose) console.log(`✅ Found ${rawFiles.length} Markdown files`);
+
+    // 转换 Markdown 文件
+    if (verbose) console.log(`⚡ Converting Markdown files...`);
+    const files = await this.markdownConverter.convertFiles(rawFiles);
 
     // 更新导航生成器的 baseUrl（优先使用命令行参数）
     if (baseUrl !== undefined) {

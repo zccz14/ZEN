@@ -135,6 +135,7 @@ export class MarkdownConverter {
 
   /**
    * 从目录读取所有 Markdown 文件并转换
+   * @deprecated 使用 convertFiles 替代，支持从扫描结果加载
    */
   async convertDirectory(dirPath: string): Promise<FileInfo[]> {
     const files: FileInfo[] = [];
