@@ -1,30 +1,8 @@
-import { marked } from 'marked';
-import hljs from 'highlight.js';
 import { FileInfo, MarkdownProcessor, ScannedFile } from './types';
 import { findMarkdownEntries } from './findEntries';
+import { convertMarkdownToHtml } from './utils/convertMarkdownToHtml';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-
-// 配置 marked 使用 highlight.js 进行代码高亮
-marked.setOptions({
-  highlight: function (code: string, lang: string) {
-    if (lang && hljs.getLanguage(lang)) {
-      try {
-        return hljs.highlight(code, { language: lang }).value;
-      } catch (err) {
-        console.warn(`Failed to highlight code with language ${lang}:`, err);
-      }
-    }
-    return hljs.highlightAuto(code).value;
-  },
-  pedantic: false,
-  gfm: true,
-  breaks: false,
-  sanitize: false,
-  smartLists: true,
-  smartypants: false,
-  xhtml: false,
-} as any);
 
 export class MarkdownConverter {
   private processors: MarkdownProcessor[] = [];
@@ -73,7 +51,7 @@ export class MarkdownConverter {
     }
 
     // 转换 Markdown 为 HTML
-    let html = marked.parse(content) as string;
+    let html = convertMarkdownToHtml(content);
 
     // 应用后置处理器
     for (const processor of this.processors) {
