@@ -3,7 +3,8 @@ import { MarkdownConverter } from './markdown';
 import { TemplateEngine } from './template';
 import { NavigationGenerator } from './navigation';
 import { GitIgnoreProcessor } from './gitignore';
-import { FileScanner, ScanOptions } from './scanner';
+import { FileScanner, ScanOptions as ScannerScanOptions } from './scanner';
+import { scan, ScanOptions } from './scan';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
@@ -44,11 +45,41 @@ export class ZenBuilder {
       throw new Error(`Source directory does not exist: ${srcDir}`);
     }
 
-    // 执行扫描
-    const files = await this.fileScanner.scan({
+    // 执行扫描 - 使用新的 scan() 函数获取文件路径列表
+    const filePaths = await scan({
       srcDir,
       verbose,
     });
+
+    // 在 verbose 模式下输出文件列表
+    if (verbose && filePaths.length > 0) {
+      console.log(`📋 File list (${filePaths.length} files):`);
+      filePaths.forEach((filePath, index) => {
+        const relativePath = path.relative(srcDir, filePath);
+        console.log(`  ${index + 1}. ${relativePath}`);
+      });
+    }
+
+    // 将文件路径转换为 FileInfo 对象
+    const files: FileInfo[] = [];
+    for (const filePath of filePaths) {
+      try {
+        const content = await fs.readFile(filePath, 'utf-8');
+        const relativePath = path.relative(srcDir, filePath);
+        const ext = path.extname(filePath);
+        const name = path.basename(filePath, ext);
+
+        files.push({
+          path: filePath,
+          relativePath,
+          name,
+          ext,
+          content,
+        });
+      } catch (error) {
+        console.error(`❌ Failed to read file ${filePath}:`, error);
+      }
+    }
 
     if (verbose) {
       console.log(`✅ Scan completed!`);
@@ -64,10 +95,42 @@ export class ZenBuilder {
    * 扫描源文件获取文件列表
    */
   private async scanFiles(srcDir: string, verbose: boolean): Promise<FileInfo[]> {
-    const files = await this.fileScanner.scan({
+    // 使用新的 scan() 函数获取文件路径列表
+    const filePaths = await scan({
       srcDir,
       verbose,
     });
+
+    // 在 verbose 模式下输出文件列表
+    if (verbose && filePaths.length > 0) {
+      console.log(`📋 File list (${filePaths.length} files):`);
+      filePaths.forEach((filePath, index) => {
+        const relativePath = path.relative(srcDir, filePath);
+        console.log(`  ${index + 1}. ${relativePath}`);
+      });
+    }
+
+    // 将文件路径转换为 FileInfo 对象
+    const files: FileInfo[] = [];
+    for (const filePath of filePaths) {
+      try {
+        const content = await fs.readFile(filePath, 'utf-8');
+        const relativePath = path.relative(srcDir, filePath);
+        const ext = path.extname(filePath);
+        const name = path.basename(filePath, ext);
+
+        files.push({
+          path: filePath,
+          relativePath,
+          name,
+          ext,
+          content,
+        });
+      } catch (error) {
+        console.error(`❌ Failed to read file ${filePath}:`, error);
+      }
+    }
+
     return files;
   }
 
