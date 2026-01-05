@@ -1,8 +1,9 @@
-import { BuildOptions, FileInfo, NavigationItem, ZenConfig } from './types';
+import { BuildOptions, FileInfo, NavigationItem, ZenConfig, ScannedFile } from './types';
 import { MarkdownConverter } from './markdown';
 import { TemplateEngine } from './template';
 import { NavigationGenerator } from './navigation';
 import { GitIgnoreProcessor } from './gitignore';
+import { Scanner } from './scanner';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
@@ -13,6 +14,7 @@ export class ZenBuilder {
   private markdownConverter: MarkdownConverter;
   private templateEngine: TemplateEngine;
   private navigationGenerator: NavigationGenerator;
+  private scanner: Scanner;
   private config: ZenConfig = {};
 
   constructor(config: ZenConfig = {}) {
@@ -20,6 +22,7 @@ export class ZenBuilder {
     this.markdownConverter = new MarkdownConverter(config.processors || []);
     this.templateEngine = new TemplateEngine();
     this.navigationGenerator = new NavigationGenerator(config.baseUrl);
+    this.scanner = new Scanner(config);
   }
 
   /**
@@ -47,16 +50,31 @@ export class ZenBuilder {
     // 确保输出目录存在
     await fs.mkdir(outDir, { recursive: true });
 
-    // 读取并转换 Markdown 文件
-    if (verbose) console.log(`📄 Reading Markdown files...`);
-    const files = await this.markdownConverter.convertDirectory(srcDir);
+    // 扫描阶段：生成文件列表
+    if (verbose) console.log(`🔍 Scanning source directory...`);
+    const scannedFiles = await this.scanner.scanDirectory(srcDir);
 
-    if (files.length === 0) {
+    if (scannedFiles.length === 0) {
       console.warn(`⚠️ No Markdown files found in ${srcDir}`);
       return;
     }
 
-    if (verbose) console.log(`✅ Found ${files.length} Markdown files`);
+    if (verbose) console.log(`✅ Found ${scannedFiles.length} Markdown files`);
+
+    // 保存扫描结果到 .zen/src 目录
+    const zenSrcDir = path.join(path.dirname(outDir), 'src');
+    const scanResultPath = path.join(zenSrcDir, 'scan-result.json');
+    if (verbose) console.log(`💾 Saving scan result to ${scanResultPath}...`);
+    await this.scanner.saveScanResult(scannedFiles, scanResultPath);
+
+    // 构建阶段：读取文件内容并转换
+    if (verbose) console.log(`📄 Reading and converting Markdown files...`);
+    const files = await this.markdownConverter.convertScannedFiles(scannedFiles);
+
+    if (files.length === 0) {
+      console.warn(`⚠️ Failed to read any Markdown files`);
+      return;
+    }
 
     // 更新导航生成器的 baseUrl（优先使用命令行参数）
     if (baseUrl !== undefined) {

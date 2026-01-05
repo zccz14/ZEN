@@ -10,6 +10,13 @@ export interface BuildOptions {
   baseUrl?: string;
 }
 
+export interface ScannedFile {
+  path: string;
+  relativePath: string;
+  name: string;
+  ext: string;
+}
+
 export interface FileInfo {
   path: string;
   relativePath: string;

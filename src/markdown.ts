@@ -1,6 +1,6 @@
 import { marked } from 'marked';
 import hljs from 'highlight.js';
-import { FileInfo, MarkdownProcessor } from './types';
+import { FileInfo, MarkdownProcessor, ScannedFile } from './types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { GitIgnoreProcessor } from './gitignore';
@@ -135,13 +135,14 @@ export class MarkdownConverter {
 
   /**
    * 从目录读取所有 Markdown 文件并转换
+   * 保持向后兼容，但内部使用扫描逻辑
    */
   async convertDirectory(dirPath: string): Promise<FileInfo[]> {
-    const files: FileInfo[] = [];
-
-    // 创建 GitIgnoreProcessor 并加载 .gitignore 文件
+    // 使用扫描逻辑获取文件列表
     const gitignoreProcessor = new GitIgnoreProcessor(dirPath);
     await gitignoreProcessor.loadFromFile();
+
+    const scannedFiles: ScannedFile[] = [];
 
     async function scanDirectory(currentPath: string) {
       const entries = await fs.readdir(currentPath, { withFileTypes: true });
@@ -162,23 +163,47 @@ export class MarkdownConverter {
         if (entry.isDirectory()) {
           await scanDirectory(fullPath);
         } else if (entry.isFile() && entry.name.endsWith('.md')) {
-          const content = await fs.readFile(fullPath, 'utf-8');
           const relativePath = path.relative(dirPath, fullPath);
           const ext = path.extname(entry.name);
           const name = path.basename(entry.name, ext);
 
-          files.push({
+          scannedFiles.push({
             path: fullPath,
             relativePath,
             name,
             ext,
-            content,
           });
         }
       }
     }
 
     await scanDirectory(dirPath);
+
+    // 使用新的方法转换扫描的文件
+    return this.convertScannedFiles(scannedFiles);
+  }
+
+  /**
+   * 从扫描的文件列表读取内容并转换
+   */
+  async convertScannedFiles(scannedFiles: ScannedFile[]): Promise<FileInfo[]> {
+    const files: FileInfo[] = [];
+
+    for (const scannedFile of scannedFiles) {
+      try {
+        const content = await fs.readFile(scannedFile.path, 'utf-8');
+        files.push({
+          path: scannedFile.path,
+          relativePath: scannedFile.relativePath,
+          name: scannedFile.name,
+          ext: scannedFile.ext,
+          content,
+        });
+      } catch (error) {
+        console.warn(`⚠️ Failed to read file ${scannedFile.path}:`, error);
+      }
+    }
+
     return this.convertFiles(files);
   }
 }
