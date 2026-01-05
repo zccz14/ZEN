@@ -19,10 +19,8 @@ export class AIClient {
   async extractMetadata(content: string, filePath: string): Promise<AIMetadata | null> {
     const config = this.aiService.getConfig();
 
-    if (!config.apiKey) {
-      console.log(`⚠️ API key not configured for: ${filePath}`);
-      return null;
-    }
+    // API key 检查现在在 services/openai.ts 中处理
+    // 如果 API key 不存在，completeMessages 函数会抛出错误
 
     try {
       const metadata = await extractMetadataFromMarkdown(content, filePath);
@@ -48,10 +46,8 @@ export class AIClient {
     const results = new Map<string, AIMetadata>();
     const config = this.aiService.getConfig();
 
-    if (!config.apiKey) {
-      console.log('⚠️ API key not configured');
-      return results;
-    }
+    // API key 检查现在在 services/openai.ts 中处理
+    // 如果 API key 不存在，completeMessages 函数会抛出错误
 
     console.log(`🤖 Processing ${files.length} files with AI...`);
 

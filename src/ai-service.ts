@@ -9,9 +9,12 @@ import {
   cleanupCache as cleanupCacheFromStore,
   removeOrphanEntries as removeOrphanEntriesFromStore,
 } from './metadata';
+import { completeMessages } from './services/openai';
 
 /**
- * AI 服务配置
+ * AI 服务配置（简化版）
+ * 所有 AI 配置现在通过环境变量在 services/openai.ts 中管理
+ * 保留接口以保持类型兼容性
  */
 export interface AIConfig {
   apiKey: string;
@@ -27,20 +30,15 @@ export interface AIConfig {
 export class AIService {
   private config: AIConfig;
 
-  constructor(config: Omit<Partial<AIConfig>, 'enabled'> = {}) {
-    // 从环境变量读取配置
-    const apiKey = process.env.OPENAI_API_KEY || '';
-    const baseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
-
-    // 配置优先级：构造函数参数 > 环境变量 > 默认值
-    const model = config.model || process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
-
+  constructor() {
+    // AI 配置现在在 services/openai.ts 中通过环境变量统一管理
+    // 这里提供默认值以保持类型兼容性
     this.config = {
-      apiKey,
-      baseUrl,
-      model,
+      apiKey: '', // 由 services/openai.ts 管理
+      baseUrl: '', // 由 services/openai.ts 管理
+      model: 'gpt-3.5-turbo', // 默认模型，可由环境变量覆盖
       temperature: 0, // 总是设置为 0，提取内容不需要随机性
-      maxTokens: config.maxTokens || 500,
+      maxTokens: 500, // 默认值
     };
   }
 
@@ -52,26 +50,16 @@ export class AIService {
   }
 
   /**
-   * 检查是否启用 AI 功能
+   * AI 总是启用
    */
   isEnabled(): boolean {
-    // AI 总是启用，但如果没有 API key 会显示警告
-    if (this.config.apiKey === '') {
-      console.warn(
-        '⚠️ AI is enabled but API key is missing. Please set OPENAI_API_KEY environment variable.'
-      );
-    }
-    return true; // AI 总是启用
+    return true;
   }
 
   /**
    * 根据文件 hash 获取缓存的 metadata
    */
   async getCachedMetadata(fileHash: string, filePath: string): Promise<AIMetadata | null> {
-    if (!this.isEnabled()) {
-      return null;
-    }
-
     return getCachedMetadataFromStore(fileHash, filePath);
   }
 
@@ -79,10 +67,6 @@ export class AIService {
    * 缓存 metadata 到 .zen/meta.json
    */
   async cacheMetadata(fileHash: string, filePath: string, metadata: AIMetadata): Promise<void> {
-    if (!this.isEnabled()) {
-      return;
-    }
-
     return cacheMetadataToStore(fileHash, filePath, metadata);
   }
 

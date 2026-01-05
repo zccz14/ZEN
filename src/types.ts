@@ -71,11 +71,6 @@ export interface ZenConfig {
   i18n?: {
     targetLangs: string[];
   };
-  ai?: {
-    model?: string;
-    temperature?: number;
-    maxTokens?: number;
-  };
   processors?: MarkdownProcessor[];
   includePattern?: string;
   excludePattern?: string;

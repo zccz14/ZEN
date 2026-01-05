@@ -35,15 +35,13 @@ export class ZenBuilder {
     this.aiProcessor = new AIProcessor(config);
 
     // 创建翻译服务
-    this.translationService = new TranslationService(config.ai);
+    this.translationService = new TranslationService();
 
     // 获取现有的 processors 或创建空数组
     const existingProcessors = config.processors || [];
 
-    // 如果 AI 处理器启用，将其添加到 processors 列表的开头
-    const processors = this.aiProcessor.isEnabled()
-      ? [this.aiProcessor, ...existingProcessors]
-      : existingProcessors;
+    // AI 处理器总是启用，将其添加到 processors 列表的开头
+    const processors = [this.aiProcessor, ...existingProcessors];
 
     this.markdownConverter = new MarkdownConverter(processors);
     this.templateEngine = new TemplateEngine();
@@ -112,12 +110,10 @@ export class ZenBuilder {
     if (verbose) console.log(`✅ Found ${scannedFiles.length} Markdown files`);
 
     // 清理 meta.json 中的孤儿条目（文件已删除但缓存仍存在）
-    if (this.aiProcessor.isEnabled()) {
-      if (verbose) console.log(`🧹 Cleaning orphan entries in meta.json...`);
-      const aiService = new AIService();
-      const existingFilePaths = scannedFiles.map(file => file.path);
-      await aiService.removeOrphanEntries(existingFilePaths);
-    }
+    if (verbose) console.log(`🧹 Cleaning orphan entries in meta.json...`);
+    const aiService = new AIService();
+    const existingFilePaths = scannedFiles.map(file => file.path);
+    await aiService.removeOrphanEntries(existingFilePaths);
 
     // 保存扫描结果到 .zen/dist 目录
     const zenDistDir = path.join(path.dirname(outDir), 'dist');
@@ -134,18 +130,16 @@ export class ZenBuilder {
       return;
     }
 
-    // AI 批量处理（如果启用）
-    if (this.aiProcessor.isEnabled()) {
-      if (verbose) console.log(`🤖 Running AI metadata extraction...`);
-      await this.aiProcessor.processBatch(files);
-    }
+    // AI 批量处理
+    if (verbose) console.log(`🤖 Running AI metadata extraction...`);
+    await this.aiProcessor.processBatch(files);
 
     // 存储母语文件到 .zen/src
     if (verbose) console.log(`💾 Storing native language files...`);
     await this.storeNativeFiles(files, verbose);
 
     // 处理翻译（如果指定了目标语言）
-    if (langs && langs.length > 0 && this.translationService.isEnabled()) {
+    if (langs && langs.length > 0) {
       if (verbose) console.log(`🌐 Processing translations...`);
       await this.processTranslations(files, langs, verbose);
     }
@@ -270,12 +264,10 @@ export class ZenBuilder {
     if (verbose) console.log(`✅ Found ${scannedFiles.length} Markdown files`);
 
     // 清理 meta.json 中的孤儿条目（文件已删除但缓存仍存在）
-    if (this.aiProcessor.isEnabled()) {
-      if (verbose) console.log(`🧹 Cleaning orphan entries in meta.json...`);
-      const aiService = new AIService();
-      const existingFilePaths = scannedFiles.map(file => file.path);
-      await aiService.removeOrphanEntries(existingFilePaths);
-    }
+    if (verbose) console.log(`🧹 Cleaning orphan entries in meta.json...`);
+    const aiService = new AIService();
+    const existingFilePaths = scannedFiles.map(file => file.path);
+    await aiService.removeOrphanEntries(existingFilePaths);
 
     // 构建阶段：读取文件内容并转换
     if (verbose) console.log(`📄 Reading and converting Markdown files...`);
@@ -286,11 +278,9 @@ export class ZenBuilder {
       return;
     }
 
-    // AI 批量处理（如果启用）- 更新 meta.json
-    if (this.aiProcessor.isEnabled()) {
-      if (verbose) console.log(`🤖 Running AI metadata extraction...`);
-      await this.aiProcessor.processBatch(files);
-    }
+    // AI 批量处理 - 更新 meta.json
+    if (verbose) console.log(`🤖 Running AI metadata extraction...`);
+    await this.aiProcessor.processBatch(files);
 
     // 存储母语文件到 .zen/src
     if (verbose) console.log(`💾 Storing native language files...`);
@@ -974,23 +964,7 @@ export class ZenBuilder {
       }
     }
 
-    if (config.ai) {
-      // AI 总是启用，检查 API key
-      if (!process.env.OPENAI_API_KEY) {
-        errors.push('OPENAI_API_KEY environment variable is required for AI functionality');
-      }
-
-      if (
-        config.ai.temperature !== undefined &&
-        (config.ai.temperature < 0 || config.ai.temperature > 2)
-      ) {
-        errors.push('ai.temperature must be between 0 and 2');
-      }
-
-      if (config.ai.maxTokens !== undefined && config.ai.maxTokens < 1) {
-        errors.push('ai.maxTokens must be greater than 0');
-      }
-    }
+    // AI 配置验证已移除，所有 AI 配置通过环境变量管理
 
     return errors;
   }

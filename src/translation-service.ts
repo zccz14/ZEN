@@ -18,7 +18,9 @@ export interface TranslationCache {
 }
 
 /**
- * 翻译服务配置
+ * 翻译服务配置（简化版）
+ * 所有 AI 配置现在通过环境变量在 services/openai.ts 中管理
+ * 保留完整接口以保持类型兼容性
  */
 export interface TranslationConfig {
   enabled: boolean;
@@ -38,20 +40,15 @@ export class TranslationService {
   private translationCachePath: string;
 
   constructor(config: Partial<TranslationConfig> = {}) {
-    // 从环境变量读取配置
-    const apiKey = process.env.OPENAI_API_KEY || '';
-    const baseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
-
-    // 配置优先级：构造函数参数 > 环境变量 > 默认值
-    const model = config.model || process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
-
+    // AI 配置现在在 services/openai.ts 中通过环境变量统一管理
+    // 翻译服务总是启用
     this.config = {
-      enabled: config.enabled ?? apiKey !== '',
-      apiKey,
-      baseUrl,
-      model,
+      enabled: true, // 翻译服务总是启用
+      apiKey: '', // 由 services/openai.ts 管理
+      baseUrl: '', // 由 services/openai.ts 管理
+      model: 'gpt-3.5-turbo', // 默认模型，可由环境变量覆盖
       temperature: 0, // 总是设置为 0，翻译不需要随机性
-      maxTokens: config.maxTokens || 2000,
+      maxTokens: 2000, // 默认值
     };
 
     this.aiService = new AIService();
@@ -59,16 +56,10 @@ export class TranslationService {
   }
 
   /**
-   * 检查是否启用翻译功能
+   * 翻译服务总是启用
    */
   isEnabled(): boolean {
-    const enabled = this.config.enabled && this.config.apiKey !== '';
-    if (!enabled && this.config.enabled) {
-      console.warn(
-        '⚠️ Translation is enabled but API key is missing. Please set OPENAI_API_KEY environment variable.'
-      );
-    }
-    return enabled;
+    return this.config.enabled;
   }
 
   /**
@@ -105,10 +96,6 @@ export class TranslationService {
     sourceLang: string,
     targetLang: string
   ): Promise<string | null> {
-    if (!this.isEnabled()) {
-      return null;
-    }
-
     try {
       const cache = await this.loadTranslationCache();
       const cachedTranslation = cache.find(
@@ -140,10 +127,6 @@ export class TranslationService {
     targetLang: string,
     translatedContent: string
   ): Promise<void> {
-    if (!this.isEnabled()) {
-      return;
-    }
-
     try {
       const cache = await this.loadTranslationCache();
 
@@ -186,10 +169,6 @@ export class TranslationService {
    * 使用AI翻译内容
    */
   async translateWithAI(content: string, sourceLang: string, targetLang: string): Promise<string> {
-    if (!this.isEnabled()) {
-      throw new Error('Translation service is not enabled');
-    }
-
     return translateMarkdown(content, sourceLang, targetLang);
   }
 

@@ -11,20 +11,13 @@ export class AIProcessor implements MarkdownProcessor {
   private enabled: boolean;
 
   constructor(config: ZenConfig = {}) {
-    // 从配置和环境变量初始化 AI 服务
-    const aiConfig = {
-      model: config.ai?.model,
-      temperature: config.ai?.temperature,
-      maxTokens: config.ai?.maxTokens,
-    };
-
-    this.aiService = new AIService(aiConfig);
+    // AI 服务现在不需要配置参数
+    this.aiService = new AIService();
     this.aiClient = new AIClient(this.aiService);
     this.enabled = true; // AI 总是启用
 
     console.log('🤖 AI processor initialized');
     console.log(`   Model: ${this.aiService.getConfig().model}`);
-    console.log(`   Base URL: ${this.aiService.getConfig().baseUrl}`);
   }
 
   /**
@@ -221,8 +214,6 @@ ${metadata.inferred_date ? `<meta name="ai-inferred-date" content="${metadata.in
   getConfigInfo(): string {
     const config = this.aiService.getConfig();
     return `AI Processor Status: Enabled
-API Key: ${config.apiKey ? 'Set' : 'Not set'}
-Base URL: ${config.baseUrl}
 Model: ${config.model}
 Temperature: ${config.temperature}
 Max Tokens: ${config.maxTokens}`;
