@@ -29,4 +29,4 @@ yarn-error.log*
 test-ai-docs/
 test-ai.js
 test-ai-integration.js
-.zen/
+.zen/dist/
