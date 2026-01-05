@@ -1,0 +1,50 @@
+[
+  {
+    "path": "/private/var/folders/vt/1bvsdxls2x71_7jxt641nz_c0000gn/T/vibe-kanban/worktrees/c947-/ZEN/README.md",
+    "relativePath": "README.md",
+    "name": "README",
+    "ext": ".md"
+  },
+  {
+    "path": "/private/var/folders/vt/1bvsdxls2x71_7jxt641nz_c0000gn/T/vibe-kanban/worktrees/c947-/ZEN/docs/ci/github-ci-cd.md",
+    "relativePath": "docs/ci/github-ci-cd.md",
+    "name": "github-ci-cd",
+    "ext": ".md"
+  },
+  {
+    "path": "/private/var/folders/vt/1bvsdxls2x71_7jxt641nz_c0000gn/T/vibe-kanban/worktrees/c947-/ZEN/docs/deployment/github-pages.md",
+    "relativePath": "docs/deployment/github-pages.md",
+    "name": "github-pages",
+    "ext": ".md"
+  },
+  {
+    "path": "/private/var/folders/vt/1bvsdxls2x71_7jxt641nz_c0000gn/T/vibe-kanban/worktrees/c947-/ZEN/docs/guides/api.md",
+    "relativePath": "docs/guides/api.md",
+    "name": "api",
+    "ext": ".md"
+  },
+  {
+    "path": "/private/var/folders/vt/1bvsdxls2x71_7jxt641nz_c0000gn/T/vibe-kanban/worktrees/c947-/ZEN/docs/guides/best-practices.md",
+    "relativePath": "docs/guides/best-practices.md",
+    "name": "best-practices",
+    "ext": ".md"
+  },
+  {
+    "path": "/private/var/folders/vt/1bvsdxls2x71_7jxt641nz_c0000gn/T/vibe-kanban/worktrees/c947-/ZEN/docs/guides/config.md",
+    "relativePath": "docs/guides/config.md",
+    "name": "config",
+    "ext": ".md"
+  },
+  {
+    "path": "/private/var/folders/vt/1bvsdxls2x71_7jxt641nz_c0000gn/T/vibe-kanban/worktrees/c947-/ZEN/docs/guides/index.md",
+    "relativePath": "docs/guides/index.md",
+    "name": "index",
+    "ext": ".md"
+  },
+  {
+    "path": "/private/var/folders/vt/1bvsdxls2x71_7jxt641nz_c0000gn/T/vibe-kanban/worktrees/c947-/ZEN/docs/testing/test-document.md",
+    "relativePath": "docs/testing/test-document.md",
+    "name": "test-document",
+    "ext": ".md"
+  }
+]
