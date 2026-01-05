@@ -19,6 +19,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -106,18 +107,32 @@ jobs:
           gh label create "automated-pr" --color "0E8A16" --description "Automatically created pull request" 2>/dev/null || true
           gh label create "version-bump" --color "5319E7" --description "Version bump changes" 2>/dev/null || true
 
-          # 创建 PR，如果标签创建失败则不带标签
-          gh pr create \
+          # 尝试创建 PR，如果失败则输出错误信息但不终止工作流
+          if gh pr create \
             --title "$PR_TITLE" \
             --body "$PR_BODY" \
             --base main \
             --head bump-version-${{ github.run_id }} \
             --label "automated-pr" \
             --label "version-bump" \
-            --label "enhancement"
+            --label "enhancement" 2>&1; then
+            echo "PR created successfully"
+          else
+            echo "WARNING: Failed to create PR automatically"
+            echo "Branch has been pushed to: bump-version-${{ github.run_id }}"
+            echo "Please create PR manually at: https://github.com/${{ github.repository }}/pull/new/bump-version-${{ github.run_id }}"
+            # 设置输出变量，但工作流不失败
+            echo "pr_created=false" >> $GITHUB_OUTPUT
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Output PR URL
+      - name: Output PR status
         run: |
-          echo "Pull Request created: ${{ steps.create_pr.outputs.pr_url }}"
+          if [ "${{ steps.create_pr.outputs.pr_created }}" = "false" ]; then
+            echo "PR creation failed - please create manually"
+            echo "Branch: bump-version-${{ github.run_id }}"
+            echo "URL: https://github.com/${{ github.repository }}/pull/new/bump-version-${{ github.run_id }}"
+          else
+            echo "Pull Request created successfully"
+          fi
