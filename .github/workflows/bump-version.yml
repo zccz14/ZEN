@@ -25,6 +25,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Setup Git
         run: |
@@ -105,3 +106,7 @@ jobs:
             automated-pr
             version-bump
             enhancement
+          token: ${{ secrets.GITHUB_TOKEN }}
+          add-paths: |
+            package.json
+            package-lock.json
