@@ -178,23 +178,29 @@ export class MarkdownConverter {
     await scanDirectory(dirPath);
 
     // 使用新的方法转换扫描的文件
-    return this.convertScannedFiles(scannedFiles);
+    return this.convertScannedFiles(scannedFiles, dirPath);
   }
 
   /**
    * 从扫描的文件列表读取内容并转换
    */
-  async convertScannedFiles(scannedFiles: ScannedFile[]): Promise<FileInfo[]> {
+  async convertScannedFiles(
+    scannedFiles: ScannedFile[],
+    baseDir: string = ''
+  ): Promise<FileInfo[]> {
     const files: FileInfo[] = [];
 
     for (const scannedFile of scannedFiles) {
       try {
-        const content = await fs.readFile(scannedFile.path, 'utf-8');
+        // 构建绝对路径
+        const absolutePath = baseDir ? path.join(baseDir, scannedFile.path) : scannedFile.path;
+        const content = await fs.readFile(absolutePath, 'utf-8');
         files.push({
           path: scannedFile.path,
           name: scannedFile.name,
           ext: scannedFile.ext,
           content,
+          hash: scannedFile.hash, // 复制 hash 字段
         });
       } catch (error) {
         console.warn(`⚠️ Failed to read file ${scannedFile.path}:`, error);

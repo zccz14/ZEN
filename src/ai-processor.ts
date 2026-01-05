@@ -36,7 +36,12 @@ export class AIProcessor implements MarkdownProcessor {
    * 在解析前处理 - 这里我们提取 AI metadata
    */
   async beforeParse(content: string, fileInfo: FileInfo): Promise<string> {
-    if (!this.enabled || !fileInfo.hash) {
+    if (!this.enabled) {
+      return content;
+    }
+
+    if (!fileInfo.hash) {
+      console.warn(`⚠️ Skipping AI processing for ${fileInfo.path}: file hash is missing`);
       return content;
     }
 

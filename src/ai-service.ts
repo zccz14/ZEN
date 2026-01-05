@@ -68,7 +68,13 @@ export class AIService {
    * 检查是否启用 AI 功能
    */
   isEnabled(): boolean {
-    return this.config.enabled && this.config.apiKey !== '';
+    const enabled = this.config.enabled && this.config.apiKey !== '';
+    if (!enabled && this.config.enabled) {
+      console.warn(
+        '⚠️ AI is enabled but API key is missing. Please set OPENAI_API_KEY environment variable.'
+      );
+    }
+    return enabled;
   }
 
   /**

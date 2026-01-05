@@ -83,7 +83,7 @@ export class ZenBuilder {
 
     // 构建阶段：读取文件内容并转换
     if (verbose) console.log(`📄 Reading and converting Markdown files...`);
-    const files = await this.markdownConverter.convertScannedFiles(scannedFiles);
+    const files = await this.markdownConverter.convertScannedFiles(scannedFiles, srcDir);
 
     if (files.length === 0) {
       console.warn(`⚠️ Failed to read any Markdown files`);
