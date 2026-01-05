@@ -126,9 +126,18 @@ export class AIService {
       const metaData = await this.loadMetaData();
       const cachedFile = metaData.files.find(f => f.hash === fileHash);
 
-      if (cachedFile && cachedFile.path === filePath) {
-        console.log(`📚 Using cached AI metadata for: ${filePath}`);
-        return cachedFile.metadata;
+      if (cachedFile) {
+        if (cachedFile.path === filePath) {
+          // 完全匹配：hash 和 path 都相同
+          console.log(`📚 Using cached AI metadata for: ${filePath}`);
+          return cachedFile.metadata;
+        } else {
+          // 文件移动情况：hash 相同但 path 不同
+          // 更新缓存中的 path 为最新路径
+          console.log(`🔄 File moved detected: ${cachedFile.path} -> ${filePath}`);
+          await this.cacheMetadata(fileHash, filePath, cachedFile.metadata);
+          return cachedFile.metadata;
+        }
       }
     } catch (error) {
       console.warn(`⚠️ Failed to load cached metadata:`, error);
@@ -148,19 +157,40 @@ export class AIService {
     try {
       const metaData = await this.loadMetaData();
 
-      // 查找是否已存在相同 hash 的缓存
-      const existingIndex = metaData.files.findIndex(f => f.hash === fileHash);
+      // 查找是否已存在相同 hash 的缓存（文件移动情况）
+      const sameHashIndex = metaData.files.findIndex(f => f.hash === fileHash);
 
-      if (existingIndex >= 0) {
-        // 更新现有缓存
-        metaData.files[existingIndex] = {
+      // 查找是否已存在相同 path 但不同 hash 的缓存（文件内容更新情况）
+      const samePathIndex = metaData.files.findIndex(
+        f => f.path === filePath && f.hash !== fileHash
+      );
+
+      if (sameHashIndex >= 0) {
+        // 文件移动情况：相同 hash 但 path 可能不同
+        // 更新现有缓存项的 path 和 metadata
+        metaData.files[sameHashIndex] = {
           hash: fileHash,
           path: filePath,
           metadata,
           lastUpdated: new Date().toISOString(),
         };
+
+        // 如果存在相同 path 但不同 hash 的旧缓存项，删除它
+        if (samePathIndex >= 0 && samePathIndex !== sameHashIndex) {
+          metaData.files.splice(samePathIndex, 1);
+        }
+      } else if (samePathIndex >= 0) {
+        // 文件内容更新情况：相同 path 但 hash 不同
+        // 删除旧的缓存项，添加新的
+        metaData.files.splice(samePathIndex, 1);
+        metaData.files.push({
+          hash: fileHash,
+          path: filePath,
+          metadata,
+          lastUpdated: new Date().toISOString(),
+        });
       } else {
-        // 添加新缓存
+        // 全新的文件，添加新缓存
         metaData.files.push({
           hash: fileHash,
           path: filePath,
