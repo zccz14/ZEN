@@ -89,11 +89,8 @@ class BuildCommand extends BaseCommand {
       const currentDir = process.cwd();
       const outDir = this.getOutDir();
 
-      // 处理 AI 配置：强制启用 AI（除非在配置文件中明确禁用）
-      const aiConfig = {
-        ...config.ai,
-        enabled: config.ai?.enabled !== false, // 默认启用，除非明确设置为 false
-      };
+      // AI 总是启用，配置中的 enabled 字段不再使用
+      const aiConfig = config.ai || {};
 
       // 处理语言配置：命令行参数优先于配置文件
       const targetLangs = this.lang && this.lang.length > 0 ? this.lang : config.i18n?.targetLangs;
@@ -123,7 +120,7 @@ class BuildCommand extends BaseCommand {
       // 创建最终的配置，包含 AI 和 i18n 设置
       const finalConfig = {
         ...config,
-        ai: aiConfig.enabled ? aiConfig : undefined,
+        ai: aiConfig,
         i18n: i18nConfig,
       };
 

@@ -13,7 +13,6 @@ export class AIProcessor implements MarkdownProcessor {
   constructor(config: ZenConfig = {}) {
     // 从配置和环境变量初始化 AI 服务
     const aiConfig = {
-      enabled: config.ai?.enabled ?? true,
       model: config.ai?.model,
       temperature: config.ai?.temperature,
       maxTokens: config.ai?.maxTokens,
@@ -21,25 +20,17 @@ export class AIProcessor implements MarkdownProcessor {
 
     this.aiService = new AIService(aiConfig);
     this.aiClient = new AIClient(this.aiService);
-    this.enabled = this.aiService.isEnabled();
+    this.enabled = true; // AI 总是启用
 
-    if (this.enabled) {
-      console.log('🤖 AI processor initialized and enabled');
-      console.log(`   Model: ${this.aiService.getConfig().model}`);
-      console.log(`   Base URL: ${this.aiService.getConfig().baseUrl}`);
-    } else {
-      console.log('⚠️ AI processor initialized but disabled (no API key or explicitly disabled)');
-    }
+    console.log('🤖 AI processor initialized');
+    console.log(`   Model: ${this.aiService.getConfig().model}`);
+    console.log(`   Base URL: ${this.aiService.getConfig().baseUrl}`);
   }
 
   /**
    * 在解析前处理 - 这里我们提取 AI metadata
    */
   async beforeParse(content: string, fileInfo: FileInfo): Promise<string> {
-    if (!this.enabled) {
-      return content;
-    }
-
     if (!fileInfo.hash) {
       console.warn(`⚠️ Skipping AI processing for ${fileInfo.path}: file hash is missing`);
       return content;
@@ -75,7 +66,7 @@ export class AIProcessor implements MarkdownProcessor {
    * 在解析后处理 - 这里可以添加 AI 增强的 HTML 内容
    */
   async afterParse(html: string, fileInfo: FileInfo): Promise<string> {
-    if (!this.enabled || !fileInfo.aiMetadata) {
+    if (!fileInfo.aiMetadata) {
       return html;
     }
 
@@ -181,10 +172,6 @@ ${metadata.inferred_date ? `<meta name="ai-inferred-date" content="${metadata.in
    * 批量处理文件
    */
   async processBatch(files: FileInfo[]): Promise<void> {
-    if (!this.enabled) {
-      return;
-    }
-
     console.log(`🤖 Processing ${files.length} files with AI...`);
 
     const filesToProcess = files.filter(file => file.hash && !file.aiMetadata);
@@ -233,7 +220,7 @@ ${metadata.inferred_date ? `<meta name="ai-inferred-date" content="${metadata.in
    */
   getConfigInfo(): string {
     const config = this.aiService.getConfig();
-    return `AI Processor Status: ${this.enabled ? 'Enabled' : 'Disabled'}
+    return `AI Processor Status: Enabled
 API Key: ${config.apiKey ? 'Set' : 'Not set'}
 Base URL: ${config.baseUrl}
 Model: ${config.model}

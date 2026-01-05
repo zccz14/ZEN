@@ -7,7 +7,6 @@ import * as crypto from 'crypto';
  * AI 服务配置
  */
 export interface AIConfig {
-  enabled: boolean;
   apiKey: string;
   baseUrl: string;
   model: string;
@@ -41,7 +40,7 @@ export class AIService {
   private config: AIConfig;
   private metaDataPath: string;
 
-  constructor(config: Partial<AIConfig> = {}) {
+  constructor(config: Omit<Partial<AIConfig>, 'enabled'> = {}) {
     // 从环境变量读取配置
     const apiKey = process.env.OPENAI_API_KEY || '';
     const baseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
@@ -50,7 +49,6 @@ export class AIService {
     const model = config.model || process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 
     this.config = {
-      enabled: config.enabled ?? apiKey !== '',
       apiKey,
       baseUrl,
       model,
@@ -72,13 +70,13 @@ export class AIService {
    * 检查是否启用 AI 功能
    */
   isEnabled(): boolean {
-    const enabled = this.config.enabled && this.config.apiKey !== '';
-    if (!enabled && this.config.enabled) {
+    // AI 总是启用，但如果没有 API key 会显示警告
+    if (this.config.apiKey === '') {
       console.warn(
         '⚠️ AI is enabled but API key is missing. Please set OPENAI_API_KEY environment variable.'
       );
     }
-    return enabled;
+    return true; // AI 总是启用
   }
 
   /**
