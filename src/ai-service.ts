@@ -232,6 +232,33 @@ export class AIService {
   }
 
   /**
+   * 移除孤儿条目（文件已删除但缓存仍存在）
+   * @param existingFilePaths 当前存在的文件路径列表
+   */
+  async removeOrphanEntries(existingFilePaths: string[]): Promise<void> {
+    try {
+      const metaData = await this.loadMetaData();
+      const originalCount = metaData.files.length;
+
+      // 创建现有文件路径的 Set 用于快速查找
+      const existingPathsSet = new Set(existingFilePaths);
+
+      // 过滤掉文件已经不存在的缓存条目
+      metaData.files = metaData.files.filter(fileData => {
+        return existingPathsSet.has(fileData.path);
+      });
+
+      const removedCount = originalCount - metaData.files.length;
+      if (removedCount > 0) {
+        await this.saveMetaData(metaData);
+        console.log(`🗑️ Removed ${removedCount} orphan AI metadata entries`);
+      }
+    } catch (error) {
+      console.warn(`⚠️ Failed to remove orphan entries:`, error);
+    }
+  }
+
+  /**
    * 计算文件内容的 hash
    */
   calculateFileHash(content: string): string {

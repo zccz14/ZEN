@@ -105,6 +105,14 @@ export class ZenBuilder {
 
     if (verbose) console.log(`✅ Found ${scannedFiles.length} Markdown files`);
 
+    // 清理 meta.json 中的孤儿条目（文件已删除但缓存仍存在）
+    if (this.aiProcessor.isEnabled()) {
+      if (verbose) console.log(`🧹 Cleaning orphan entries in meta.json...`);
+      const aiService = new AIService();
+      const existingFilePaths = scannedFiles.map(file => file.path);
+      await aiService.removeOrphanEntries(existingFilePaths);
+    }
+
     // 保存扫描结果到 .zen/dist 目录
     const zenDistDir = path.join(path.dirname(outDir), 'dist');
     const scanResultPath = path.join(zenDistDir, 'scan-result.json');
