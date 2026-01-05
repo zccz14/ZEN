@@ -156,7 +156,18 @@ class BuildCommand extends BaseCommand {
       if (this.watch) {
         await builder.watch(buildOptions);
       } else {
-        await builder.build(buildOptions);
+        // 如果指定了语言参数，使用多语言构建
+        if (this.lang && this.lang.length > 0) {
+          const multiLangOptions = {
+            ...buildOptions,
+            langs: this.lang,
+            useMetaData: true,
+            filterOrphans: true,
+          };
+          await builder.buildMultiLang(multiLangOptions);
+        } else {
+          await builder.build(buildOptions);
+        }
       }
 
       return 0;

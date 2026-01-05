@@ -1,4 +1,11 @@
-import { BuildOptions, FileInfo, NavigationItem, ZenConfig, ScannedFile } from './types';
+import {
+  BuildOptions,
+  FileInfo,
+  NavigationItem,
+  ZenConfig,
+  ScannedFile,
+  MultiLangBuildOptions,
+} from './types';
 import { MarkdownConverter } from './markdown';
 import { TemplateEngine } from './template';
 import { NavigationGenerator } from './navigation';
@@ -208,6 +215,346 @@ export class ZenBuilder {
       console.log(`   Output directory: ${outDir}`);
     } else {
       console.log(`✅ Built ${processedCount} files to ${outDir} in ${duration}ms`);
+    }
+  }
+
+  /**
+   * 多语言构建：基于 meta.json 构建多语言版本
+   */
+  async buildMultiLang(options: MultiLangBuildOptions): Promise<void> {
+    const startTime = Date.now();
+    const {
+      srcDir,
+      outDir,
+      template,
+      verbose = false,
+      baseUrl,
+      langs,
+      useMetaData = true,
+      filterOrphans = true,
+    } = options;
+
+    if (!langs || langs.length === 0) {
+      throw new Error('At least one language must be specified for multi-language build');
+    }
+
+    if (verbose) {
+      console.log(`🚀 Starting ZEN multi-language build...`);
+      console.log(`📁 Source: ${srcDir}`);
+      console.log(`📁 Output: ${outDir}`);
+      console.log(`🌐 Target languages: ${langs.join(', ')}`);
+      console.log(`📊 Using meta.json: ${useMetaData}`);
+      console.log(`🧹 Filter orphans: ${filterOrphans}`);
+      console.log(`🔗 Base URL: ${baseUrl || '(not set)'}`);
+      console.log(`🔍 Verbose mode enabled`);
+    }
+
+    // 验证源目录
+    try {
+      await fs.access(srcDir);
+    } catch (error) {
+      throw new Error(`Source directory does not exist: ${srcDir}`);
+    }
+
+    // 确保输出目录存在
+    await fs.mkdir(outDir, { recursive: true });
+
+    // 加载 meta.json
+    const aiService = new AIService();
+    const metaData = await aiService.loadMetaData();
+
+    if (verbose) {
+      console.log(`📊 Loaded ${metaData.files.length} entries from meta.json`);
+    }
+
+    // 过滤有效的文件项
+    let validFiles = metaData.files;
+
+    if (filterOrphans) {
+      const originalCount = validFiles.length;
+      validFiles = await this.filterValidFiles(validFiles, srcDir, verbose);
+      if (verbose) {
+        console.log(`🧹 Filtered ${originalCount - validFiles.length} orphan files`);
+      }
+    }
+
+    if (validFiles.length === 0) {
+      console.warn(`⚠️ No valid files found in meta.json`);
+      return;
+    }
+
+    if (verbose) {
+      console.log(`✅ Found ${validFiles.length} valid files to build`);
+    }
+
+    // 为每个语言构建
+    let totalProcessed = 0;
+    for (const lang of langs) {
+      if (verbose) {
+        console.log(`\n🌐 Building for language: ${lang}`);
+      }
+
+      const langProcessed = await this.buildForLanguage(
+        validFiles,
+        lang,
+        srcDir,
+        outDir,
+        template,
+        baseUrl,
+        verbose,
+        langs
+      );
+
+      totalProcessed += langProcessed;
+    }
+
+    // 生成语言索引页面
+    if (verbose) {
+      console.log(`\n📄 Generating language index...`);
+    }
+    await this.generateLanguageIndex(langs, outDir, verbose);
+
+    const duration = Date.now() - startTime;
+    console.log(`🎉 Multi-language build completed!`);
+    console.log(`   Languages: ${langs.join(', ')}`);
+    console.log(`   Total files built: ${totalProcessed}`);
+    console.log(`   Duration: ${duration}ms`);
+    console.log(`   Output directory: ${outDir}`);
+  }
+
+  /**
+   * 过滤有效的文件（移除 path 不存在的孤儿文件）
+   */
+  private async filterValidFiles(files: any[], srcDir: string, verbose?: boolean): Promise<any[]> {
+    const validFiles: any[] = [];
+
+    for (const file of files) {
+      // 如果文件路径已经是绝对路径或包含目录，直接使用
+      const filePath = file.path.startsWith('/') ? file.path : path.join(process.cwd(), file.path);
+      try {
+        await fs.access(filePath);
+        validFiles.push(file);
+      } catch (error) {
+        // 文件不存在，跳过
+        if (verbose) {
+          console.log(`  ⚠️ Orphan file skipped: ${file.path} (path: ${filePath})`);
+        }
+      }
+    }
+
+    return validFiles;
+  }
+
+  /**
+   * 为特定语言构建文件
+   */
+  private async buildForLanguage(
+    files: any[],
+    lang: string,
+    srcDir: string,
+    outDir: string,
+    template?: string,
+    baseUrl?: string,
+    verbose?: boolean,
+    allLangs?: string[]
+  ): Promise<number> {
+    const aiService = new AIService();
+    const langDir = path.join(outDir, lang);
+    await fs.mkdir(langDir, { recursive: true });
+
+    let processedCount = 0;
+
+    // 更新导航生成器的 baseUrl
+    if (baseUrl !== undefined) {
+      this.navigationGenerator.setBaseUrl(baseUrl);
+    } else if (this.config.baseUrl) {
+      this.navigationGenerator.setBaseUrl(this.config.baseUrl);
+    }
+
+    // 为当前语言生成导航
+    const navigation = this.navigationGenerator.generate([]); // 暂时使用空导航
+
+    for (const file of files) {
+      try {
+        let content: string;
+        let filePath: string;
+        let finalHash = file.hash;
+        let finalMetadata = file.metadata;
+
+        // 获取源语言
+        const sourceLang = file.metadata?.inferred_lang || 'zh-Hans';
+
+        if (lang === sourceLang) {
+          // 如果是源语言，读取原始文件
+          filePath = file.path.startsWith('/') ? file.path : path.join(process.cwd(), file.path);
+          content = await fs.readFile(filePath, 'utf-8');
+        } else {
+          // 如果是目标语言，尝试读取翻译文件
+          const translationService = new TranslationService();
+          try {
+            // 创建临时 FileInfo 对象用于获取翻译
+            const tempFileInfo: FileInfo = {
+              path: file.path,
+              name: path.basename(file.path, '.md'),
+              ext: '.md',
+              content: '', // 临时内容
+              hash: file.hash,
+              aiMetadata: file.metadata,
+            };
+
+            // 确保翻译文件存在并获取内容
+            content = await translationService.ensureTranslatedFile(
+              tempFileInfo,
+              sourceLang,
+              lang,
+              file.hash
+            );
+
+            // 翻译文件的路径
+            filePath = translationService.getTranslatedFilePath(file.path, lang, file.hash);
+
+            // 对于翻译文件，我们可以使用相同的 hash，或者生成新的 hash
+            // 这里我们使用相同的 hash，因为翻译是基于原始内容的
+          } catch (translationError) {
+            console.warn(
+              `⚠️ Failed to get translation for ${file.path} to ${lang}, using source file:`,
+              translationError
+            );
+            // 如果翻译失败，回退到源文件
+            filePath = file.path.startsWith('/') ? file.path : path.join(process.cwd(), file.path);
+            content = await fs.readFile(filePath, 'utf-8');
+          }
+        }
+
+        // 创建 FileInfo 对象
+        const fileInfo: FileInfo = {
+          path: file.path,
+          name: path.basename(file.path, '.md'),
+          ext: '.md',
+          content,
+          hash: finalHash,
+          aiMetadata: finalMetadata,
+        };
+
+        // 转换为 HTML
+        const convertedFileInfo = await this.markdownConverter.convert(fileInfo);
+        const html = convertedFileInfo.html || '';
+
+        // 更新文件信息中的 HTML 内容
+        const finalFileInfo: FileInfo = {
+          ...fileInfo,
+          html,
+        };
+
+        // 生成模板数据
+        const templateData = this.templateEngine.generateTemplateData(
+          finalFileInfo,
+          navigation,
+          lang,
+          allLangs
+        );
+
+        // 渲染模板
+        const renderedHtml = await this.templateEngine.render(templateData, template);
+
+        // 生成输出路径
+        const outputPath = this.templateEngine.getOutputPath(
+          finalFileInfo,
+          outDir,
+          lang,
+          file.hash
+        );
+
+        // 保存文件
+        await this.templateEngine.saveToFile(renderedHtml, outputPath);
+
+        processedCount++;
+
+        if (verbose && processedCount % 5 === 0) {
+          console.log(`  Processed ${processedCount}/${files.length} files for ${lang}...`);
+        }
+      } catch (error) {
+        console.error(`❌ Failed to process ${file.path} for ${lang}:`, error);
+      }
+    }
+
+    if (verbose) {
+      console.log(`  ✅ Built ${processedCount} files for ${lang}`);
+    }
+
+    return processedCount;
+  }
+
+  /**
+   * 生成语言索引页面
+   */
+  private async generateLanguageIndex(
+    langs: string[],
+    outDir: string,
+    verbose?: boolean
+  ): Promise<void> {
+    try {
+      const indexHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZEN Documentation - Language Selection</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+           line-height: 1.6; color: #333; background: #f8f9fa;
+           display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .container { text-align: center; padding: 3rem; max-width: 600px; }
+    h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #212529; }
+    p { color: #6c757d; margin-bottom: 2rem; font-size: 1.125rem; }
+    .lang-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+    .lang-item { margin: 0; }
+    .lang-link { display: block; padding: 1rem 2rem; background: #fff; border: 2px solid #007bff;
+                color: #007bff; text-decoration: none; border-radius: 8px;
+                font-size: 1.25rem; font-weight: 500; transition: all 0.2s; }
+    .lang-link:hover { background: #007bff; color: white; transform: translateY(-2px);
+                      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2); }
+    .footer { margin-top: 3rem; color: #6c757d; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ZEN Documentation</h1>
+    <p>Select your preferred language:</p>
+
+    <ul class="lang-list">
+      ${langs
+        .map(lang => {
+          const langNames: Record<string, string> = {
+            'zh-Hans': '简体中文',
+            'en-US': 'English',
+            'ja-JP': '日本語',
+            'ko-KR': '한국어',
+          };
+          const langName = langNames[lang] || lang;
+          return `<li class="lang-item">
+          <a href="${lang}/" class="lang-link">${langName}</a>
+        </li>`;
+        })
+        .join('')}
+    </ul>
+
+    <div class="footer">
+      <p>Generated by <strong>ZEN</strong> • <a href="https://github.com/zccz14/ZEN" target="_blank">View on GitHub</a></p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+      const indexPath = path.join(outDir, 'index.html');
+      await fs.writeFile(indexPath, indexHtml, 'utf-8');
+
+      if (verbose) {
+        console.log(`  ✅ Generated language index at ${indexPath}`);
+      }
+    } catch (error) {
+      console.warn(`⚠️ Failed to generate language index:`, error);
     }
   }
 

@@ -269,6 +269,35 @@ export class TemplateEngine {
 </html>`;
 
   /**
+   * 生成语言切换器 HTML
+   */
+  private generateLanguageSwitcher(currentLang: string, availableLangs: string[]): string {
+    const langNames: Record<string, string> = {
+      'zh-Hans': '简体中文',
+      'en-US': 'English',
+      'ja-JP': '日本語',
+      'ko-KR': '한국어',
+    };
+
+    const items = availableLangs
+      .map(lang => {
+        const langName = langNames[lang] || lang;
+        const isCurrent = lang === currentLang;
+        const activeClass = isCurrent ? 'active' : '';
+
+        return `<li class="lang-item ${activeClass}">
+        <a href="?lang=${lang}" class="lang-link">${langName}</a>
+      </li>`;
+      })
+      .join('');
+
+    return `<div class="language-switcher">
+      <span class="lang-label">Language:</span>
+      <ul class="lang-list">${items}</ul>
+    </div>`;
+  }
+
+  /**
    * 生成导航 HTML
    */
   private generateNavigationHtml(navigation: NavigationItem[], currentPath?: string): string {
@@ -306,6 +335,21 @@ export class TemplateEngine {
     result = result.replace(/{{title}}/g, data.title || 'Untitled');
     result = result.replace(/{{{content}}}/g, data.content || '');
 
+    // 替换元数据变量
+    if (data.metadata) {
+      result = result.replace(/{{summary}}/g, data.metadata.summary || '');
+      result = result.replace(/{{tags}}/g, data.metadata.tags?.join(', ') || '');
+      result = result.replace(/{{inferred_date}}/g, data.metadata.inferred_date || '');
+      result = result.replace(/{{inferred_lang}}/g, data.metadata.inferred_lang || '');
+    }
+
+    // 替换语言相关变量
+    result = result.replace(/{{lang}}/g, data.lang || '');
+    if (data.availableLangs && data.availableLangs.length > 0 && data.lang) {
+      const langSwitcher = this.generateLanguageSwitcher(data.lang, data.availableLangs);
+      result = result.replace('{{language_switcher}}', langSwitcher);
+    }
+
     return result;
   }
 
@@ -332,23 +376,39 @@ export class TemplateEngine {
   /**
    * 从文件信息生成模板数据
    */
-  generateTemplateData(fileInfo: FileInfo, navigation: NavigationItem[]): TemplateData {
+  generateTemplateData(
+    fileInfo: FileInfo,
+    navigation: NavigationItem[],
+    lang?: string,
+    availableLangs?: string[]
+  ): TemplateData {
+    // 优先使用 AI 元数据中的标题，其次使用文件元数据，最后使用文件名
+    const title = fileInfo.aiMetadata?.title || fileInfo.metadata?.title || fileInfo.name;
+
     return {
-      title: fileInfo.metadata?.title || fileInfo.name, // 优先使用提取的标题，如果没有则使用文件名
+      title,
       content: fileInfo.html || '',
       navigation,
-      metadata: fileInfo.metadata,
+      metadata: fileInfo.aiMetadata, // 使用完整的 AI 元数据
       currentPath: `/${fileInfo.path.replace(/\.md$/, '.html')}`,
+      lang,
+      availableLangs,
     };
   }
 
   /**
    * 生成输出文件路径
    */
-  getOutputPath(fileInfo: FileInfo, outDir: string): string {
-    const htmlFileName = `${fileInfo.name}.html`;
-    const relativeDir = path.dirname(fileInfo.path);
-    return path.join(outDir, relativeDir, htmlFileName);
+  getOutputPath(fileInfo: FileInfo, outDir: string, lang?: string, hash?: string): string {
+    if (lang && hash) {
+      // 多语言模式：.zen/dist/{lang}/{hash}.html
+      return path.join(outDir, lang, `${hash}.html`);
+    } else {
+      // 传统模式：保持目录结构
+      const htmlFileName = `${fileInfo.name}.html`;
+      const relativeDir = path.dirname(fileInfo.path);
+      return path.join(outDir, relativeDir, htmlFileName);
+    }
   }
 
   /**

@@ -52,8 +52,10 @@ export interface TemplateData {
   title: string;
   content: string;
   navigation: NavigationItem[];
-  metadata?: { title: string }; // 简化，只保留标题
+  metadata?: AIMetadata; // 使用完整的 AI 元数据
   currentPath?: string;
+  lang?: string; // 当前语言
+  availableLangs?: string[]; // 可用的语言列表
 }
 
 export interface MarkdownProcessor {
@@ -80,4 +82,10 @@ export interface ZenConfig {
   processors?: MarkdownProcessor[];
   includePattern?: string;
   excludePattern?: string;
+}
+
+export interface MultiLangBuildOptions extends BuildOptions {
+  langs: string[]; // 必须指定目标语言
+  useMetaData?: boolean; // 是否使用 meta.json 中的元数据
+  filterOrphans?: boolean; // 是否过滤孤儿文件
 }
