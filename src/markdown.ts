@@ -123,8 +123,7 @@ export class MarkdownConverter {
     const name = path.basename(filePath, ext);
 
     const fileInfo: FileInfo = {
-      path: filePath,
-      relativePath,
+      path: relativePath,
       name,
       ext,
       content,
@@ -168,8 +167,7 @@ export class MarkdownConverter {
           const name = path.basename(entry.name, ext);
 
           scannedFiles.push({
-            path: fullPath,
-            relativePath,
+            path: relativePath,
             name,
             ext,
           });
@@ -194,7 +192,6 @@ export class MarkdownConverter {
         const content = await fs.readFile(scannedFile.path, 'utf-8');
         files.push({
           path: scannedFile.path,
-          relativePath: scannedFile.relativePath,
           name: scannedFile.name,
           ext: scannedFile.ext,
           content,

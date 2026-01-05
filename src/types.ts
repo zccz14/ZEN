@@ -11,20 +11,20 @@ export interface BuildOptions {
 }
 
 export interface ScannedFile {
-  path: string;
-  relativePath: string;
+  path: string; // 相对路径
   name: string;
   ext: string;
+  hash?: string; // 文件内容的 sha256 hash
 }
 
 export interface FileInfo {
-  path: string;
-  relativePath: string;
+  path: string; // 相对路径
   name: string;
   ext: string;
   content: string;
   html?: string;
   metadata?: { title: string }; // 简化，只保留标题
+  hash?: string; // 文件内容的 sha256 hash
 }
 
 export interface NavigationItem {

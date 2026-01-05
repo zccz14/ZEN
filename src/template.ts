@@ -338,7 +338,7 @@ export class TemplateEngine {
       content: fileInfo.html || '',
       navigation,
       metadata: fileInfo.metadata,
-      currentPath: `/${fileInfo.relativePath.replace(/\.md$/, '.html')}`,
+      currentPath: `/${fileInfo.path.replace(/\.md$/, '.html')}`,
     };
   }
 
@@ -347,7 +347,7 @@ export class TemplateEngine {
    */
   getOutputPath(fileInfo: FileInfo, outDir: string): string {
     const htmlFileName = `${fileInfo.name}.html`;
-    const relativeDir = path.dirname(fileInfo.relativePath);
+    const relativeDir = path.dirname(fileInfo.path);
     return path.join(outDir, relativeDir, htmlFileName);
   }
 

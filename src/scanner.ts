@@ -3,12 +3,26 @@ import { GitIgnoreProcessor } from './gitignore';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as minimatch from 'minimatch';
+import * as crypto from 'crypto';
 
 export class Scanner {
   private config: ZenConfig;
 
   constructor(config: ZenConfig = {}) {
     this.config = config;
+  }
+
+  /**
+   * 计算文件内容的 sha256 hash
+   */
+  private async calculateFileHash(filePath: string): Promise<string> {
+    try {
+      const content = await fs.readFile(filePath, 'utf-8');
+      return crypto.createHash('sha256').update(content).digest('hex');
+    } catch (error) {
+      console.warn(`⚠️ Failed to calculate hash for ${filePath}:`, error);
+      return '';
+    }
   }
 
   /**
@@ -25,7 +39,7 @@ export class Scanner {
     const includePattern = this.config.includePattern || '**/*.md';
     const excludePattern = this.config.excludePattern;
 
-    async function scanDirectory(currentPath: string) {
+    const scanDirectory = async (currentPath: string) => {
       const entries = await fs.readdir(currentPath, { withFileTypes: true });
 
       for (const entry of entries) {
@@ -58,16 +72,17 @@ export class Scanner {
 
           const ext = path.extname(entry.name);
           const name = path.basename(entry.name, ext);
+          const hash = await this.calculateFileHash(fullPath);
 
           files.push({
-            path: fullPath,
-            relativePath,
+            path: relativePath, // 只保存相对路径
             name,
             ext,
+            hash,
           });
         }
       }
-    }
+    };
 
     await scanDirectory(dirPath);
     return files;

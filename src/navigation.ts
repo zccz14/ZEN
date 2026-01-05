@@ -20,7 +20,7 @@ export class NavigationGenerator {
    */
   generate(files: FileInfo[]): NavigationItem[] {
     // 按路径排序
-    const sortedFiles = [...files].sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+    const sortedFiles = [...files].sort((a, b) => a.path.localeCompare(b.path));
 
     // 构建树形结构
     const root: NavigationItem[] = [];
@@ -36,7 +36,7 @@ export class NavigationGenerator {
    * 将文件添加到导航树中
    */
   private addFileToNavigation(navigation: NavigationItem[], file: FileInfo): void {
-    const parts = file.relativePath.split('/');
+    const parts = file.path.split('/');
     let currentLevel = navigation;
 
     for (let i = 0; i < parts.length; i++) {
@@ -55,7 +55,7 @@ export class NavigationGenerator {
 
       // 生成路径
       const rawPath = isMarkdownFile
-        ? `/${file.relativePath.replace(/\.md$/, '.html')}`
+        ? `/${file.path.replace(/\.md$/, '.html')}`
         : `/${parts.slice(0, i + 1).join('/')}`;
       const itemPath = this.generatePath(rawPath);
 
@@ -137,7 +137,7 @@ export class NavigationGenerator {
     return files
       .map(file => {
         const title = file.metadata?.title || this.formatTitle(file.name); // 优先使用提取的标题
-        const rawPath = `/${file.relativePath.replace(/\.md$/, '.html')}`;
+        const rawPath = `/${file.path.replace(/\.md$/, '.html')}`;
         const itemPath = this.generatePath(rawPath);
 
         return {
@@ -209,7 +209,7 @@ export class NavigationGenerator {
     const effectiveBaseUrl = baseUrl || this.baseUrl || 'https://example.com';
     const urls = files
       .map(file => {
-        const path = `/${file.relativePath.replace(/\.md$/, '.html')}`;
+        const path = `/${file.path.replace(/\.md$/, '.html')}`;
         const lastmod = new Date().toISOString().split('T')[0];
 
         return `  <url>

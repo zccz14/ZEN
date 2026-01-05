@@ -61,9 +61,9 @@ export class ZenBuilder {
 
     if (verbose) console.log(`✅ Found ${scannedFiles.length} Markdown files`);
 
-    // 保存扫描结果到 .zen/src 目录
-    const zenSrcDir = path.join(path.dirname(outDir), 'src');
-    const scanResultPath = path.join(zenSrcDir, 'scan-result.json');
+    // 保存扫描结果到 .zen/dist 目录
+    const zenDistDir = path.join(path.dirname(outDir), 'dist');
+    const scanResultPath = path.join(zenDistDir, 'scan-result.json');
     if (verbose) console.log(`💾 Saving scan result to ${scanResultPath}...`);
     await this.scanner.saveScanResult(scannedFiles, scanResultPath);
 
@@ -113,7 +113,7 @@ export class ZenBuilder {
           console.log(`  Processed ${processedCount}/${files.length} files...`);
         }
       } catch (error) {
-        console.error(`❌ Failed to process ${file.relativePath}:`, error);
+        console.error(`❌ Failed to process ${file.path}:`, error);
       }
     }
 
