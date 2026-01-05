@@ -4,6 +4,7 @@ import * as crypto from 'crypto';
 import { AIMetadata, FileInfo } from './types';
 import { AIService } from './ai-service';
 import { completeMessages, OpenAIMessage } from './services/openai';
+import { translateMarkdown } from './ai/translateMarkdown';
 
 /**
  * 翻译缓存项
@@ -189,36 +190,7 @@ export class TranslationService {
       throw new Error('Translation service is not enabled');
     }
 
-    const prompt = `请将以下${sourceLang}文本翻译成${targetLang}。保持Markdown格式不变，只翻译文本内容：
-
-${content}
-
-翻译结果（保持原格式）：`;
-
-    try {
-      const messages: OpenAIMessage[] = [
-        {
-          role: 'system',
-          content: '你是一个专业的翻译助手，擅长将文档翻译成不同语言，同时保持原有的格式和结构。',
-        },
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ];
-
-      const response = await completeMessages(messages);
-      const translatedContent = response.choices[0]?.message?.content?.trim() || '';
-
-      if (!translatedContent) {
-        throw new Error('Empty translation response');
-      }
-
-      return translatedContent;
-    } catch (error) {
-      console.error(`❌ Translation failed:`, error);
-      throw error;
-    }
+    return translateMarkdown(content, sourceLang, targetLang);
   }
 
   /**

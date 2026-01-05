@@ -50,4 +50,3 @@ npx zengen
 | `--clean`    |      | 清理输出目录                     | `false`     |
 | `--base-url` |      | 站点基础 URL                     | 无          |
 | `--help`     | `-h` | 显示帮助信息                     | 无          |
-
