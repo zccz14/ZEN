@@ -3,16 +3,17 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import { AIMetadata, FileInfo } from './types';
 import { AIService } from './ai-service';
+import { completeMessages, OpenAIMessage } from './services/openai';
 
 /**
  * 翻译缓存项
  */
 export interface TranslationCache {
-  sourceHash: string;      // 源文件hash
-  sourceLang: string;      // 源语言
-  targetLang: string;      // 目标语言
+  sourceHash: string; // 源文件hash
+  sourceLang: string; // 源语言
+  targetLang: string; // 目标语言
   translatedContent: string; // 翻译后的内容
-  lastUpdated: string;     // 最后更新时间
+  lastUpdated: string; // 最后更新时间
 }
 
 /**
@@ -117,7 +118,9 @@ export class TranslationService {
       );
 
       if (cachedTranslation) {
-        console.log(`📚 Using cached translation for ${sourceHash} (${sourceLang} → ${targetLang})`);
+        console.log(
+          `📚 Using cached translation for ${sourceHash} (${sourceLang} → ${targetLang})`
+        );
         return cachedTranslation.translatedContent;
       }
     } catch (error) {
@@ -181,11 +184,7 @@ export class TranslationService {
   /**
    * 使用AI翻译内容
    */
-  async translateWithAI(
-    content: string,
-    sourceLang: string,
-    targetLang: string
-  ): Promise<string> {
+  async translateWithAI(content: string, sourceLang: string, targetLang: string): Promise<string> {
     if (!this.isEnabled()) {
       throw new Error('Translation service is not enabled');
     }
@@ -197,36 +196,19 @@ ${content}
 翻译结果（保持原格式）：`;
 
     try {
-      const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.config.apiKey}`,
+      const messages: OpenAIMessage[] = [
+        {
+          role: 'system',
+          content: '你是一个专业的翻译助手，擅长将文档翻译成不同语言，同时保持原有的格式和结构。',
         },
-        body: JSON.stringify({
-          model: this.config.model,
-          messages: [
-            {
-              role: 'system',
-              content: '你是一个专业的翻译助手，擅长将文档翻译成不同语言，同时保持原有的格式和结构。'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: this.config.temperature,
-          max_tokens: this.config.maxTokens,
-        }),
-      });
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ];
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Translation API error: ${response.status} ${errorText}`);
-      }
-
-      const data = await response.json();
-      const translatedContent = data.choices[0]?.message?.content?.trim() || '';
+      const response = await completeMessages(messages);
+      const translatedContent = response.choices[0]?.message?.content?.trim() || '';
 
       if (!translatedContent) {
         throw new Error('Empty translation response');
@@ -242,11 +224,7 @@ ${content}
   /**
    * 翻译文件
    */
-  async translateFile(
-    fileInfo: FileInfo,
-    sourceLang: string,
-    targetLang: string
-  ): Promise<string> {
+  async translateFile(fileInfo: FileInfo, sourceLang: string, targetLang: string): Promise<string> {
     const sourceHash = fileInfo.hash || this.aiService.calculateFileHash(fileInfo.content);
 
     // 检查缓存
@@ -275,11 +253,7 @@ ${content}
   /**
    * 生成翻译后的文件路径
    */
-  getTranslatedFilePath(
-    originalPath: string,
-    targetLang: string,
-    nativeHash: string
-  ): string {
+  getTranslatedFilePath(originalPath: string, targetLang: string, nativeHash: string): string {
     const zenSrcDir = path.join(process.cwd(), '.zen', 'src');
     const langDir = path.join(zenSrcDir, targetLang);
     const fileName = `${nativeHash}.md`;

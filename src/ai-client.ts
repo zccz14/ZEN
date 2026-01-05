@@ -1,31 +1,9 @@
 import { AIMetadata } from './types';
-import { AIService, AIConfig } from './ai-service';
+import { AIService } from './ai-service';
+import { completeMessages, OpenAIMessage, OpenAIResponse } from './services/openai';
 
 /**
- * OpenAI 兼容 API 响应接口
- */
-interface OpenAIResponse {
-  id: string;
-  object: string;
-  created: number;
-  model: string;
-  choices: Array<{
-    index: number;
-    message: {
-      role: string;
-      content: string;
-    };
-    finish_reason: string;
-  }>;
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-}
-
-/**
- * AI 客户端类 - 使用 fetch 调用 OpenAI 兼容 API
+ * AI 客户端类 - 使用新的 OpenAI 服务
  */
 export class AIClient {
   private aiService: AIService;
@@ -49,12 +27,21 @@ export class AIClient {
       console.log(`🤖 Extracting AI metadata for: ${filePath}`);
 
       const prompt = this.buildMetadataPrompt(content);
-      const response = await this.callOpenAIAPI(prompt, config);
+      const messages: OpenAIMessage[] = [
+        {
+          role: 'system',
+          content:
+            '你是一个专业的文档分析助手，擅长从文档中提取结构化信息。请严格按照要求的 JSON 格式返回结果。',
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ];
 
-      if (!response) {
-        console.warn(`⚠️ Failed to extract metadata for: ${filePath}`);
-        return null;
-      }
+      const response = await completeMessages(messages, {
+        response_format: { type: 'json_object' },
+      });
 
       const metadata = this.parseMetadataResponse(response.choices[0].message.content);
 
@@ -108,50 +95,6 @@ ${truncatedContent}
   "inferred_date": "2023-01-01",
   "inferred_lang": "zh-Hans"
 }`;
-  }
-
-  /**
-   * 调用 OpenAI 兼容 API
-   */
-  private async callOpenAIAPI(prompt: string, config: AIConfig): Promise<OpenAIResponse | null> {
-    try {
-      const response = await fetch(`${config.baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${config.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: config.model,
-          messages: [
-            {
-              role: 'system',
-              content:
-                '你是一个专业的文档分析助手，擅长从文档中提取结构化信息。请严格按照要求的 JSON 格式返回结果。',
-            },
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          temperature: config.temperature,
-          max_tokens: config.maxTokens,
-          response_format: { type: 'json_object' },
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`❌ OpenAI API error (${response.status}):`, errorText);
-        return null;
-      }
-
-      const data: OpenAIResponse = await response.json();
-      return data;
-    } catch (error) {
-      console.error('❌ Failed to call OpenAI API:', error);
-      return null;
-    }
   }
 
   /**
