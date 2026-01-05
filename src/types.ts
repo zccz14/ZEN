@@ -69,9 +69,7 @@ export interface ZenConfig {
   template?: string;
   baseUrl?: string;
   i18n?: {
-    sourceLang: string;
     targetLangs: string[];
-    apiKey?: string;
   };
   ai?: {
     model?: string;

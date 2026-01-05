@@ -25,21 +25,6 @@ function getVersion(): string {
 
 // 基础命令类
 abstract class BaseCommand extends Command {
-  protected async loadConfig(configPath?: string): Promise<ZenConfig> {
-    if (!configPath) {
-      return {};
-    }
-
-    try {
-      const resolvedPath = path.resolve(configPath);
-      const configContent = await fs.readFile(resolvedPath, 'utf-8');
-      return JSON.parse(configContent);
-    } catch (error) {
-      this.context.stderr.write(`❌ Failed to load config file: ${error}\n`);
-      throw error;
-    }
-  }
-
   protected getOutDir(): string {
     const currentDir = process.cwd();
     return path.join(currentDir, '.zen', 'dist');
@@ -56,7 +41,6 @@ class BuildCommand extends BaseCommand {
   port = Option.String('-p,--port', '3000');
   host = Option.String('--host', 'localhost');
   verbose = Option.Boolean('-v,--verbose');
-  config = Option.String('-c,--config');
   baseUrl = Option.String('--base-url');
   clean = Option.Boolean('--clean');
   lang = Option.Array('--lang', {
@@ -74,7 +58,6 @@ class BuildCommand extends BaseCommand {
         $ zengen build --watch
         $ zengen build --watch --serve
         $ zengen build --watch --serve --port 8080
-        $ zengen build --config zen.config.json
         $ zengen build --clean
         $ zengen build --lang en-US --lang ja-JP (translate to English and Japanese)
     `,
@@ -82,28 +65,19 @@ class BuildCommand extends BaseCommand {
 
   async execute() {
     try {
-      // 加载配置文件
-      const config = await this.loadConfig(this.config);
-
       // 强制使用当前目录作为 src 目录，输出到 .zen/dist 目录
       const currentDir = process.cwd();
       const outDir = this.getOutDir();
 
-      // AI 总是启用，配置中的 enabled 字段不再使用
-      const aiConfig = config.ai || {};
-
-      // 处理语言配置：命令行参数优先于配置文件
-      const targetLangs = this.lang && this.lang.length > 0 ? this.lang : config.i18n?.targetLangs;
+      // 处理语言配置：只使用命令行参数
       const i18nConfig =
-        targetLangs && targetLangs.length > 0
+        this.lang && this.lang.length > 0
           ? {
-              ...config.i18n,
-              sourceLang: config.i18n?.sourceLang || 'zh-Hans', // 默认源语言为中文
-              targetLangs,
+              targetLangs: this.lang,
             }
           : undefined;
 
-      // 合并命令行参数和配置
+      // 构建选项
       const buildOptions = {
         srcDir: currentDir,
         outDir: outDir,
@@ -113,14 +87,12 @@ class BuildCommand extends BaseCommand {
         port: parseInt(this.port, 10),
         host: this.host,
         verbose: this.verbose,
-        baseUrl: this.baseUrl || config.baseUrl,
+        baseUrl: this.baseUrl,
         langs: this.lang,
       };
 
-      // 创建最终的配置，包含 AI 和 i18n 设置
+      // 创建最终的配置
       const finalConfig = {
-        ...config,
-        ai: aiConfig,
         i18n: i18nConfig,
       };
 

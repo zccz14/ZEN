@@ -967,10 +967,6 @@ export class ZenBuilder {
     }
 
     if (config.i18n) {
-      if (!config.i18n.sourceLang) {
-        errors.push('i18n.sourceLang is required');
-      }
-
       if (!config.i18n.targetLangs || config.i18n.targetLangs.length === 0) {
         errors.push('i18n.targetLangs must have at least one language');
       }
@@ -978,7 +974,7 @@ export class ZenBuilder {
 
     if (config.ai) {
       // AI 总是启用，检查 API key
-      if (!process.env.OPENAI_API_KEY && !config.i18n?.apiKey) {
+      if (!process.env.OPENAI_API_KEY) {
         errors.push('OPENAI_API_KEY environment variable is required for AI functionality');
       }
 
