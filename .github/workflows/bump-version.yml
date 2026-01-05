@@ -74,50 +74,34 @@ jobs:
           npm run test:build
           npm run test:cli
 
-      - name: Commit changes
+      - name: Show changed files
         run: |
-          git add package.json
-          git commit -m "chore: bump version from ${{ steps.get_version.outputs.current_version }} to ${{ steps.bump_version.outputs.new_version }}"
-
-      - name: Push changes
-        run: |
-          git push origin bump-version-${{ github.run_id }}
+          echo "Changed files:"
+          git status --porcelain
 
       - name: Create Pull Request
-        id: create_pr
-        run: |
-          PR_TITLE="chore: bump version from ${{ steps.get_version.outputs.current_version }} to ${{ steps.bump_version.outputs.new_version }}"
-          PR_BODY="This PR was automatically created by the Bump Version workflow.
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: "chore: bump version from ${{ steps.get_version.outputs.current_version }} to ${{ steps.bump_version.outputs.new_version }}"
+          title: "chore: bump version from ${{ steps.get_version.outputs.current_version }} to ${{ steps.bump_version.outputs.new_version }}"
+          body: |
+            This PR was automatically created by the Bump Version workflow.
 
-          ## Changes
-          - Bumped version from **${{ steps.get_version.outputs.current_version }}** to **${{ steps.bump_version.outputs.new_version }}**
-          - Version bump type: **${{ github.event.inputs.version }}**
+            ## Changes
+            - Bumped version from **${{ steps.get_version.outputs.current_version }}** to **${{ steps.bump_version.outputs.new_version }}**
+            - Version bump type: **${{ github.event.inputs.version }}**
 
-          ## Test Results
-          - Type checking: ✅ Passed
-          - Build test: ✅ Passed
-          - CLI test: ✅ Passed
+            ## Test Results
+            - Type checking: ✅ Passed
+            - Build test: ✅ Passed
+            - CLI test: ✅ Passed
 
-          🤖 Generated with [Claude Code](https://claude.com/claude-code)
+            🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-          Co-Authored-By: Claude <noreply@anthropic.com>"
-
-          # 先尝试创建标签，如果失败则忽略
-          gh label create "automated-pr" --color "0E8A16" --description "Automatically created pull request" 2>/dev/null || true
-          gh label create "version-bump" --color "5319E7" --description "Version bump changes" 2>/dev/null || true
-
-          # 创建 PR，如果标签创建失败则不带标签
-          gh pr create \
-            --title "$PR_TITLE" \
-            --body "$PR_BODY" \
-            --base main \
-            --head bump-version-${{ github.run_id }} \
-            --label "automated-pr" \
-            --label "version-bump" \
-            --label "enhancement"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Output PR URL
-        run: |
-          echo "Pull Request created: ${{ steps.create_pr.outputs.pr_url }}"
+            Co-Authored-By: Claude <noreply@anthropic.com>
+          branch: bump-version-${{ github.run_id }}
+          base: main
+          labels: |
+            automated-pr
+            version-bump
+            enhancement
