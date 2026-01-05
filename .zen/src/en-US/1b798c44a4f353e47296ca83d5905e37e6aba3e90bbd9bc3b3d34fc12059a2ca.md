@@ -1,0 +1,3 @@
+Please translate the following zh-Hans text into en-US. Keep the Markdown format unchanged, only translate the text content:
+
+Translation result (maintaining the original format):
