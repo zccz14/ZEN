@@ -40,8 +40,8 @@ export class AIClient {
   async extractMetadata(content: string, filePath: string): Promise<AIMetadata | null> {
     const config = this.aiService.getConfig();
 
-    if (!config.enabled || !config.apiKey) {
-      console.log(`⚠️ AI feature is disabled or API key not configured for: ${filePath}`);
+    if (!config.apiKey) {
+      console.log(`⚠️ API key not configured for: ${filePath}`);
       return null;
     }
 
@@ -193,8 +193,8 @@ ${truncatedContent}
     const results = new Map<string, AIMetadata>();
     const config = this.aiService.getConfig();
 
-    if (!config.enabled || !config.apiKey) {
-      console.log('⚠️ AI feature is disabled or API key not configured');
+    if (!config.apiKey) {
+      console.log('⚠️ API key not configured');
       return results;
     }
 

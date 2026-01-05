@@ -977,8 +977,9 @@ export class ZenBuilder {
     }
 
     if (config.ai) {
-      if (config.ai.enabled && !process.env.OPENAI_API_KEY && !config.i18n?.apiKey) {
-        errors.push('OPENAI_API_KEY environment variable is required when AI is enabled');
+      // AI 总是启用，检查 API key
+      if (!process.env.OPENAI_API_KEY && !config.i18n?.apiKey) {
+        errors.push('OPENAI_API_KEY environment variable is required for AI functionality');
       }
 
       if (

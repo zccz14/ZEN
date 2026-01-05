@@ -74,7 +74,6 @@ export interface ZenConfig {
     apiKey?: string;
   };
   ai?: {
-    enabled?: boolean;
     model?: string;
     temperature?: number;
     maxTokens?: number;
