@@ -16,18 +16,22 @@ export interface AIConfig {
 }
 
 /**
+ * 单个文件的元数据缓存项
+ */
+export interface FileMetaData {
+  hash: string;
+  path: string;
+  metadata: AIMetadata;
+  lastUpdated: string;
+}
+
+/**
  * .zen/meta.json 文件结构
  */
 export interface MetaDataStore {
   version: string;
   timestamp: string;
-  files: {
-    [hash: string]: {
-      path: string;
-      metadata: AIMetadata;
-      lastUpdated: string;
-    };
-  };
+  files: FileMetaData[];
 }
 
 /**
@@ -90,7 +94,7 @@ export class AIService {
       return {
         version: '1.0.0',
         timestamp: new Date().toISOString(),
-        files: {},
+        files: [],
       };
     }
   }
@@ -120,7 +124,7 @@ export class AIService {
 
     try {
       const metaData = await this.loadMetaData();
-      const cachedFile = metaData.files[fileHash];
+      const cachedFile = metaData.files.find(f => f.hash === fileHash);
 
       if (cachedFile && cachedFile.path === filePath) {
         console.log(`📚 Using cached AI metadata for: ${filePath}`);
@@ -143,11 +147,27 @@ export class AIService {
 
     try {
       const metaData = await this.loadMetaData();
-      metaData.files[fileHash] = {
-        path: filePath,
-        metadata,
-        lastUpdated: new Date().toISOString(),
-      };
+
+      // 查找是否已存在相同 hash 的缓存
+      const existingIndex = metaData.files.findIndex(f => f.hash === fileHash);
+
+      if (existingIndex >= 0) {
+        // 更新现有缓存
+        metaData.files[existingIndex] = {
+          hash: fileHash,
+          path: filePath,
+          metadata,
+          lastUpdated: new Date().toISOString(),
+        };
+      } else {
+        // 添加新缓存
+        metaData.files.push({
+          hash: fileHash,
+          path: filePath,
+          metadata,
+          lastUpdated: new Date().toISOString(),
+        });
+      }
 
       await this.saveMetaData(metaData);
       console.log(`💾 Cached AI metadata for: ${filePath}`);
@@ -163,16 +183,15 @@ export class AIService {
     try {
       const metaData = await this.loadMetaData();
       const cutoffTime = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
-      let cleanedCount = 0;
+      const originalCount = metaData.files.length;
 
-      for (const [hash, fileData] of Object.entries(metaData.files)) {
+      // 过滤掉过期的缓存
+      metaData.files = metaData.files.filter(fileData => {
         const fileTime = new Date(fileData.lastUpdated).getTime();
-        if (fileTime < cutoffTime) {
-          delete metaData.files[hash];
-          cleanedCount++;
-        }
-      }
+        return fileTime >= cutoffTime;
+      });
 
+      const cleanedCount = originalCount - metaData.files.length;
       if (cleanedCount > 0) {
         await this.saveMetaData(metaData);
         console.log(`🧹 Cleaned ${cleanedCount} expired AI metadata entries`);
