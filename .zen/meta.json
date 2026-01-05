@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2026-01-05T00:00:00.000Z",
+  "files": [
+    {
+      "hash": "abc123",
+      "path": "docs/getting-started.md",
+      "metadata": {
+        "title": "快速开始指南",
+        "summary": "本文档介绍如何快速开始使用 ZEN 文档生成器",
+        "tags": ["getting-started", "tutorial", "documentation"],
+        "inferred_date": "2025-12-01",
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 100,
+          "completion": 50,
+          "total": 150
+        }
+      },
+      "lastUpdated": "2026-01-05T00:00:00.000Z"
+    },
+    {
+      "hash": "def456",
+      "path": "docs/advanced-usage.md",
+      "metadata": {
+        "title": "高级用法",
+        "summary": "深入介绍 ZEN 的高级功能和配置选项",
+        "tags": ["advanced", "configuration", "customization"],
+        "inferred_date": "2025-12-15",
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 120,
+          "completion": 60,
+          "total": 180
+        }
+      },
+      "lastUpdated": "2026-01-05T00:00:00.000Z"
+    },
+    {
+      "hash": "ghi789",
+      "path": "docs/deployment.md",
+      "metadata": {
+        "title": "部署指南",
+        "summary": "如何将 ZEN 生成的文档部署到生产环境",
+        "tags": ["deployment", "production", "hosting"],
+        "inferred_date": "2025-12-20",
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 80,
+          "completion": 40,
+          "total": 120
+        }
+      },
+      "lastUpdated": "2026-01-05T00:00:00.000Z"
+    }
+  ]
+}
