@@ -64,6 +64,27 @@ export class ZenBuilder {
     // 确保输出目录存在
     await fs.mkdir(outDir, { recursive: true });
 
+    // 确保 .zen/.gitignore 文件存在且内容正确
+    const zenDir = path.dirname(outDir); // .zen 目录
+    const zenGitignorePath = path.join(zenDir, '.gitignore');
+    const gitignoreContent = 'dist\n';
+
+    try {
+      // 检查 .gitignore 文件是否存在
+      await fs.access(zenGitignorePath);
+
+      // 如果存在，检查内容是否正确
+      const existingContent = await fs.readFile(zenGitignorePath, 'utf-8');
+      if (existingContent.trim() !== 'dist') {
+        if (verbose) console.log(`📝 Updating .zen/.gitignore content...`);
+        await fs.writeFile(zenGitignorePath, gitignoreContent, 'utf-8');
+      }
+    } catch (error) {
+      // 文件不存在，创建它
+      if (verbose) console.log(`📝 Creating .zen/.gitignore file...`);
+      await fs.writeFile(zenGitignorePath, gitignoreContent, 'utf-8');
+    }
+
     // 扫描阶段：生成文件列表
     if (verbose) console.log(`🔍 Scanning source directory...`);
     const scannedFiles = await this.scanner.scanDirectory(srcDir);
