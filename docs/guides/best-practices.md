@@ -2,95 +2,6 @@
 
 本文档介绍使用 ZEN 构建文档站点的最佳实践。
 
-## 文件组织
-
-### 推荐的文件结构
-
-```
-project/
-├── docs/                    # 文档源文件
-│   ├── index.md            # 首页
-│   ├── getting-started.md  # 入门指南
-│   ├── api/                # API 文档目录
-│   │   ├── overview.md
-│   │   ├── core-api.md
-│   │   └── plugins.md
-│   ├── guides/             # 指南目录
-│   │   ├── installation.md
-│   │   └── configuration.md
-│   └── resources/          # 资源文件
-│       └── images/
-└── package.json
-```
-
-**注意**: ZEN 强制使用当前目录作为源目录，所以应该切换到 `docs/` 目录下运行构建命令：
-
-```bash
-cd docs
-npx zengen build
-```
-
-### 命名约定
-
-- 使用小写字母和连字符：`getting-started.md`
-- 避免特殊字符和空格
-- 主要页面使用简短名称：`index.md`, `api.md`
-- 分类页面使用目录组织
-
-## 写作规范
-
-### Markdown 语法
-
-**推荐:**
-
-````markdown
-# 一级标题
-
-## 二级标题
-
-### 三级标题
-
-使用 **粗体** 和 _斜体_ 强调重要内容。
-
-- 列表项 1
-- 列表项 2
-  - 子列表项
-
-1. 有序列表项 1
-2. 有序列表项 2
-
-> 引用重要的说明或提示。
-
-`行内代码` 用于技术术语。
-
-```javascript
-// 代码块示例
-console.log('Hello ZEN!');
-```
-````
-
-````
-
-**避免:**
-- 过多的标题层级（超过 4 级）
-- 复杂的表格（考虑使用简单列表替代）
-- 过长的行（建议 80-100 字符换行）
-
-### 元数据使用
-
-在每个 Markdown 文件顶部添加 frontmatter：
-
-```yaml
----
-title: 页面标题
-description: 简洁的页面描述
-keywords: [关键词1, 关键词2]
-author: 作者名
-date: 2024-01-01
-last_modified: 2024-01-15
----
-````
-
 ## 多语言管理
 
 ### 翻译策略
@@ -99,30 +10,6 @@ last_modified: 2024-01-15
 2. **增量翻译**: 每次更新后只翻译修改部分
 3. **术语一致**: 建立术语表保持翻译一致性
 4. **人工校对**: AI 翻译后建议人工校对
-
-### 翻译文件管理
-
-```
-docs/
-├── index.zh-CN.md      # 中文源文件
-├── index.en-US.md      # 英文翻译
-├── api/
-│   ├── overview.zh-CN.md
-│   └── overview.en-US.md
-└── glossary.json       # 术语表
-```
-
-### 配置示例
-
-```json
-{
-  "i18n": {
-    "sourceLang": "zh-CN",
-    "targetLangs": ["en-US", "ja-JP"],
-    "apiKey": "your-openai-api-key"
-  }
-}
-```
 
 ## 性能优化
 
