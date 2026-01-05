@@ -42,12 +42,15 @@ export class AIService {
     const apiKey = process.env.OPENAI_API_KEY || '';
     const baseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
 
+    // 配置优先级：构造函数参数 > 环境变量 > 默认值
+    const model = config.model || process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+
     this.config = {
       enabled: config.enabled ?? apiKey !== '',
       apiKey,
       baseUrl,
-      model: config.model || 'gpt-3.5-turbo',
-      temperature: config.temperature || 0.3,
+      model,
+      temperature: 0, // 总是设置为 0，提取内容不需要随机性
       maxTokens: config.maxTokens || 500,
     };
 

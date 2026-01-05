@@ -55,6 +55,7 @@ class BuildCommand extends BaseCommand {
   config = Option.String('-c,--config');
   baseUrl = Option.String('--base-url');
   clean = Option.Boolean('--clean');
+  ai = Option.Boolean('--ai', { description: 'Enable AI metadata extraction' });
 
   static usage = Command.Usage({
     description: 'Build documentation site from Markdown files in current directory',
@@ -69,6 +70,7 @@ class BuildCommand extends BaseCommand {
         $ zengen build --watch --serve --port 8080
         $ zengen build --config zen.config.json
         $ zengen build --clean
+        $ zengen build --ai (requires OPENAI_API_KEY environment variable)
     `,
   });
 
@@ -80,6 +82,12 @@ class BuildCommand extends BaseCommand {
       // 强制使用当前目录作为 src 目录，输出到 .zen/dist 目录
       const currentDir = process.cwd();
       const outDir = this.getOutDir();
+
+      // 处理 AI 配置：如果指定了 --ai 参数，启用 AI；否则使用配置中的设置
+      const aiConfig = {
+        ...config.ai,
+        enabled: this.ai ? true : config.ai?.enabled,
+      };
 
       // 合并命令行参数和配置
       const buildOptions = {
@@ -94,10 +102,16 @@ class BuildCommand extends BaseCommand {
         baseUrl: this.baseUrl || config.baseUrl,
       };
 
-      const builder = new ZenBuilder(config);
+      // 创建最终的配置，包含 AI 设置
+      const finalConfig = {
+        ...config,
+        ai: aiConfig.enabled ? aiConfig : undefined,
+      };
+
+      const builder = new ZenBuilder(finalConfig);
 
       // 验证配置
-      const errors = builder.validateConfig(config);
+      const errors = builder.validateConfig(finalConfig);
       if (errors.length > 0) {
         this.context.stderr.write('❌ Configuration errors:\n');
         errors.forEach(error => this.context.stderr.write(`  - ${error}\n`));
