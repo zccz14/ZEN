@@ -9,7 +9,6 @@ import {
 import { MarkdownConverter } from './markdown';
 import { TemplateEngine } from './template';
 import { NavigationGenerator } from './navigation';
-import { GitIgnoreProcessor } from './gitignore';
 import { Scanner } from './scanner';
 import { AIProcessor } from './ai-processor';
 import { TranslationService } from './translation-service';
@@ -593,15 +592,19 @@ export class ZenBuilder {
       console.log(`🌐 HTTP server started at http://${host}:${port}`);
     }
 
-    // 创建 GitIgnoreProcessor 并加载 .gitignore 文件
-    const gitignoreProcessor = new GitIgnoreProcessor(srcDir);
-    await gitignoreProcessor.loadFromFile();
+    // 硬编码的忽略模式列表
+    const hardcodedIgnorePatterns = [
+      'node_modules',
+      '.git',
+      '.zen',
+      'dist',
+      '.DS_Store',
+      'Thumbs.db',
+    ];
 
-    // 获取 .gitignore 模式并转换为 chokidar 兼容的正则表达式
-    const gitignorePatterns = gitignoreProcessor.getPatterns();
-    const gitignoreRegexes = gitignorePatterns.map(pattern => {
+    // 将硬编码模式转换为 chokidar 兼容的正则表达式
+    const ignoreRegexes = hardcodedIgnorePatterns.map(pattern => {
       // 将 glob 模式转换为正则表达式
-      // 注意：这是一个简化的转换，对于复杂的 glob 模式可能需要更复杂的处理
       const regexPattern = pattern
         .replace(/\./g, '\\.')
         .replace(/\*/g, '.*')
@@ -610,12 +613,11 @@ export class ZenBuilder {
       return new RegExp(`(^|[\\/\\\\])${regexPattern}([\\/\\\\].*)?$`);
     });
 
-    // 设置文件监听，忽略隐藏文件、.zen 目录和 .gitignore 中的文件
+    // 设置文件监听，忽略隐藏文件和常见忽略目录
     const watcher = chokidar.watch(srcDir, {
       ignored: [
         /(^|[\/\\])\../, // 忽略隐藏文件
-        /(^|[\/\\])\.zen($|[\/\\])/, // 忽略 .zen 目录
-        ...gitignoreRegexes, // 忽略 .gitignore 中的文件
+        ...ignoreRegexes, // 忽略常见目录和文件
       ],
       persistent: true,
       ignoreInitial: true,
@@ -656,24 +658,24 @@ export class ZenBuilder {
 
     watcher
       .on('add', (filePath: string) => {
-        // 双重检查：确保文件是 .md 文件且不被 .gitignore 忽略
-        if (filePath.endsWith('.md') && !gitignoreProcessor.shouldIgnore(filePath)) {
+        // 检查文件是否是 .md 文件
+        if (filePath.endsWith('.md')) {
           if (verbose) console.log(`📄 File added: ${filePath}`);
           buildQueue.push(filePath);
           setTimeout(debouncedBuild, 300);
         }
       })
       .on('change', (filePath: string) => {
-        // 双重检查：确保文件是 .md 文件且不被 .gitignore 忽略
-        if (filePath.endsWith('.md') && !gitignoreProcessor.shouldIgnore(filePath)) {
+        // 检查文件是否是 .md 文件
+        if (filePath.endsWith('.md')) {
           if (verbose) console.log(`📄 File changed: ${filePath}`);
           buildQueue.push(filePath);
           setTimeout(debouncedBuild, 300);
         }
       })
       .on('unlink', (filePath: string) => {
-        // 双重检查：确保文件是 .md 文件且不被 .gitignore 忽略
-        if (filePath.endsWith('.md') && !gitignoreProcessor.shouldIgnore(filePath)) {
+        // 检查文件是否是 .md 文件
+        if (filePath.endsWith('.md')) {
           if (verbose) console.log(`📄 File removed: ${filePath}`);
           buildQueue.push(filePath);
           setTimeout(debouncedBuild, 300);
