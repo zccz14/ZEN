@@ -1,8 +1,7 @@
 import { ScannedFile, ZenConfig } from './types';
-import { GitIgnoreProcessor } from './gitignore';
+import { findMarkdownEntries } from './findEntries';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import * as minimatch from 'minimatch';
 import * as crypto from 'crypto';
 
 export class Scanner {
@@ -29,62 +28,33 @@ export class Scanner {
    * 扫描目录并生成文件列表
    */
   async scanDirectory(dirPath: string): Promise<ScannedFile[]> {
+    // 使用新的findMarkdownEntries函数获取所有.md文件
+    const markdownFiles = await findMarkdownEntries(dirPath);
+
     const files: ScannedFile[] = [];
 
-    // 创建 GitIgnoreProcessor 并加载 .gitignore 文件
-    const gitignoreProcessor = new GitIgnoreProcessor(dirPath);
-    await gitignoreProcessor.loadFromFile();
+    for (const relativePath of markdownFiles) {
+      const fullPath = path.join(dirPath, relativePath);
 
-    // 获取 include/exclude 模式
-    const includePattern = this.config.includePattern || '**/*.md';
-    const excludePattern = this.config.excludePattern;
+      try {
+        // 检查文件是否存在
+        await fs.access(fullPath);
 
-    const scanDirectory = async (currentPath: string) => {
-      const entries = await fs.readdir(currentPath, { withFileTypes: true });
+        const ext = path.extname(relativePath);
+        const name = path.basename(relativePath, ext);
+        const hash = await this.calculateFileHash(fullPath);
 
-      for (const entry of entries) {
-        const fullPath = path.join(currentPath, entry.name);
-
-        // 检查是否应该被 .gitignore 忽略
-        if (gitignoreProcessor.shouldIgnore(fullPath)) {
-          continue;
-        }
-
-        // 忽略 .zen 目录（保持向后兼容）
-        if (entry.name === '.zen') {
-          continue;
-        }
-
-        if (entry.isDirectory()) {
-          await scanDirectory(fullPath);
-        } else if (entry.isFile()) {
-          const relativePath = path.relative(dirPath, fullPath);
-
-          // 应用 include 模式
-          if (!minimatch.match([relativePath], includePattern).length) {
-            continue;
-          }
-
-          // 应用 exclude 模式
-          if (excludePattern && minimatch.match([relativePath], excludePattern).length > 0) {
-            continue;
-          }
-
-          const ext = path.extname(entry.name);
-          const name = path.basename(entry.name, ext);
-          const hash = await this.calculateFileHash(fullPath);
-
-          files.push({
-            path: relativePath, // 只保存相对路径
-            name,
-            ext,
-            hash,
-          });
-        }
+        files.push({
+          path: relativePath, // 只保存相对路径
+          name,
+          ext,
+          hash,
+        });
+      } catch (error) {
+        console.warn(`⚠️ File not found or inaccessible: ${fullPath}`, error);
       }
-    };
+    }
 
-    await scanDirectory(dirPath);
     return files;
   }
 
@@ -131,47 +101,25 @@ export class Scanner {
       const scanResult = JSON.parse(content);
       const scanTime = new Date(scanResult.timestamp).getTime();
 
-      // 检查源目录中是否有文件比扫描时间更新
-      const gitignoreProcessor = new GitIgnoreProcessor(dirPath);
-      await gitignoreProcessor.loadFromFile();
+      // 获取当前的Markdown文件列表
+      const currentFiles = await findMarkdownEntries(dirPath);
 
-      let isOutdated = false;
+      // 检查每个文件是否比扫描时间更新
+      for (const relativePath of currentFiles) {
+        const fullPath = path.join(dirPath, relativePath);
 
-      async function checkDirectory(currentPath: string) {
-        const entries = await fs.readdir(currentPath, { withFileTypes: true });
-
-        for (const entry of entries) {
-          const fullPath = path.join(currentPath, entry.name);
-
-          // 检查是否应该被 .gitignore 忽略
-          if (gitignoreProcessor.shouldIgnore(fullPath)) {
-            continue;
+        try {
+          const stats = await fs.stat(fullPath);
+          if (stats.mtime.getTime() > scanTime) {
+            return true; // 文件已更新，扫描结果过期
           }
-
-          // 忽略 .zen 目录
-          if (entry.name === '.zen') {
-            continue;
-          }
-
-          if (entry.isDirectory()) {
-            await checkDirectory(fullPath);
-          } else if (entry.isFile()) {
-            // 检查文件修改时间
-            const stats = await fs.stat(fullPath);
-            if (stats.mtime.getTime() > scanTime) {
-              isOutdated = true;
-              return; // 提前退出
-            }
-          }
-
-          if (isOutdated) {
-            break;
-          }
+        } catch (error) {
+          // 如果文件无法访问，继续检查下一个
+          console.warn(`⚠️ Cannot access file for timestamp check: ${fullPath}`, error);
         }
       }
 
-      await checkDirectory(dirPath);
-      return isOutdated;
+      return false; // 所有文件都没有更新
     } catch (error) {
       // 如果扫描结果文件不存在或读取失败，视为过期
       return true;

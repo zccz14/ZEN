@@ -1,9 +1,9 @@
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import { FileInfo, MarkdownProcessor, ScannedFile } from './types';
+import { findMarkdownEntries } from './findEntries';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { GitIgnoreProcessor } from './gitignore';
 
 // 配置 marked 使用 highlight.js 进行代码高亮
 marked.setOptions({
@@ -134,48 +134,24 @@ export class MarkdownConverter {
 
   /**
    * 从目录读取所有 Markdown 文件并转换
-   * 保持向后兼容，但内部使用扫描逻辑
+   * 使用新的findMarkdownEntries函数获取文件列表
    */
   async convertDirectory(dirPath: string): Promise<FileInfo[]> {
-    // 使用扫描逻辑获取文件列表
-    const gitignoreProcessor = new GitIgnoreProcessor(dirPath);
-    await gitignoreProcessor.loadFromFile();
+    // 使用新的findMarkdownEntries函数获取文件列表
+    const markdownFiles = await findMarkdownEntries(dirPath);
 
     const scannedFiles: ScannedFile[] = [];
 
-    async function scanDirectory(currentPath: string) {
-      const entries = await fs.readdir(currentPath, { withFileTypes: true });
+    for (const relativePath of markdownFiles) {
+      const ext = path.extname(relativePath);
+      const name = path.basename(relativePath, ext);
 
-      for (const entry of entries) {
-        const fullPath = path.join(currentPath, entry.name);
-
-        // 检查是否应该被 .gitignore 忽略
-        if (gitignoreProcessor.shouldIgnore(fullPath)) {
-          continue;
-        }
-
-        // 忽略 .zen 目录（保持向后兼容）
-        if (entry.name === '.zen') {
-          continue;
-        }
-
-        if (entry.isDirectory()) {
-          await scanDirectory(fullPath);
-        } else if (entry.isFile() && entry.name.endsWith('.md')) {
-          const relativePath = path.relative(dirPath, fullPath);
-          const ext = path.extname(entry.name);
-          const name = path.basename(entry.name, ext);
-
-          scannedFiles.push({
-            path: relativePath,
-            name,
-            ext,
-          });
-        }
-      }
+      scannedFiles.push({
+        path: relativePath,
+        name,
+        ext,
+      });
     }
-
-    await scanDirectory(dirPath);
 
     // 使用新的方法转换扫描的文件
     return this.convertScannedFiles(scannedFiles, dirPath);
