@@ -102,13 +102,19 @@ jobs:
 
           Co-Authored-By: Claude <noreply@anthropic.com>"
 
+          # 先尝试创建标签，如果失败则忽略
+          gh label create "automated-pr" --color "0E8A16" --description "Automatically created pull request" 2>/dev/null || true
+          gh label create "version-bump" --color "5319E7" --description "Version bump changes" 2>/dev/null || true
+
+          # 创建 PR，如果标签创建失败则不带标签
           gh pr create \
             --title "$PR_TITLE" \
             --body "$PR_BODY" \
             --base main \
             --head bump-version-${{ github.run_id }} \
             --label "automated-pr" \
-            --label "version-bump"
+            --label "version-bump" \
+            --label "enhancement"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
