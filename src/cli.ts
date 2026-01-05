@@ -56,6 +56,7 @@ class BuildCommand extends BaseCommand {
   baseUrl = Option.String('--base-url');
   clean = Option.Boolean('--clean');
   ai = Option.Boolean('--ai', { description: 'Enable AI metadata extraction' });
+  lang = Option.Array('--lang', { description: 'Target languages for translation (e.g., en-US, ja-JP)' });
 
   static usage = Command.Usage({
     description: 'Build documentation site from Markdown files in current directory',
@@ -71,6 +72,7 @@ class BuildCommand extends BaseCommand {
         $ zengen build --config zen.config.json
         $ zengen build --clean
         $ zengen build --ai (requires OPENAI_API_KEY environment variable)
+        $ zengen build --lang en-US --lang ja-JP (translate to English and Japanese)
     `,
   });
 
@@ -89,6 +91,14 @@ class BuildCommand extends BaseCommand {
         enabled: this.ai ? true : config.ai?.enabled,
       };
 
+      // 处理语言配置：命令行参数优先于配置文件
+      const targetLangs = this.lang && this.lang.length > 0 ? this.lang : config.i18n?.targetLangs;
+      const i18nConfig = targetLangs && targetLangs.length > 0 ? {
+        ...config.i18n,
+        sourceLang: config.i18n?.sourceLang || 'zh-Hans', // 默认源语言为中文
+        targetLangs,
+      } : undefined;
+
       // 合并命令行参数和配置
       const buildOptions = {
         srcDir: currentDir,
@@ -100,12 +110,14 @@ class BuildCommand extends BaseCommand {
         host: this.host,
         verbose: this.verbose,
         baseUrl: this.baseUrl || config.baseUrl,
+        langs: this.lang,
       };
 
-      // 创建最终的配置，包含 AI 设置
+      // 创建最终的配置，包含 AI 和 i18n 设置
       const finalConfig = {
         ...config,
         ai: aiConfig.enabled ? aiConfig : undefined,
+        i18n: i18nConfig,
       };
 
       const builder = new ZenBuilder(finalConfig);

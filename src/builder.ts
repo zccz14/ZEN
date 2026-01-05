@@ -5,6 +5,8 @@ import { NavigationGenerator } from './navigation';
 import { GitIgnoreProcessor } from './gitignore';
 import { Scanner } from './scanner';
 import { AIProcessor } from './ai-processor';
+import { TranslationService } from './translation-service';
+import { AIService } from './ai-service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
@@ -17,6 +19,7 @@ export class ZenBuilder {
   private navigationGenerator: NavigationGenerator;
   private scanner: Scanner;
   private aiProcessor: AIProcessor;
+  private translationService: TranslationService;
   private config: ZenConfig = {};
 
   constructor(config: ZenConfig = {}) {
@@ -24,6 +27,9 @@ export class ZenBuilder {
 
     // 创建 AI 处理器
     this.aiProcessor = new AIProcessor(config);
+
+    // 创建翻译服务
+    this.translationService = new TranslationService(config.ai);
 
     // 获取现有的 processors 或创建空数组
     const existingProcessors = config.processors || [];
@@ -44,13 +50,16 @@ export class ZenBuilder {
    */
   async build(options: BuildOptions): Promise<void> {
     const startTime = Date.now();
-    const { srcDir, outDir, template, verbose = false, baseUrl } = options;
+    const { srcDir, outDir, template, verbose = false, baseUrl, langs } = options;
 
     if (verbose) {
       console.log(`🚀 Starting ZEN build...`);
       console.log(`📁 Source: ${srcDir}`);
       console.log(`📁 Output: ${outDir}`);
       console.log(`🔗 Base URL: ${baseUrl || '(not set)'}`);
+      if (langs && langs.length > 0) {
+        console.log(`🌐 Target languages: ${langs.join(', ')}`);
+      }
       console.log(`🔍 Verbose mode enabled`);
     }
 
@@ -115,6 +124,12 @@ export class ZenBuilder {
     if (this.aiProcessor.isEnabled()) {
       if (verbose) console.log(`🤖 Running AI metadata extraction...`);
       await this.aiProcessor.processBatch(files);
+    }
+
+    // 处理翻译（如果指定了目标语言）
+    if (langs && langs.length > 0 && this.translationService.isEnabled()) {
+      if (verbose) console.log(`🌐 Processing translations...`);
+      await this.processTranslations(files, langs, verbose);
     }
 
     // 更新导航生成器的 baseUrl（优先使用命令行参数）
@@ -489,8 +504,48 @@ export class ZenBuilder {
   }
 
   /**
-   * 验证配置
+   * 处理文件翻译
    */
+  private async processTranslations(
+    files: FileInfo[],
+    targetLangs: string[],
+    verbose: boolean
+  ): Promise<void> {
+    const aiService = new AIService();
+
+    for (const file of files) {
+      try {
+        // 获取文件的AI元数据（包含inferred_lang）
+        const sourceLang = file.aiMetadata?.inferred_lang || 'zh-Hans';
+        const nativeHash = file.hash || aiService.calculateFileHash(file.content);
+
+        if (verbose) {
+          console.log(`📄 Processing translations for: ${file.path} (${sourceLang})`);
+        }
+
+        for (const targetLang of targetLangs) {
+          try {
+            // 确保翻译文件存在
+            await this.translationService.ensureTranslatedFile(
+              file,
+              sourceLang,
+              targetLang,
+              nativeHash
+            );
+
+            if (verbose) {
+              console.log(`  ✅ Translated to ${targetLang}`);
+            }
+          } catch (error) {
+            console.error(`  ❌ Failed to translate to ${targetLang}:`, error);
+          }
+        }
+      } catch (error) {
+        console.error(`❌ Failed to process translations for ${file.path}:`, error);
+      }
+    }
+  }
+
   validateConfig(config: ZenConfig): string[] {
     const errors: string[] = [];
 

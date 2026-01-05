@@ -8,6 +8,7 @@ export interface BuildOptions {
   port?: number;
   host?: string;
   baseUrl?: string;
+  langs?: string[]; // 目标语言数组
 }
 
 export interface ScannedFile {
