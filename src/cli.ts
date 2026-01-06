@@ -2,8 +2,7 @@
 
 import { config } from 'dotenv';
 import { Cli, Command, Option } from 'clipanion';
-import { ZenBuilder } from './builder';
-import { ZenConfig } from './types';
+import { buildSite, buildMultiLang, watchAndBuild, serveSite } from './build/pipeline';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as fsSync from 'fs';
@@ -74,14 +73,6 @@ class BuildCommand extends BaseCommand {
       const currentDir = process.cwd();
       const outDir = this.getOutDir();
 
-      // 处理语言配置：只使用命令行参数
-      const i18nConfig =
-        this.lang && this.lang.length > 0
-          ? {
-              targetLangs: this.lang,
-            }
-          : undefined;
-
       // 构建选项
       const buildOptions = {
         srcDir: currentDir,
@@ -96,21 +87,6 @@ class BuildCommand extends BaseCommand {
         langs: this.lang,
       };
 
-      // 创建最终的配置
-      const finalConfig = {
-        i18n: i18nConfig,
-      };
-
-      const builder = new ZenBuilder(finalConfig);
-
-      // 验证配置
-      const errors = builder.validateConfig(finalConfig);
-      if (errors.length > 0) {
-        this.context.stderr.write('❌ Configuration errors:\n');
-        errors.forEach(error => this.context.stderr.write(`  - ${error}\n`));
-        return 1;
-      }
-
       // 警告 --serve 选项需要 --watch 选项
       if (this.serve && !this.watch) {
         this.context.stdout.write(
@@ -121,7 +97,15 @@ class BuildCommand extends BaseCommand {
 
       // 构建或监听
       if (this.watch) {
-        await builder.watch(buildOptions);
+        if (this.serve) {
+          // 同时启动监听和服务器
+          await Promise.all([
+            watchAndBuild(buildOptions),
+            serveSite(buildOptions)
+          ]);
+        } else {
+          await watchAndBuild(buildOptions);
+        }
       } else {
         // 如果指定了语言参数，使用多语言构建
         if (this.lang && this.lang.length > 0) {
@@ -131,9 +115,9 @@ class BuildCommand extends BaseCommand {
             useMetaData: true,
             filterOrphans: true,
           };
-          await builder.buildMultiLang(multiLangOptions);
+          await buildMultiLang(multiLangOptions);
         } else {
-          await builder.build(buildOptions);
+          await buildSite(buildOptions);
         }
       }
 
