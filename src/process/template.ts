@@ -133,6 +133,29 @@ async function renderTemplate(template: string, data: TemplateData): Promise<str
   return result;
 }
 
+const renderRedirectTemplate = async (from: string, to: string): Promise<void> => {
+  const {
+    options: { baseUrl = '/' },
+  } = MetaData;
+  const toURL = path.join(baseUrl, to);
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="0; url=${toURL}">
+    <title>Redirecting...</title>
+</head>
+<body>
+    <p>Redirecting to <a href="${toURL}">${toURL}</a></p>
+</body>
+</html>`;
+  const targetPath = path.join(ZEN_DIST_DIR, from);
+  await fs.mkdir(path.dirname(targetPath), { recursive: true });
+  await fs.writeFile(targetPath, html, 'utf-8');
+};
+
 /**
  * 渲染模板并保存文件
  */
@@ -167,4 +190,12 @@ export async function renderTemplates(): Promise<void> {
       }
     }
   }
+
+  for (const lang of langs || []) {
+    await renderRedirectTemplate(
+      path.join(lang, 'index.html'),
+      path.join(lang, files[0].hash + '.html')
+    );
+  }
+  await renderRedirectTemplate('index.html', path.join(langs?.[0] || 'en-US', 'index.html'));
 }
