@@ -1,32 +1,35 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { ZEN_DIST_DIR, ZEN_SRC_DIR } from '../paths';
-import { FileInfo, MetaDataStore, NavigationItem } from '../types';
 import { MetaData } from '../metadata';
+import { ZEN_DIST_DIR, ZEN_SRC_DIR } from '../paths';
+import { MetaDataStore, NavigationItem } from '../types';
 import { convertMarkdownToHtml } from '../utils/convertMarkdownToHtml';
 
+const langNames: Record<string, string> = {
+  'zh-Hans': '简体中文',
+  'en-US': 'English',
+  'ja-JP': '日本語',
+  'ko-KR': '한국어',
+};
 /**
  * 生成语言切换器 HTML
  * @param currentLang 当前语言
  * @param availableLangs 可用语言列表
  * @returns 语言切换器 HTML 字符串
  */
-export function generateLanguageSwitcher(currentLang: string, availableLangs: string[]): string {
-  const langNames: Record<string, string> = {
-    'zh-Hans': '简体中文',
-    'en-US': 'English',
-    'ja-JP': '日本語',
-    'ko-KR': '한국어',
-  };
+function generateLanguageSwitcher(templateData: TemplateData): string {
+  const {
+    options: { langs = [], baseUrl = '/' },
+  } = MetaData;
 
-  const items = availableLangs
+  const items = langs
     .map(lang => {
       const langName = langNames[lang] || lang;
-      const isCurrent = lang === currentLang;
+      const isCurrent = lang === templateData.lang;
       const activeClass = isCurrent ? 'active' : '';
 
       return `<li class="lang-item ${activeClass}">
-        <a href="?lang=${lang}" class="lang-link">${langName}</a>
+        <a href="${path.join(baseUrl, lang, templateData.file.hash + '.html')}" class="lang-link">${langName}</a>
       </li>`;
     })
     .join('');
@@ -36,14 +39,31 @@ export function generateLanguageSwitcher(currentLang: string, availableLangs: st
     <ul class="lang-list">${items}</ul>
   </div>`;
 }
+function generateFlatNavigation(lang: string): NavigationItem[] {
+  const {
+    files,
+    options: { baseUrl = '' },
+  } = MetaData;
+  return files
+    .map(file => {
+      const title = file.metadata?.title || file.path; // 优先使用提取的标题
 
+      return {
+        title,
+        path: path.join(baseUrl, lang, file.hash + '.html'),
+      };
+    })
+    .sort((a, b) => a.title.localeCompare(b.title));
+}
 /**
  * 生成导航 HTML
  * @param navigation 导航树
  * @param currentPath 当前路径（可选，用于高亮当前页面）
  * @returns 导航 HTML 字符串
  */
-export function generateNavigationHtml(navigation: NavigationItem[], currentPath?: string): string {
+function generateNavigationHtml(lang: string, currentPath?: string): string {
+  const navigation = generateFlatNavigation(lang);
+
   const renderItem = (item: NavigationItem): string => {
     const isActive = currentPath === item.path;
     const activeClass = isActive ? 'active' : '';
@@ -89,8 +109,8 @@ async function renderTemplate(template: string, data: TemplateData): Promise<str
   let result = template;
 
   // 替换导航
-  // const navigationHtml = generateNavigationHtml(data.navigation, data.currentPath);
-  // result = result.replace('{{navigation}}', navigationHtml);
+  const navigationHtml = generateNavigationHtml(data.lang, data.file.hash);
+  result = result.replace('{{navigation}}', navigationHtml);
 
   // 替换其他变量 - 使用全局替换
   result = result.replace(/{{title}}/g, data.file.metadata.title || 'Untitled');
@@ -107,37 +127,11 @@ async function renderTemplate(template: string, data: TemplateData): Promise<str
   // 替换语言相关变量
   result = result.replace(/{{lang}}/g, data.lang || '');
   if (langs && langs.length > 1 && data.lang) {
-    const langSwitcher = generateLanguageSwitcher(data.lang, langs);
+    const langSwitcher = generateLanguageSwitcher(data);
     result = result.replace('{{language_switcher}}', langSwitcher);
   }
 
   return result;
-}
-
-/**
- * 渲染模板
- * @param data 模板数据
- * @param templatePath 自定义模板路径（可选）
- * @returns 渲染后的 HTML 字符串
- */
-export async function renderTemplateWithData(
-  data: TemplateData,
-  templatePath?: string
-): Promise<string> {
-  let template = path.join(__dirname, '../../assets/templates/default/layout.html');
-
-  if (templatePath) {
-    try {
-      template = await fs.readFile(templatePath, 'utf-8');
-    } catch (error) {
-      console.warn(
-        `Failed to load custom template from ${templatePath}, using default template:`,
-        error
-      );
-    }
-  }
-
-  return renderTemplate(template, data);
 }
 
 /**

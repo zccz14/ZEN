@@ -1,6 +1,6 @@
+import { join } from 'path';
 import { MetaData } from '../metadata';
-import { NavigationItem, FileInfo } from '../types';
-import * as path from 'path';
+import { FileInfo, NavigationItem } from '../types';
 
 /**
  * 格式化标题（将连字符/下划线转换为空格并首字母大写）
@@ -145,16 +145,18 @@ function findNavigationItem(
  * @param baseUrl 基础URL（可选）
  * @returns 扁平化的导航项数组
  */
-export function generateFlatNavigation(files: FileInfo[], baseUrl: string = ''): NavigationItem[] {
+export function generateFlatNavigation(lang: string): NavigationItem[] {
+  const {
+    files,
+    options: { baseUrl = '' },
+  } = MetaData;
   return files
     .map(file => {
-      const title = file.metadata?.title || formatTitle(file.name); // 优先使用提取的标题
-      const rawPath = `/${file.path.replace(/\.md$/, '.html')}`;
-      const itemPath = generatePath(rawPath, baseUrl);
+      const title = file.metadata?.title || file.path; // 优先使用提取的标题
 
       return {
         title,
-        path: itemPath,
+        path: join(baseUrl, lang, file.hash + '.html'),
       };
     })
     .sort((a, b) => a.title.localeCompare(b.title));
