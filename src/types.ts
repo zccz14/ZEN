@@ -4,6 +4,7 @@
 export interface FileMetaData {
   hash: string;
   path: string;
+  links: string[];
   metadata?: AIMetadata;
 }
 

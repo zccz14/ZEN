@@ -1,12 +1,11 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { translateMarkdown } from '../ai/translateMarkdown';
-import { findMarkdownEntries } from '../findEntries';
 import { loadMetaData, MetaData, saveMetaData } from '../metadata';
 import { INPUT_DIR, ZEN_DIR, ZEN_DIST_DIR, ZEN_SRC_DIR } from '../paths';
 import { extractMetadataByAI } from '../process/extractMetadataByAI';
+import { scanSourceFiles } from '../process/scanSourceFiles';
 import { renderTemplates } from '../process/template';
-import { calculateFileHash } from '../scan/files';
 import { BuildOptions } from '../types';
 import { updateFrontmatter } from '../utils/frontmatter';
 
@@ -26,49 +25,6 @@ async function validateConfig(options: BuildOptions): Promise<void> {
   }
 
   MetaData.options = options;
-}
-
-/**
- * 扫描源文件
- */
-async function scanSourceFiles(): Promise<void> {
-  console.log(`🔍 Scanning source directory...`);
-  const markdownFiles = await findMarkdownEntries(INPUT_DIR);
-  const hashes = new Set<string>();
-
-  for (const relativePath of markdownFiles) {
-    const fullPath = path.join(INPUT_DIR, relativePath);
-
-    try {
-      // 检查文件是否存在
-      await fs.access(fullPath);
-
-      const hash = await calculateFileHash(fullPath);
-
-      hashes.add(hash);
-
-      const metaWithSameHash = MetaData.files.find(f => f.hash === hash);
-      if (metaWithSameHash) {
-        metaWithSameHash.path = relativePath;
-      } else {
-        // 如果没有相同哈希的元数据，则添加一个新的占位符
-        MetaData.files.push({
-          hash,
-          path: relativePath,
-        });
-      }
-    } catch (error) {
-      console.warn(`⚠️ File not found or inaccessible: ${fullPath}`, error);
-    }
-  }
-  // 移除不再存在的文件元数据
-  MetaData.files = MetaData.files.filter(f => hashes.has(f.hash));
-
-  console.log(`✅ Found ${MetaData.files.length} Markdown files`);
-
-  if (MetaData.files.length === 0) {
-    console.warn(`⚠️ No Markdown files found in ${INPUT_DIR}`);
-  }
 }
 
 /**

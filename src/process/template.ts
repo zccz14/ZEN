@@ -84,6 +84,33 @@ async function generateNavigationHtml(data: TemplateData): Promise<string> {
     .join('')}</ul>`;
 }
 
+const replaceInnerLinks = (data: TemplateData, markdownContent: string): string => {
+  let content = markdownContent;
+  for (const link of data.file.links) {
+    if (URL.canParse(link)) continue; // 跳过绝对 URL
+
+    const targetPath = path.resolve('/', path.dirname(data.file.path), link).slice(1);
+
+    const targetFile = MetaData.files.find(f => f.path === targetPath);
+
+    if (!targetFile) {
+      console.warn(`⚠️ Link target not found for ${link} in file ${data.file.path}`);
+      continue;
+    }
+    // 替换链接
+    const targetLink = path.join(
+      MetaData.options.baseUrl ?? '/',
+      data.lang,
+      targetFile.hash + '.html'
+    );
+
+    // 全局替换链接
+    const linksRegex = new RegExp(`\\]\\(${link.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)`, 'g');
+    content = content.replace(linksRegex, `](${targetLink})`);
+  }
+  return content;
+};
+
 interface TemplateData {
   file: MetaDataStore['files'][0];
   content: string;
@@ -103,7 +130,7 @@ async function renderTemplate(template: string, data: TemplateData): Promise<str
   const markdownContent = data.content;
   const { frontmatter, body } = parseFrontmatter(markdownContent);
 
-  const htmlContent = convertMarkdownToHtml(body);
+  const htmlContent = convertMarkdownToHtml(replaceInnerLinks(data, body));
 
   let result = template;
 
