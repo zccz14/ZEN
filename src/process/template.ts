@@ -42,7 +42,7 @@ function generateLanguageSwitcher(templateData: TemplateData): string {
 function generateFlatNavigation(lang: string): NavigationItem[] {
   const {
     files,
-    options: { baseUrl = '' },
+    options: { baseUrl = '/' },
   } = MetaData;
   return files
     .map(file => {
