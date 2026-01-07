@@ -10,6 +10,7 @@
   "scripts": {
     "build": "npx rimraf dist && tsc",
     "dev": "ts-node src/cli.ts",
+    "build:doc": "npm run build && node dist/cli.js build --lang zh-Hans --lang en-US --verbose",
     "test": "npm run build && node --test dist/**/*.test.js",
     "test:types": "tsc --noEmit",
     "test:build": "npm run build && test -f dist/index.js && test -f dist/cli.js",
@@ -58,6 +59,7 @@
     "express": "^4.21.2",
     "highlight.js": "^11.11.1",
     "marked": "^17.0.1",
-    "minimatch": "^10.1.1"
+    "minimatch": "^10.1.1",
+    "yaml": "^2.8.2"
   }
 }

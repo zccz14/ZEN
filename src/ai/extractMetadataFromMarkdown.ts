@@ -1,18 +1,12 @@
+import { completeMessages, OpenAIMessage } from '../services/openai';
 import { AIMetadata } from '../types';
-import { completeMessages, OpenAIMessage, OpenAIResponse } from '../services/openai';
 
 /**
  * 从 markdown 内容中提取 metadata
  * @param content Markdown 内容
- * @param filePath 文件路径（用于日志）
  * @returns Promise<AIMetadata> 提取的元数据，失败时抛出错误
  */
-export async function extractMetadataFromMarkdown(
-  content: string,
-  filePath: string
-): Promise<AIMetadata> {
-  console.log(`🤖 Extracting AI metadata for: ${filePath}`);
-
+export async function extractMetadataFromMarkdown(content: string): Promise<AIMetadata> {
   const prompt = buildMetadataPrompt(content);
   const messages: OpenAIMessage[] = [
     {
@@ -96,13 +90,6 @@ function parseMetadataResponse(responseContent: string): AIMetadata {
     };
   } catch (error) {
     console.error('❌ Failed to parse AI response:', error, 'Response:', responseContent);
-
-    // 返回默认值
-    return {
-      title: '解析失败',
-      summary: 'AI 响应解析失败',
-      tags: ['error'],
-      inferred_lang: 'zh-Hans',
-    };
+    throw error;
   }
 }
