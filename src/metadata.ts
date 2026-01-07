@@ -1,6 +1,7 @@
-import { AIMetadata } from './types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { ZEN_META_PATH } from './paths';
+import { AIMetadata } from './types';
 
 /**
  * 单个文件的元数据缓存项
@@ -31,21 +32,12 @@ export const MetaData: MetaDataStore = {
 };
 
 /**
- * 获取 meta.json 文件路径
- */
-function getMetaDataPath(): string {
-  return path.join(process.cwd(), '.zen', 'meta.json');
-}
-
-/**
  * 从文件中读取数据，覆盖 store，但是要保持它仍然是同一个对象
  */
 export async function loadMetaData(): Promise<void> {
-  const metaDataPath = getMetaDataPath();
-
   try {
-    await fs.access(metaDataPath);
-    const content = await fs.readFile(metaDataPath, 'utf-8');
+    await fs.access(ZEN_META_PATH);
+    const content = await fs.readFile(ZEN_META_PATH, 'utf-8');
     const newData = JSON.parse(content);
 
     // 使用 Object.assign 保持同一个对象引用
@@ -62,17 +54,15 @@ export async function loadMetaData(): Promise<void> {
  * 将 MetaData 写入 store
  */
 export async function saveMetaData(): Promise<void> {
-  const metaDataPath = getMetaDataPath();
-
   // 确保 .zen 目录存在
-  const zenDir = path.dirname(metaDataPath);
+  const zenDir = path.dirname(ZEN_META_PATH);
   await fs.mkdir(zenDir, { recursive: true });
 
   // 更新时间戳
   MetaData.timestamp = new Date().toISOString();
 
   // 保存文件
-  await fs.writeFile(metaDataPath, JSON.stringify(MetaData, null, 2), 'utf-8');
+  await fs.writeFile(ZEN_META_PATH, JSON.stringify(MetaData, null, 2), 'utf-8');
 }
 
 /**
@@ -157,29 +147,6 @@ export async function cacheMetadata(
     console.log(`💾 Cached AI metadata for: ${filePath}`);
   } catch (error) {
     console.warn(`⚠️ Failed to cache metadata:`, error);
-  }
-}
-
-/**
- * 清理过期的缓存
- */
-export async function cleanupCache(maxAgeDays: number = 30): Promise<void> {
-  try {
-    const cutoffTime = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
-    const originalCount = MetaData.files.length;
-
-    // 过滤掉过期的缓存
-    MetaData.files = MetaData.files.filter(fileData => {
-      const fileTime = new Date(fileData.lastUpdated).getTime();
-      return fileTime >= cutoffTime;
-    });
-
-    const cleanedCount = originalCount - MetaData.files.length;
-    if (cleanedCount > 0) {
-      console.log(`🧹 Cleaned ${cleanedCount} expired AI metadata entries`);
-    }
-  } catch (error) {
-    console.warn(`⚠️ Failed to cleanup cache:`, error);
   }
 }
 

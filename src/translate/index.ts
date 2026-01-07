@@ -1,8 +1,8 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { FileInfo } from '../types';
 import { translateMarkdown } from '../ai/translateMarkdown';
 import { calculateFileHash } from '../process/ai-utils';
+import { FileInfo } from '../types';
 
 /**
  * 翻译缓存项
@@ -116,9 +116,7 @@ export async function getCachedTranslation(
     );
 
     if (cachedTranslation) {
-      console.log(
-        `📚 Using cached translation for ${sourceHash} (${sourceLang} → ${targetLang})`
-      );
+      console.log(`📚 Using cached translation for ${sourceHash} (${sourceLang} → ${targetLang})`);
       return cachedTranslation.translatedContent;
     }
   } catch (error) {
@@ -213,7 +211,12 @@ export async function translateFile(
   const sourceHash = fileInfo.hash || calculateFileHash(fileInfo.content);
 
   // 检查缓存
-  const cachedTranslation = await getCachedTranslation(sourceHash, sourceLang, targetLang, cachePath);
+  const cachedTranslation = await getCachedTranslation(
+    sourceHash,
+    sourceLang,
+    targetLang,
+    cachePath
+  );
   if (cachedTranslation) {
     return cachedTranslation;
   }
@@ -227,7 +230,11 @@ export async function translateFile(
 
   // 使用AI翻译
   console.log(`🌐 Translating from ${sourceLang} to ${targetLang}...`);
-  const translatedContent = await translateMarkdownContent(fileInfo.content, sourceLang, targetLang);
+  const translatedContent = await translateMarkdownContent(
+    fileInfo.content,
+    sourceLang,
+    targetLang
+  );
 
   // 缓存结果
   await cacheTranslation(sourceHash, sourceLang, targetLang, translatedContent, cachePath);
@@ -302,36 +309,6 @@ export async function ensureTranslatedFile(
 }
 
 /**
- * 清理过期的翻译缓存
- * @param maxAgeDays 最大保留天数，默认 30 天
- * @param cachePath 缓存文件路径（可选）
- */
-export async function cleanupTranslationCache(
-  maxAgeDays: number = 30,
-  cachePath?: string
-): Promise<void> {
-  try {
-    const cache = await loadTranslationCache(cachePath);
-    const cutoffTime = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
-    const originalCount = cache.length;
-
-    // 过滤掉过期的缓存
-    const filteredCache = cache.filter(item => {
-      const itemTime = new Date(item.lastUpdated).getTime();
-      return itemTime >= cutoffTime;
-    });
-
-    const cleanedCount = originalCount - filteredCache.length;
-    if (cleanedCount > 0) {
-      await saveTranslationCache(filteredCache, cachePath);
-      console.log(`🧹 Cleaned ${cleanedCount} expired translation cache entries`);
-    }
-  } catch (error) {
-    console.warn(`⚠️ Failed to cleanup translation cache:`, error);
-  }
-}
-
-/**
  * 批量翻译文件
  * @param files 文件信息数组
  * @param sourceLang 源语言
@@ -361,40 +338,4 @@ export async function batchTranslateFiles(
   }
 
   return results;
-}
-
-/**
- * 创建翻译函数集合（高阶函数）
- * @param config 翻译配置（可选）
- * @param cachePath 缓存文件路径（可选）
- * @param baseDir 基础目录，默认为 .zen
- * @returns 翻译函数集合
- */
-export function createTranslationFunctions(
-  config: TranslationConfig = getDefaultTranslationConfig(),
-  cachePath?: string,
-  baseDir: string = '.zen'
-) {
-  const effectiveCachePath = cachePath || getTranslationCachePath(baseDir);
-
-  return {
-    getConfig: () => config,
-    isEnabled: () => config.enabled,
-    loadTranslationCache: () => loadTranslationCache(effectiveCachePath),
-    saveTranslationCache: (cache: TranslationCache[]) => saveTranslationCache(cache, effectiveCachePath),
-    getCachedTranslation: (sourceHash: string, sourceLang: string, targetLang: string) =>
-      getCachedTranslation(sourceHash, sourceLang, targetLang, effectiveCachePath),
-    cacheTranslation: (sourceHash: string, sourceLang: string, targetLang: string, translatedContent: string) =>
-      cacheTranslation(sourceHash, sourceLang, targetLang, translatedContent, effectiveCachePath),
-    translateMarkdownContent,
-    translateFile: (fileInfo: FileInfo, sourceLang: string, targetLang: string) =>
-      translateFile(fileInfo, sourceLang, targetLang, effectiveCachePath),
-    getTranslatedFilePath: (originalPath: string, targetLang: string, nativeHash: string) =>
-      getTranslatedFilePath(originalPath, targetLang, nativeHash, baseDir),
-    ensureTranslatedFile: (fileInfo: FileInfo, sourceLang: string, targetLang: string, nativeHash: string) =>
-      ensureTranslatedFile(fileInfo, sourceLang, targetLang, nativeHash, effectiveCachePath, baseDir),
-    cleanupCache: (maxAgeDays: number = 30) => cleanupTranslationCache(maxAgeDays, effectiveCachePath),
-    batchTranslateFiles: (files: FileInfo[], sourceLang: string, targetLang: string) =>
-      batchTranslateFiles(files, sourceLang, targetLang, effectiveCachePath),
-  };
 }

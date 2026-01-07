@@ -2,7 +2,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { loadMetaData, saveMetaData } from '../metadata';
 import { ZEN_DIR, ZEN_DIST_DIR, ZEN_SRC_DIR } from '../paths';
-import { batchProcessAI } from '../process/ai';
+import { batchProcessAI } from '../process/ai-client';
 import { convertScannedFiles } from '../process/markdown';
 import { batchRenderAndSave } from '../process/template';
 import { scanMarkdownFiles } from '../scan/files';
@@ -218,7 +218,6 @@ async function buildPipeline(options: BuildOptions): Promise<void> {
   const scanResult = await scanSourceFiles(validatedOptions);
   if (scanResult.scannedFiles.length === 0) {
     console.warn(`⚠️ No Markdown files found in ${validatedOptions.srcDir}`);
-    return;
   }
 
   // 处理 Markdown 文件
