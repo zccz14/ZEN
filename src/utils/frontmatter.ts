@@ -13,6 +13,6 @@ export const parseFrontmatter = (content: string): { frontmatter: any; body: str
 
 export const updateFrontmatter = (content: string, newFrontmatter: any): string => {
   const { body } = parseFrontmatter(content);
-  const frontmatterContent = `---\n${stringify(newFrontmatter)}---\n\n`;
+  const frontmatterContent = `---\n${stringify(newFrontmatter, { defaultStringType: 'QUOTE_DOUBLE' })}---\n\n`;
   return frontmatterContent + body;
 };

@@ -35,30 +35,39 @@
     {
       "hash": "74541be9d53c64107a548e09847244d52bff803960942cd2bfbd2a8600afb805",
       "path": "README.md",
-      "metadata": {
-        "title": "ZEN - 极简主义 Markdown + AI 静态站点构建器",
-        "summary": "ZEN 是一个结合 AI 的静态站点生成器，支持智能分类导航和自动增量翻译，让用户专注于用母语写作，简化配置和构建过程。",
-        "tags": [
-          "静态站点生成器",
-          "Markdown",
-          "AI",
-          "多语言翻译",
-          "极简主义",
-          "文档工具",
-          "Node.js"
-        ],
-        "inferred_lang": "zh-Hans",
-        "tokens_used": {
-          "prompt": 1038,
-          "completion": 120,
-          "total": 1158
-        }
-      },
       "links": [
         "https://zccz14.github.io/ZEN/",
         "https://nodejs.org/",
         "https://platform.openai.com/account/api-keys"
-      ]
+      ],
+      "metadata": {
+        "title": "ZEN - 极简主义 Markdown + AI 静态站点构建器",
+        "summary": "ZEN 是一个结合 AI 功能的静态站点生成器，旨在简化文档写作和站点构建过程。它允许用户专注于用母语编写 Markdown 内容，自动处理标题生成、分类导航和增量翻译，支持多语言版本，无需复杂配置。工具基于 Node.js 和 OpenAI API，通过命令行快速构建站点，适合追求高效和简洁的写作者。",
+        "tags": ["静态站点生成器", "Markdown", "AI", "极简主义", "多语言翻译", "Node.js", "OpenAI"],
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 1038,
+          "completion": 163,
+          "total": 1201
+        }
+      }
+    },
+    {
+      "hash": "9d0485c244a80b14dcc92ef91cf5ff82220ed774ebb5e09549929ac75200c7bc",
+      "path": "docs/tricks.md",
+      "links": [],
+      "metadata": {
+        "title": "ZEN文档日期声明使用技巧",
+        "summary": "本文档介绍了ZEN工具中在正文中直接声明日期的使用技巧，与传统Markdown通过YAML Frontmatter声明日期的方式对比，强调了ZEN的自动识别和智能处理功能，提升了用户体验，并适用于日记、博客等需要时间线的内容类型。",
+        "tags": ["ZEN", "日期声明", "Markdown", "AI处理", "时间线", "用户体验", "文档管理"],
+        "inferred_date": "2026-01-08",
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 417,
+          "completion": 135,
+          "total": 552
+        }
+      }
     }
   ]
 }

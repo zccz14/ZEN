@@ -24,8 +24,10 @@ function generateLanguageSwitcher(templateData: TemplateData): string {
       const isCurrent = lang === templateData.lang;
       const activeClass = isCurrent ? 'active' : '';
 
+      const link = path.join('..', lang, templateData.file.hash + '.html');
+
       return `<li class="lang-item ${activeClass}">
-        <a href="${path.join(baseUrl, lang, templateData.file.hash + '.html')}" class="lang-link">${langName}</a>
+        <a href="${link}" class="lang-link">${langName}</a>
       </li>`;
     })
     .join('');
@@ -62,14 +64,17 @@ async function generateNavigationHtml(data: TemplateData): Promise<string> {
       const { frontmatter } = parseFrontmatter(content);
       const title = frontmatter.title || file.metadata?.title || file.path; // 优先使用提取的标题
 
+      // 使用相对链接
+      const link = file.hash + '.html';
+
       return {
         title,
-        path: path.join(baseUrl, data.lang, file.hash + '.html'),
+        path: link,
         isActive: data.file.hash === file.hash,
       };
     })
   );
-  navigation.sort((a, b) => a.title.localeCompare(b.title));
+  navigation.sort((a, b) => b.path.localeCompare(a.path));
 
   return `<ul class="nav-list">${navigation
     .map(item => {
@@ -97,12 +102,8 @@ const replaceInnerLinks = (data: TemplateData, markdownContent: string): string 
       console.warn(`⚠️ Link target not found for ${link} in file ${data.file.path}`);
       continue;
     }
-    // 替换链接
-    const targetLink = path.join(
-      MetaData.options.baseUrl ?? '/',
-      data.lang,
-      targetFile.hash + '.html'
-    );
+    // 替换链接 (使用相对链接)
+    const targetLink = path.join(targetFile.hash + '.html');
 
     // 全局替换链接
     const linksRegex = new RegExp(`\\]\\(${link.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)`, 'g');

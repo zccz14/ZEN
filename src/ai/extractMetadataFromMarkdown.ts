@@ -41,7 +41,7 @@ export async function extractMetadataFromMarkdown(content: string): Promise<AIMe
  */
 function buildMetadataPrompt(content: string): string {
   // 限制内容长度以避免 token 超限
-  const maxContentLength = 8000;
+  const maxContentLength = Infinity; // 可根据需要调整长度限制
   const truncatedContent =
     content.length > maxContentLength
       ? content.substring(0, maxContentLength) + '... [内容已截断]'
@@ -55,8 +55,8 @@ ${truncatedContent}
 """
 
 请提取：
-1. title: 文档的标题（简洁明了，不超过 20 个字）
-2. summary: 文档摘要（控制在 100 字以内，概括主要内容）
+1. title: 文档的标题（简洁明了，不超过 30 个字）
+2. summary: 文档摘要（控制在 300 字以内，概括主要内容）
 3. tags: 关键词列表（3-8 个关键词，使用中文或英文）
 4. inferred_date: 文档中隐含的创建日期（如果有的话，格式：YYYY-MM-DD，没有就留空字符串）
 5. inferred_lang: 文档使用的语言代码（例如：zh-Hans 表示简体中文，en-US 表示美式英语）
