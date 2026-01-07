@@ -18,8 +18,7 @@
           "completion": 124,
           "total": 774
         }
-      },
-      "lastUpdated": "2026-01-05T17:52:25.773Z"
+      }
     },
     {
       "hash": "5ec990146b35e00de2630559126ee07f7cdcddeb23b0e8cab3d85b4181353e26",
@@ -34,73 +33,7 @@
           "completion": 120,
           "total": 584
         }
-      },
-      "lastUpdated": "2026-01-05T17:52:30.439Z"
-    },
-    {
-      "hash": "f0c2799126931ccd113a0c45b1e623870b0d4f4f400becf6dd877da8f1011517",
-      "path": "docs/getting-started.md",
-      "metadata": {
-        "title": "快速开始指南",
-        "summary": "本文档介绍了ZEN文档生成器的快速入门方法，包括安装步骤、基本使用流程和主要特性，帮助用户快速上手。",
-        "tags": [
-          "ZEN文档生成器",
-          "快速开始",
-          "安装",
-          "基本用法",
-          "特性",
-          "Markdown",
-          "AI辅助",
-          "多语言支持"
-        ],
-        "inferred_lang": "zh-Hans",
-        "tokens_used": {
-          "prompt": 373,
-          "completion": 102,
-          "total": 475
-        }
-      },
-      "lastUpdated": "2026-01-05T17:52:38.265Z"
-    },
-    {
-      "hash": "fdfca9b960d0eaa8b2b96fe988ead7481d2c0b16f66ebc94fb477139b4178cdc",
-      "path": "docs/guides/index.md",
-      "metadata": {
-        "title": "ZEN 文档站点示例",
-        "summary": "介绍 ZEN 文档构建工具，一个极简主义的 Markdown 文档站点生成器，包括特性如极简配置、内容优先、智能导航和多语言支持，以及快速开始指南和代码示例。",
-        "tags": [
-          "ZEN",
-          "文档构建工具",
-          "Markdown",
-          "站点生成器",
-          "极简主义",
-          "快速开始",
-          "多语言支持"
-        ],
-        "inferred_lang": "zh-Hans",
-        "tokens_used": {
-          "prompt": 567,
-          "completion": 119,
-          "total": 686
-        }
-      },
-      "lastUpdated": "2026-01-05T17:52:50.656Z"
-    },
-    {
-      "hash": "6124ea88edec5bde737b26b21f71ecfeffe4e73151784856edf813ee231a4baa",
-      "path": "docs/testing/test-document.md",
-      "metadata": {
-        "title": "Test Document",
-        "summary": "这是一个测试文档，内容为空，仅包含标题。",
-        "tags": ["测试", "文档", "示例"],
-        "inferred_lang": "en-US",
-        "tokens_used": {
-          "prompt": 265,
-          "completion": 58,
-          "total": 323
-        }
-      },
-      "lastUpdated": "2026-01-05T17:52:52.971Z"
+      }
     },
     {
       "hash": "01d04f7c17b4a541ead9d759d877b30b403e15b849182a49eb1f62bd29ecd18c",
@@ -115,8 +48,22 @@
           "completion": 106,
           "total": 1197
         }
-      },
-      "lastUpdated": "2026-01-06T01:26:53.682Z"
+      }
+    },
+    {
+      "hash": "f0c2799126931ccd113a0c45b1e623870b0d4f4f400becf6dd877da8f1011517",
+      "path": "docs/getting-started.md",
+      "metadata": {
+        "title": "快速开始指南",
+        "summary": "本文档介绍如何快速开始使用 ZEN 文档生成器，包括安装步骤、基本用法和主要特性。",
+        "tags": ["ZEN 文档生成器", "快速开始", "安装", "基本用法", "特性", "Markdown", "构建命令"],
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 373,
+          "completion": 94,
+          "total": 467
+        }
+      }
     },
     {
       "hash": "1e96be58d76c60056b708eb5bd8b8b81d7b5845d9cfe0b879d85068a5f11df3a",
@@ -131,8 +78,7 @@
           "completion": 116,
           "total": 1398
         }
-      },
-      "lastUpdated": "2026-01-06T01:26:58.919Z"
+      }
     },
     {
       "hash": "80ae9bed74fc6348a7c1fe9f33e86b65f5d919169721f77bcf0e1bc29fbdb4f9",
@@ -147,9 +93,45 @@
           "completion": 109,
           "total": 778
         }
-      },
-      "lastUpdated": "2026-01-06T01:27:03.804Z"
+      }
+    },
+    {
+      "hash": "fdfca9b960d0eaa8b2b96fe988ead7481d2c0b16f66ebc94fb477139b4178cdc",
+      "path": "docs/guides/index.md",
+      "metadata": {
+        "title": "ZEN 文档站点示例",
+        "summary": "介绍 ZEN 文档构建工具，一个极简主义的 Markdown 文档站点生成器，包括特性、快速开始指南、代码示例和下一步学习资源。",
+        "tags": [
+          "ZEN",
+          "文档构建工具",
+          "Markdown",
+          "站点生成器",
+          "快速开始",
+          "代码示例",
+          "多语言支持"
+        ],
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 567,
+          "completion": 108,
+          "total": 675
+        }
+      }
+    },
+    {
+      "hash": "6124ea88edec5bde737b26b21f71ecfeffe4e73151784856edf813ee231a4baa",
+      "path": "docs/testing/test-document.md",
+      "metadata": {
+        "title": "Test Document",
+        "summary": "这是一个测试文档，内容为空，仅包含标题。",
+        "tags": ["测试", "文档", "示例"],
+        "inferred_lang": "en-US",
+        "tokens_used": {
+          "prompt": 265,
+          "completion": 58,
+          "total": 323
+        }
+      }
     }
-  ],
-  "timestamp": "2026-01-07T09:59:57.948Z"
+  ]
 }

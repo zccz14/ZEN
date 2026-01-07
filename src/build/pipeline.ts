@@ -115,49 +115,54 @@ async function processTranslations(): Promise<void> {
     options: { langs = [], verbose },
   } = MetaData;
 
-  for (const file of files) {
-    if (verbose) console.info(`📄 Processing file for translation: ${file.path}`);
-    if (!file.metadata) {
-      console.warn(`⚠️ Missing metadata for file: ${file.path}, skipping translation.`);
-      continue;
-    }
-    for (const lang of langs) {
-      if (verbose) console.log(`🌐 Translating to ${lang}...`);
-      // 存储翻译文件到 .zen/src/{lang}
-      const sourcePath = path.join(ZEN_SRC_DIR, file.metadata.inferred_lang, file.hash + '.md'); // 使用已经加强的母语文件路径
-      const targetPath = path.join(ZEN_SRC_DIR, lang, file.hash + '.md');
-
-      try {
-        const content = await fs.readFile(sourcePath, 'utf-8');
-        if (file.metadata.inferred_lang === lang) {
-          if (verbose)
-            console.log(`ℹ️ Skipping translation for ${file.path}, already in target language`);
-          continue;
-        } else {
-          // 翻译
-          // 先检查是否已经有翻译文件存在
-
-          const exists = await fs.access(targetPath).then(
-            () => true,
-            () => false
-          );
-          if (exists) {
-            if (verbose) console.log(`ℹ️ Translation already exists for ${file.path} in ${lang}`);
-            continue;
+  await Promise.all(
+    files.flatMap(async file => {
+      return Promise.all(
+        langs.map(async lang => {
+          if (verbose) console.info(`📄 Processing file for translation: ${file.path}`);
+          if (!file.metadata) {
+            console.warn(`⚠️ Missing metadata for file: ${file.path}, skipping translation.`);
+            return;
           }
-        }
+          if (verbose) console.log(`🌐 Translating to ${lang}...`);
+          // 存储翻译文件到 .zen/src/{lang}
+          const sourcePath = path.join(ZEN_SRC_DIR, file.metadata.inferred_lang, file.hash + '.md'); // 使用已经加强的母语文件路径
+          const targetPath = path.join(ZEN_SRC_DIR, lang, file.hash + '.md');
 
-        const translatedContent = await translateMarkdown(content, lang);
+          try {
+            const content = await fs.readFile(sourcePath, 'utf-8');
+            if (file.metadata.inferred_lang === lang) {
+              if (verbose)
+                console.log(`ℹ️ Skipping translation for ${file.path}, already in target language`);
+              return;
+            } else {
+              // 翻译
+              // 先检查是否已经有翻译文件存在
 
-        await fs.mkdir(path.dirname(targetPath), { recursive: true });
-        await fs.writeFile(targetPath, translatedContent, 'utf-8');
+              const exists = await fs.access(targetPath).then(
+                () => true,
+                () => false
+              );
+              if (exists) {
+                if (verbose)
+                  console.log(`ℹ️ Translation already exists for ${file.path} in ${lang}`);
+                return;
+              }
+            }
 
-        if (verbose) console.log(`✅ Translated file saved: ${targetPath}`);
-      } catch (error) {
-        console.error(`❌ Failed to translate to ${lang}:`, error);
-      }
-    }
-  }
+            const translatedContent = await translateMarkdown(content, lang);
+
+            await fs.mkdir(path.dirname(targetPath), { recursive: true });
+            await fs.writeFile(targetPath, translatedContent, 'utf-8');
+
+            if (verbose) console.log(`✅ Translated file saved: ${targetPath}`);
+          } catch (error) {
+            console.error(`❌ Failed to translate to ${lang}:`, error);
+          }
+        })
+      );
+    })
+  );
 }
 
 /**
@@ -171,6 +176,7 @@ async function buildPipeline(options: BuildOptions): Promise<void> {
   await fs.rm(ZEN_DIST_DIR, { recursive: true, force: true });
 
   // 确保 .zen/.gitignore 文件
+  await fs.mkdir(ZEN_DIR, { recursive: true });
   await fs.writeFile(path.join(ZEN_DIR, '.gitignore'), 'dist\n', 'utf-8');
 
   // 扫描源文件
