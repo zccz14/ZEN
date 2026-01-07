@@ -1,5 +1,7 @@
+import { readFile } from 'fs/promises';
 import { extractMetadataFromMarkdown } from '../ai/extractMetadataFromMarkdown';
-import { AIMetadata, FileInfo } from '../types';
+import { MetaData } from '../metadata';
+import { AIMetadata } from '../types';
 import { cacheMetadata, getCachedMetadata, logTokenUsage } from './ai-utils';
 
 /**
@@ -9,15 +11,12 @@ import { cacheMetadata, getCachedMetadata, logTokenUsage } from './ai-utils';
  * @param config AI 配置（可选）
  * @returns 提取的 metadata，如果失败则返回 null
  */
-export async function callAIForMetadata(
-  content: string,
-  filePath: string
-): Promise<AIMetadata | null> {
+async function callAIForMetadata(content: string, filePath: string): Promise<AIMetadata | null> {
   // API key 检查现在在 services/openai.ts 中处理
   // 如果 API key 不存在，completeMessages 函数会抛出错误
 
   try {
-    const metadata = await extractMetadataFromMarkdown(content, filePath);
+    const metadata = await extractMetadataFromMarkdown(content);
 
     // 打印 tokens 使用情况
     if (metadata.tokens_used) {
@@ -73,37 +72,27 @@ async function batchCallAI(
 }
 
 /**
- * 批量处理文件
- * @param files 文件信息数组
- * @param config AI 配置（可选）
+ * 运行 AI 元数据提取
  */
-export async function batchProcessAI(files: FileInfo[]): Promise<Map<string, any>> {
+export async function runAIMetadataExtraction(): Promise<void> {
+  const { files } = MetaData;
+
+  if (MetaData.options.verbose) console.log(`🤖 Running AI metadata extraction...`);
   console.log(`🤖 Processing ${files.length} files with AI...`);
 
-  const filesToProcess = files.filter(file => file.hash && !file.aiMetadata);
-  if (filesToProcess.length === 0) {
-    console.log('📚 All files already have AI metadata or no files to process');
-    return new Map();
-  }
-
-  // 准备数据
-  const fileData = filesToProcess.map(file => ({
-    content: file.content,
-    path: file.path,
-    hash: file.hash!,
-  }));
-
-  // 批量处理
-  const results = await batchCallAI(fileData);
-
-  // 更新文件信息
-  for (const file of filesToProcess) {
-    const metadata = results.get(file.path);
-    if (metadata) {
-      file.aiMetadata = metadata;
+  for (const file of files) {
+    try {
+      if (file.metadata) {
+        console.info(`ℹ️ Skipping ${file.path}, already has metadata`);
+        continue;
+      }
+      const content = await readFile(file.path, 'utf-8');
+      file.metadata = await extractMetadataFromMarkdown(content);
+      console.log(`✅ Extracted AI metadata for ${file.path}`, file.metadata.tokens_used);
+    } catch (error) {
+      console.error(`⚠️ Failed to process file ${file.path}:`, error);
     }
   }
 
-  console.log(`✅ AI processing completed for ${results.size} files`);
-  return results;
+  console.log(`✅ AI processing completed for ${files.length} files`);
 }

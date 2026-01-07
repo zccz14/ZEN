@@ -1,35 +1,21 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { loadMetaData, saveMetaData } from '../metadata';
-import { ZEN_DIR, ZEN_DIST_DIR, ZEN_SRC_DIR } from '../paths';
-import { batchProcessAI } from '../process/ai-client';
-import { convertScannedFiles } from '../process/markdown';
-import { batchRenderAndSave } from '../process/template';
+import { translateMarkdown } from '../ai/translateMarkdown';
+import { loadMetaData, MetaData, saveMetaData } from '../metadata';
+import { INPUT_DIR, ZEN_DIR, ZEN_DIST_DIR, ZEN_SRC_DIR } from '../paths';
+import { runAIMetadataExtraction } from '../process/ai-client';
+import { renderTemplates } from '../process/template';
 import { scanMarkdownFiles } from '../scan/files';
-import { generateNavigation } from '../scan/navigation';
-import { batchTranslateFiles } from '../translate/index';
-import { BuildOptions, FileInfo, NavigationItem, ScannedFile } from '../types';
+import { BuildOptions, ScannedFile } from '../types';
 
 /**
  * 验证构建配置
  */
-export async function validateConfig(options: BuildOptions): Promise<BuildOptions> {
-  const { srcDir, outDir, verbose = false } = options;
-
-  // 验证源目录
-  try {
-    await fs.access(srcDir);
-  } catch (error) {
-    throw new Error(`Source directory does not exist: ${srcDir}`);
-  }
-
-  // 确保输出目录存在
-  await fs.mkdir(outDir, { recursive: true });
+async function validateConfig(options: BuildOptions): Promise<void> {
+  const { verbose = false } = options;
 
   if (verbose) {
     console.log(`🚀 Starting ZEN build...`);
-    console.log(`📁 Source: ${srcDir}`);
-    console.log(`📁 Output: ${outDir}`);
     console.log(`🔗 Base URL: ${options.baseUrl || '(not set)'}`);
     if (options.langs && options.langs.length > 0) {
       console.log(`🌐 Target languages: ${options.langs.join(', ')}`);
@@ -37,80 +23,47 @@ export async function validateConfig(options: BuildOptions): Promise<BuildOption
     console.log(`🔍 Verbose mode enabled`);
   }
 
-  return options;
+  MetaData.options = options;
 }
 
 /**
  * 扫描源文件
  */
-async function scanSourceFiles(
-  options: BuildOptions
-): Promise<BuildOptions & { scannedFiles: ScannedFile[] }> {
-  const { srcDir, verbose = false } = options;
+async function scanSourceFiles(): Promise<{ scannedFiles: ScannedFile[] }> {
+  const verbose = MetaData.options.verbose;
 
   if (verbose) console.log(`🔍 Scanning source directory...`);
-  const scannedFiles = await scanMarkdownFiles(srcDir);
+  const scannedFiles = await scanMarkdownFiles(INPUT_DIR);
 
   if (scannedFiles.length === 0) {
-    console.warn(`⚠️ No Markdown files found in ${srcDir}`);
-    return { ...options, scannedFiles: [] };
+    console.warn(`⚠️ No Markdown files found in ${INPUT_DIR}`);
+    return { scannedFiles: [] };
   }
 
   if (verbose) console.log(`✅ Found ${scannedFiles.length} Markdown files`);
 
-  return { ...options, scannedFiles };
-}
-
-/**
- * 处理 Markdown 文件
- */
-async function processMarkdownFilesStep(
-  options: BuildOptions & { scannedFiles: ScannedFile[] }
-): Promise<BuildOptions & { files: FileInfo[] }> {
-  const { srcDir, scannedFiles, verbose = false } = options;
-
-  if (verbose) console.log(`📄 Reading and converting Markdown files...`);
-  const files = await convertScannedFiles(scannedFiles, srcDir);
-
-  if (files.length === 0) {
-    console.warn(`⚠️ Failed to read any Markdown files`);
-    return { ...options, files: [] };
+  if (scannedFiles.length === 0) {
+    console.warn(`⚠️ No Markdown files found in ${INPUT_DIR}`);
   }
 
-  return { ...options, files };
-}
-
-/**
- * 运行 AI 元数据提取
- */
-export async function runAIMetadataExtraction(
-  options: BuildOptions & { files: FileInfo[] }
-): Promise<BuildOptions & { files: FileInfo[] }> {
-  const { files, verbose = false } = options;
-
-  if (verbose) console.log(`🤖 Running AI metadata extraction...`);
-  const metadataMap = await batchProcessAI(files);
-
-  // 将 AI 元数据添加到文件信息中
-  const updatedFiles = files.map(file => ({
-    ...file,
-    aiMetadata: metadataMap.get(file.path) || file.aiMetadata,
-  }));
-
-  return { ...options, files: updatedFiles };
+  return { scannedFiles };
 }
 
 /**
  * 存储母语文件到 .zen/src
  */
-async function storeNativeFiles(files: FileInfo[], verbose = false): Promise<void> {
-  for (const file of files) {
-    const filePath = path.join(ZEN_SRC_DIR, file.path);
-    const dirPath = path.dirname(filePath);
-
+async function storeNativeFiles(): Promise<void> {
+  const {
+    options: { verbose },
+    files,
+  } = MetaData;
+  for (const file of MetaData.files) {
     try {
-      await fs.mkdir(dirPath, { recursive: true });
-      await fs.writeFile(filePath, file.content, 'utf-8');
+      if (!file.hash) throw new Error(`Missing hash`);
+      if (!file.metadata.inferred_lang) throw new Error(`Missing inferred language`);
+      const filePath = path.join(ZEN_SRC_DIR, file.metadata.inferred_lang, file.hash);
+      await fs.mkdir(path.dirname(filePath), { recursive: true });
+      await fs.copyFile(path.join(INPUT_DIR, file.path), filePath);
     } catch (error) {
       console.warn(`⚠️ Failed to store native file ${file.path}:`, error);
     }
@@ -124,81 +77,50 @@ async function storeNativeFiles(files: FileInfo[], verbose = false): Promise<voi
 /**
  * 处理翻译
  */
-async function processTranslations(
-  files: FileInfo[],
-  langs: string[],
-  verbose = false
-): Promise<Map<string, Map<string, string>>> {
-  const translationResults = new Map<string, Map<string, string>>();
+async function processTranslations(): Promise<void> {
+  const {
+    files,
+    options: { langs = [], verbose },
+  } = MetaData;
 
-  for (const lang of langs) {
-    if (verbose) console.log(`🌐 Translating to ${lang}...`);
-
-    try {
-      const translatedMap = await batchTranslateFiles(files, 'zh-Hans', lang);
-      translationResults.set(lang, translatedMap);
-
-      // 存储翻译文件到 .zen/src/{lang}
-      const zenSrcLangDir = path.join(process.cwd(), '.zen', 'src', lang);
-
-      for (const [filePath, translatedContent] of translatedMap) {
-        const targetPath = path.join(zenSrcLangDir, filePath);
-        const dirPath = path.dirname(targetPath);
-
-        await fs.mkdir(dirPath, { recursive: true });
-        await fs.writeFile(targetPath, translatedContent, 'utf-8');
-      }
-
-      if (verbose) {
-        console.log(`✅ Translated ${translatedMap.size} files to ${lang}`);
-      }
-    } catch (error) {
-      console.error(`❌ Failed to translate to ${lang}:`, error);
-    }
-  }
-
-  return translationResults;
-}
-
-/**
- * 生成导航
- */
-async function generateNavigationStep(
-  options: BuildOptions & { files: FileInfo[] }
-): Promise<BuildOptions & { files: FileInfo[]; navigation: NavigationItem[] }> {
-  const { files, baseUrl, verbose = false } = options;
-
-  if (verbose) console.log(`🗺️ Generating navigation...`);
-  const navigation = generateNavigation(files);
-
-  return { ...options, files, navigation };
-}
-
-/**
- * 渲染模板并保存文件
- */
-async function renderTemplates(
-  options: BuildOptions & { files: FileInfo[]; navigation: NavigationItem[] }
-): Promise<BuildOptions> {
-  const { files, navigation, outDir, template, langs, verbose = false } = options;
-
-  if (verbose) console.log(`⚡ Processing files...`);
-
-  // 处理母语文件
-  await batchRenderAndSave(files, navigation, outDir, undefined, template);
-
-  // 处理翻译文件（如果有）
-  if (langs && langs.length > 0) {
+  for (const file of files) {
+    if (verbose) console.info(`📄 Processing file for translation: ${file.path}`);
     for (const lang of langs) {
-      if (verbose) console.log(`🌐 Rendering ${lang} version...`);
+      if (verbose) console.log(`🌐 Translating to ${lang}...`);
+      // 存储翻译文件到 .zen/src/{lang}
+      const targetPath = path.join(ZEN_SRC_DIR, lang, file.hash + '.md');
 
-      // 这里需要从 .zen/src/{lang} 读取翻译后的文件
-      // 为了简化，我们暂时只渲染母语版本
-      // 实际实现需要读取翻译文件并处理
+      try {
+        const content = await fs.readFile(path.join(INPUT_DIR, file.path), 'utf-8');
+        if (file.metadata.inferred_lang === lang) {
+          if (verbose)
+            console.log(`ℹ️ Skipping translation for ${file.path}, already in target language`);
+          continue;
+        } else {
+          // 翻译
+          // 先检查是否已经有翻译文件存在
+
+          const exists = await fs.access(targetPath).then(
+            () => true,
+            () => false
+          );
+          if (exists) {
+            if (verbose) console.log(`ℹ️ Translation already exists for ${file.path} in ${lang}`);
+            continue;
+          }
+        }
+
+        const translatedContent = await translateMarkdown(content, '', lang);
+
+        await fs.mkdir(path.dirname(targetPath), { recursive: true });
+        await fs.writeFile(targetPath, translatedContent, 'utf-8');
+
+        if (verbose) console.log(`✅ Translated file saved: ${targetPath}`);
+      } catch (error) {
+        console.error(`❌ Failed to translate to ${lang}:`, error);
+      }
     }
   }
-
-  return options;
 }
 
 /**
@@ -206,7 +128,7 @@ async function renderTemplates(
  */
 async function buildPipeline(options: BuildOptions): Promise<void> {
   // 验证配置
-  const validatedOptions = await validateConfig(options);
+  await validateConfig(options);
 
   // 清理输出目录
   await fs.rm(ZEN_DIST_DIR, { recursive: true, force: true });
@@ -215,34 +137,19 @@ async function buildPipeline(options: BuildOptions): Promise<void> {
   await fs.writeFile(path.join(ZEN_DIR, '.gitignore'), 'dist\n', 'utf-8');
 
   // 扫描源文件
-  const scanResult = await scanSourceFiles(validatedOptions);
-  if (scanResult.scannedFiles.length === 0) {
-    console.warn(`⚠️ No Markdown files found in ${validatedOptions.srcDir}`);
-  }
-
-  // 处理 Markdown 文件
-  const processResult = await processMarkdownFilesStep(scanResult);
-  if (processResult.files.length === 0) {
-    console.warn(`⚠️ Failed to read any Markdown files`);
-    return;
-  }
+  await scanSourceFiles();
 
   // 运行 AI 元数据提取
-  const aiResult = await runAIMetadataExtraction(processResult);
+  await runAIMetadataExtraction();
 
   // 存储母语文件
-  await storeNativeFiles(aiResult.files, aiResult.verbose);
+  await storeNativeFiles();
 
-  // 处理翻译（如果指定了目标语言）
-  if (aiResult.langs && aiResult.langs.length > 0) {
-    await processTranslations(aiResult.files, aiResult.langs, aiResult.verbose);
-  }
-
-  // 生成导航
-  const navigationResult = await generateNavigationStep(aiResult);
+  // 处理翻译
+  await processTranslations();
 
   // 渲染模板
-  await renderTemplates(navigationResult);
+  await renderTemplates();
 }
 
 /**

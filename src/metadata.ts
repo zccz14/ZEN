@@ -1,33 +1,16 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { ZEN_META_PATH } from './paths';
-import { AIMetadata } from './types';
-
-/**
- * 单个文件的元数据缓存项
- */
-export interface FileMetaData {
-  hash: string;
-  path: string;
-  metadata: AIMetadata;
-  lastUpdated: string;
-}
-
-/**
- * .zen/meta.json 文件结构
- */
-export interface MetaDataStore {
-  version: string;
-  timestamp: string;
-  files: FileMetaData[];
-}
+import { AIMetadata, MetaDataStore } from './types';
 
 /**
  * 全局 MetaDataStore 单例
  */
 export const MetaData: MetaDataStore = {
+  // 稍后覆盖
   version: '1.0.0',
   timestamp: new Date().toISOString(),
+  options: {},
   files: [],
 };
 

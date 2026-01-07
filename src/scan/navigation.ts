@@ -1,3 +1,4 @@
+import { MetaData } from '../metadata';
 import { NavigationItem, FileInfo } from '../types';
 import * as path from 'path';
 
@@ -63,9 +64,7 @@ function addFileToNavigation(
 
     // 生成标题（对于 Markdown 文件优先使用提取的标题）
     const title =
-      isMarkdownFile && file.metadata?.title
-        ? file.metadata.title
-        : formatTitle(displayName);
+      isMarkdownFile && file.metadata?.title ? file.metadata.title : formatTitle(displayName);
 
     // 生成路径
     const rawPath = isMarkdownFile
@@ -141,26 +140,6 @@ function findNavigationItem(
 }
 
 /**
- * 从文件信息生成导航结构（纯函数）
- * @param files 文件信息数组
- * @param baseUrl 基础URL（可选）
- * @returns 生成的导航树
- */
-export function generateNavigation(files: FileInfo[], baseUrl: string = ''): NavigationItem[] {
-  // 按路径排序
-  const sortedFiles = [...files].sort((a, b) => a.path.localeCompare(b.path));
-
-  // 构建树形结构
-  const root: NavigationItem[] = [];
-
-  for (const file of sortedFiles) {
-    addFileToNavigation(root, file, baseUrl);
-  }
-
-  return root;
-}
-
-/**
  * 生成扁平化导航（所有页面在同一层级）
  * @param files 文件信息数组
  * @param baseUrl 基础URL（可选）
@@ -226,7 +205,10 @@ export function generateBreadcrumbs(
  * @param baseUrl 基础URL
  * @returns 站点地图 XML 字符串
  */
-export function generateSitemapXml(files: FileInfo[], baseUrl: string = 'https://example.com'): string {
+export function generateSitemapXml(
+  files: FileInfo[],
+  baseUrl: string = 'https://example.com'
+): string {
   const urls = files
     .map(file => {
       const path = `/${file.path.replace(/\.md$/, '.html')}`;
@@ -248,17 +230,6 @@ ${urls}
 }
 
 /**
- * 生成 JSON 格式的导航数据（用于前端动态加载）
- * @param files 文件信息数组
- * @param baseUrl 基础URL（可选）
- * @returns JSON 字符串
- */
-export function generateNavigationJson(files: FileInfo[], baseUrl: string = ''): string {
-  const navigation = generateNavigation(files, baseUrl);
-  return JSON.stringify(navigation, null, 2);
-}
-
-/**
  * 生成 HTML 导航菜单
  * @param navigation 导航树
  * @param currentPath 当前路径（可选，用于高亮当前页面）
@@ -274,16 +245,18 @@ export function generateNavigationHtml(
     }
 
     const indent = '  '.repeat(level);
-    const html = items.map(item => {
-      const isActive = currentPath === item.path;
-      const activeClass = isActive ? ' class="active"' : '';
-      const childrenHtml = item.children ? renderItems(item.children, level + 1) : '';
+    const html = items
+      .map(item => {
+        const isActive = currentPath === item.path;
+        const activeClass = isActive ? ' class="active"' : '';
+        const childrenHtml = item.children ? renderItems(item.children, level + 1) : '';
 
-      return `${indent}<li class="nav-item">
+        return `${indent}<li class="nav-item">
 ${indent}  <a href="${item.path}"${activeClass} class="nav-link">${item.title}</a>
 ${childrenHtml ? `${indent}  <ul class="nav-submenu">\n${childrenHtml}${indent}  </ul>` : ''}
 ${indent}</li>`;
-    }).join('\n');
+      })
+      .join('\n');
 
     return html;
   }

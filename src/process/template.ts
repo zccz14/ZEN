@@ -1,6 +1,8 @@
-import { TemplateData, NavigationItem, FileInfo } from '../types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { ZEN_DIST_DIR } from '../paths';
+import { FileInfo, NavigationItem, TemplateData } from '../types';
+import { MetaData } from '../metadata';
 
 /**
  * 默认模板（纯字符串常量）
@@ -426,20 +428,15 @@ export function generateTemplateData(
  * @param hash 文件哈希（可选）
  * @returns 输出文件路径
  */
-export function getOutputPath(
-  fileInfo: FileInfo,
-  outDir: string,
-  lang?: string,
-  hash?: string
-): string {
+export function getOutputPath(fileInfo: FileInfo, lang?: string, hash?: string): string {
   if (lang && hash) {
     // 多语言模式：.zen/dist/{lang}/{hash}.html
-    return path.join(outDir, lang, `${hash}.html`);
+    return path.join(ZEN_DIST_DIR, lang, `${hash}.html`);
   } else {
     // 传统模式：保持目录结构
     const htmlFileName = `${fileInfo.name}.html`;
     const relativeDir = path.dirname(fileInfo.path);
-    return path.join(outDir, relativeDir, htmlFileName);
+    return path.join(ZEN_DIST_DIR, relativeDir, htmlFileName);
   }
 }
 
@@ -468,15 +465,14 @@ export async function saveRenderedHtml(html: string, outputPath: string): Promis
 export async function batchRenderAndSave(
   files: FileInfo[],
   navigation: NavigationItem[],
-  outDir: string,
   lang?: string,
   templatePath?: string
 ): Promise<void> {
-  const promises = files.map(async (fileInfo) => {
+  const promises = files.map(async fileInfo => {
     try {
       const templateData = generateTemplateData(fileInfo, navigation, lang);
       const html = await renderTemplateWithData(templateData, templatePath);
-      const outputPath = getOutputPath(fileInfo, outDir, lang, fileInfo.hash);
+      const outputPath = getOutputPath(fileInfo, lang, fileInfo.hash);
       await saveRenderedHtml(html, outputPath);
       console.log(`✅ Rendered: ${outputPath}`);
     } catch (error) {
@@ -485,4 +481,29 @@ export async function batchRenderAndSave(
   });
 
   await Promise.all(promises);
+}
+/**
+ * 渲染模板并保存文件
+ */
+export async function renderTemplates(): Promise<void> {
+  const {
+    files,
+    options: { template, langs, verbose = false },
+  } = MetaData;
+
+  if (verbose) console.log(`⚡ Processing files...`);
+
+  // 处理母语文件
+  // await batchRenderAndSave(files, navigation, undefined, template);
+
+  // 处理翻译文件（如果有）
+  if (langs && langs.length > 0) {
+    for (const lang of langs) {
+      if (verbose) console.log(`🌐 Rendering ${lang} version...`);
+
+      // 这里需要从 .zen/src/{lang} 读取翻译后的文件
+      // 为了简化，我们暂时只渲染母语版本
+      // 实际实现需要读取翻译文件并处理
+    }
+  }
 }

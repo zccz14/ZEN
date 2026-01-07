@@ -1,6 +1,24 @@
+/**
+ * 单个文件的元数据缓存项
+ */
+export interface FileMetaData {
+  hash: string;
+  path: string;
+  metadata: AIMetadata;
+  lastUpdated: string;
+}
+
+/**
+ * .zen/meta.json 文件结构
+ */
+export interface MetaDataStore {
+  version: string;
+  timestamp: string;
+  options: BuildOptions;
+  files: FileMetaData[];
+}
+
 export interface BuildOptions {
-  srcDir: string;
-  outDir: string;
   template?: string;
   watch?: boolean;
   verbose?: boolean;

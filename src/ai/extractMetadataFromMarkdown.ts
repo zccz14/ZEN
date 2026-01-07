@@ -4,15 +4,9 @@ import { AIMetadata } from '../types';
 /**
  * 从 markdown 内容中提取 metadata
  * @param content Markdown 内容
- * @param filePath 文件路径（用于日志）
  * @returns Promise<AIMetadata> 提取的元数据，失败时抛出错误
  */
-export async function extractMetadataFromMarkdown(
-  content: string,
-  filePath: string
-): Promise<AIMetadata> {
-  console.log(`🤖 Extracting AI metadata for: ${filePath}`);
-
+export async function extractMetadataFromMarkdown(content: string): Promise<AIMetadata> {
   const prompt = buildMetadataPrompt(content);
   const messages: OpenAIMessage[] = [
     {

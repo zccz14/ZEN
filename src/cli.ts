@@ -42,8 +42,6 @@ class BuildCommand extends Command {
   async execute() {
     try {
       await buildSite({
-        srcDir: process.cwd(),
-        outDir: path.join(process.cwd(), '.zen', 'dist'),
         template: this.template ? path.resolve(this.template) : undefined,
         verbose: this.verbose,
         baseUrl: this.baseUrl,

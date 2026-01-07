@@ -2,6 +2,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { FileInfo, MarkdownProcessor, ScannedFile } from '../types';
 import { convertMarkdownToHtml } from '../utils/convertMarkdownToHtml';
+import { MetaData } from '../metadata';
 
 /**
  * 从内容中提取标题（纯函数）
@@ -80,47 +81,4 @@ async function processMarkdownFile(
     html,
     metadata: { title }, // 只保留标题作为 metadata
   };
-}
-
-/**
- * 从扫描的文件列表读取内容并转换
- * @param scannedFiles 扫描到的文件列表
- * @param baseDir 基础目录路径
- * @param processors Markdown 处理器数组
- * @returns 转换后的文件信息数组
- */
-export async function convertScannedFiles(
-  scannedFiles: ScannedFile[],
-  baseDir: string = '',
-  processors: MarkdownProcessor[] = []
-): Promise<FileInfo[]> {
-  const files: FileInfo[] = [];
-
-  for (const scannedFile of scannedFiles) {
-    try {
-      // 构建绝对路径
-      const absolutePath = baseDir ? path.join(baseDir, scannedFile.path) : scannedFile.path;
-      const content = await fs.readFile(absolutePath, 'utf-8');
-
-      // 创建 FileInfo 对象
-      const fileInfo: FileInfo = {
-        path: scannedFile.path,
-        name: scannedFile.name,
-        ext: scannedFile.ext,
-        content: content,
-        hash: scannedFile.hash,
-        metadata: {
-          title: extractTitle(content),
-        },
-      };
-
-      // 转换文件
-      const processedFile = await processMarkdownFile(fileInfo, processors);
-      files.push(processedFile);
-    } catch (error) {
-      console.error(`Failed to read or convert file ${scannedFile.path}:`, error);
-    }
-  }
-
-  return files;
 }
