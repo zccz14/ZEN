@@ -3,15 +3,10 @@ import { completeMessages, OpenAIMessage } from '../services/openai';
 /**
  * 将 markdown 翻译为指定的语言
  * @param content Markdown 内容
- * @param sourceLang 源语言代码（例如：zh-Hans, en-US）
  * @param targetLang 目标语言代码（例如：zh-Hans, en-US）
  * @returns Promise<string> 翻译后的 Markdown 内容
  */
-export async function translateMarkdown(
-  content: string,
-  sourceLang: string,
-  targetLang: string
-): Promise<string> {
+export async function translateMarkdown(content: string, targetLang: string): Promise<string> {
   const messages: OpenAIMessage[] = [
     {
       role: 'system',

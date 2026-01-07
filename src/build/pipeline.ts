@@ -147,7 +147,7 @@ async function processTranslations(): Promise<void> {
           }
         }
 
-        const translatedContent = await translateMarkdown(content, '', lang);
+        const translatedContent = await translateMarkdown(content, lang);
 
         await fs.mkdir(path.dirname(targetPath), { recursive: true });
         await fs.writeFile(targetPath, translatedContent, 'utf-8');
