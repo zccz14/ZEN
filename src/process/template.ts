@@ -31,10 +31,15 @@ function generateLanguageSwitcher(templateData: TemplateData): string {
     .join('');
 
   return `<div class="language-switcher">
-    <span class="lang-label">Language:</span>
     <ul class="lang-list">${items}</ul>
   </div>`;
 }
+
+const generateTagsHtml = (tags: string[]): string => {
+  return `<ul class="tags-list">${tags
+    .map(tag => `<li class="tag-item">${tag}</li>`)
+    .join('')}</ul>`;
+};
 
 /**
  * 生成导航 HTML
@@ -113,16 +118,16 @@ async function renderTemplate(template: string, data: TemplateData): Promise<str
   // 替换元数据变量
   if (frontmatter) {
     result = result.replace(/{{summary}}/g, frontmatter.summary || '');
-    result = result.replace(/{{tags}}/g, frontmatter.tags?.join(', ') || '');
-    result = result.replace(/{{inferred_date}}/g, frontmatter.inferred_date || '');
-    result = result.replace(/{{inferred_lang}}/g, frontmatter.inferred_lang || '');
+    result = result.replace(/{{tags}}/g, generateTagsHtml(frontmatter.tags || []));
+    result = result.replace(/{{inferred_date}}/g, frontmatter.inferred_date || '--');
+    result = result.replace(/{{inferred_lang}}/g, frontmatter.inferred_lang || '--');
   }
 
   // 替换语言相关变量
   result = result.replace(/{{lang}}/g, data.lang || '');
   if (langs && langs.length > 1 && data.lang) {
     const langSwitcher = generateLanguageSwitcher(data);
-    result = result.replace('{{language_switcher}}', langSwitcher);
+    result = result.replace(/{{language_switcher}}/g, langSwitcher);
   }
 
   return result;

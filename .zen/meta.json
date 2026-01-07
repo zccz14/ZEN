@@ -2,7 +2,6 @@
   "version": "1.0.0",
   "options": {
     "verbose": true,
-    "baseUrl": "/ZEN",
     "langs": [
       "zh-Hans",
       "en-US",

@@ -84,6 +84,14 @@
         margin-top: 0.25rem;
       }
 
+      blockquote {
+        border-left: 4px solid #007bff;
+        padding: 0.5rem 1rem;
+        margin: 1rem 0;
+        background: #f8f9fa;
+        color: #495057;
+      }
+
       .content {
         flex: 1;
         margin-left: 280px;
@@ -217,6 +225,47 @@
         text-align: center;
       }
 
+      .language-switcher {
+        margin-top: 2rem;
+        text-align: center;
+      }
+
+      .lang-list {
+        list-style: none;
+        padding: 0;
+        /* display: flex; */
+        /* justify-content: center; */
+        /* flex-wrap: wrap; */
+        gap: 1rem;
+      }
+
+      .lang-item a {
+        color: #495057;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .lang-item.active a {
+        font-weight: 700;
+        color: #007bff;
+      }
+
+      .tags-list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .tag-item {
+        background: #e9ecef;
+        color: #495057;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+      }
+
       @media (max-width: 768px) {
         body {
           flex-direction: column;
@@ -243,18 +292,24 @@
   </head>
   <body>
     <nav class="sidebar">
-      <div class="sidebar-header">
+      <!-- <div class="sidebar-header">
         <h1>ZEN Documentation</h1>
         <p>A minimalist Markdown documentation site builder</p>
-      </div>
+      </div> -->
       {{navigation}}
+      <hr />
       <div>{{language_switcher}}</div>
     </nav>
 
     <main class="content">
       <header class="content-header">
-        <h1>{{title}}</h1>
+        <h2>{{title}}</h2>
+        <blockquote>{{summary}}</blockquote>
+        <div>📅 {{inferred_date}}</div>
+        <div class="tags">{{tags}}</div>
       </header>
+
+      <hr />
 
       <article class="content-body">{{content}}</article>
 
