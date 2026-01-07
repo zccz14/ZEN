@@ -1,26 +1,14 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { loadMetaData, saveMetaData } from '../metadata';
 import { ZEN_DIR, ZEN_DIST_DIR, ZEN_SRC_DIR } from '../paths';
 import { batchProcessAI } from '../process/ai';
 import { convertScannedFiles } from '../process/markdown';
 import { batchRenderAndSave } from '../process/template';
-import { saveScanResult, scanMarkdownFiles } from '../scan/files';
+import { scanMarkdownFiles } from '../scan/files';
 import { generateNavigation } from '../scan/navigation';
 import { batchTranslateFiles } from '../translate/index';
 import { BuildOptions, FileInfo, NavigationItem, ScannedFile } from '../types';
-
-/**
- * 简单的函数组合工具
- */
-function compose<T>(...fns: Array<(arg: T) => T | Promise<T>>): (arg: T) => Promise<T> {
-  return async (arg: T) => {
-    let result = arg;
-    for (const fn of fns) {
-      result = await fn(result);
-    }
-    return result;
-  };
-}
 
 /**
  * 验证构建配置
@@ -69,12 +57,6 @@ async function scanSourceFiles(
   }
 
   if (verbose) console.log(`✅ Found ${scannedFiles.length} Markdown files`);
-
-  // 保存扫描结果到 .zen/dist 目录
-  const zenDistDir = path.join(path.dirname(options.outDir), 'dist');
-  const scanResultPath = path.join(zenDistDir, 'scan-result.json');
-  if (verbose) console.log(`💾 Saving scan result to ${scanResultPath}...`);
-  await saveScanResult(scannedFiles, scanResultPath);
 
   return { ...options, scannedFiles };
 }
@@ -220,40 +202,6 @@ async function renderTemplates(
 }
 
 /**
- * 复制静态资源
- */
-async function copyStaticAssets(srcDir: string, outDir: string): Promise<void> {
-  const staticDir = path.join(srcDir, 'static');
-
-  try {
-    await fs.access(staticDir);
-    const staticOutDir = path.join(outDir, 'static');
-
-    // 递归复制目录
-    async function copyDir(src: string, dest: string) {
-      await fs.mkdir(dest, { recursive: true });
-      const entries = await fs.readdir(src, { withFileTypes: true });
-
-      for (const entry of entries) {
-        const srcPath = path.join(src, entry.name);
-        const destPath = path.join(dest, entry.name);
-
-        if (entry.isDirectory()) {
-          await copyDir(srcPath, destPath);
-        } else {
-          await fs.copyFile(srcPath, destPath);
-        }
-      }
-    }
-
-    await copyDir(staticDir, staticOutDir);
-    console.log(`📁 Copied static assets from ${staticDir} to ${staticOutDir}`);
-  } catch (error) {
-    // 静态目录不存在，忽略
-  }
-}
-
-/**
  * 构建管道（函数组合）
  */
 async function buildPipeline(options: BuildOptions): Promise<void> {
@@ -296,9 +244,6 @@ async function buildPipeline(options: BuildOptions): Promise<void> {
 
   // 渲染模板
   await renderTemplates(navigationResult);
-
-  // 复制静态资源
-  await copyStaticAssets(navigationResult.srcDir, navigationResult.outDir);
 }
 
 /**
@@ -308,6 +253,7 @@ export async function buildSite(options: BuildOptions): Promise<void> {
   const startTime = Date.now();
 
   try {
+    await loadMetaData();
     await buildPipeline(options);
 
     const endTime = Date.now();
@@ -316,5 +262,7 @@ export async function buildSite(options: BuildOptions): Promise<void> {
   } catch (error) {
     console.error(`❌ Build failed:`, error);
     throw error;
+  } finally {
+    await saveMetaData();
   }
 }

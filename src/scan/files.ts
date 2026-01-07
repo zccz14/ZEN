@@ -54,24 +54,6 @@ export async function scanMarkdownFiles(dirPath: string): Promise<ScannedFile[]>
 }
 
 /**
- * 保存扫描结果到文件
- * @param files 扫描到的文件列表
- * @param outputPath 输出文件路径
- */
-export async function saveScanResult(files: ScannedFile[], outputPath: string): Promise<void> {
-  // 确保输出目录存在
-  await fs.mkdir(path.dirname(outputPath), { recursive: true });
-
-  // 将扫描结果保存为 JSON
-  const scanResult = {
-    timestamp: new Date().toISOString(),
-    files,
-  };
-
-  await fs.writeFile(outputPath, JSON.stringify(scanResult, null, 2), 'utf-8');
-}
-
-/**
  * 从文件加载扫描结果
  * @param inputPath 输入文件路径
  * @returns 加载的文件列表，如果加载失败则返回空数组

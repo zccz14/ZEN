@@ -83,7 +83,6 @@ export async function getCachedMetadata(
   filePath: string
 ): Promise<AIMetadata | null> {
   try {
-    await loadMetaData();
     const cachedFile = MetaData.files.find(f => f.hash === fileHash);
 
     if (cachedFile) {
@@ -115,8 +114,6 @@ export async function cacheMetadata(
   metadata: AIMetadata
 ): Promise<void> {
   try {
-    await loadMetaData();
-
     // 查找是否已存在相同 hash 的缓存（文件移动情况）
     const sameHashIndex = MetaData.files.findIndex(f => f.hash === fileHash);
 
@@ -157,7 +154,6 @@ export async function cacheMetadata(
       });
     }
 
-    await saveMetaData();
     console.log(`💾 Cached AI metadata for: ${filePath}`);
   } catch (error) {
     console.warn(`⚠️ Failed to cache metadata:`, error);
@@ -169,7 +165,6 @@ export async function cacheMetadata(
  */
 export async function cleanupCache(maxAgeDays: number = 30): Promise<void> {
   try {
-    await loadMetaData();
     const cutoffTime = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
     const originalCount = MetaData.files.length;
 
@@ -181,7 +176,6 @@ export async function cleanupCache(maxAgeDays: number = 30): Promise<void> {
 
     const cleanedCount = originalCount - MetaData.files.length;
     if (cleanedCount > 0) {
-      await saveMetaData();
       console.log(`🧹 Cleaned ${cleanedCount} expired AI metadata entries`);
     }
   } catch (error) {
@@ -195,7 +189,6 @@ export async function cleanupCache(maxAgeDays: number = 30): Promise<void> {
  */
 export async function removeOrphanEntries(existingFilePaths: string[]): Promise<void> {
   try {
-    await loadMetaData();
     const originalCount = MetaData.files.length;
 
     // 创建现有文件路径的 Set 用于快速查找
@@ -208,7 +201,6 @@ export async function removeOrphanEntries(existingFilePaths: string[]): Promise<
 
     const removedCount = originalCount - MetaData.files.length;
     if (removedCount > 0) {
-      await saveMetaData();
       console.log(`🗑️ Removed ${removedCount} orphan AI metadata entries`);
     }
   } catch (error) {
