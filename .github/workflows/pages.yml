@@ -33,6 +33,9 @@ jobs:
           node-version: '24.x'
           cache: 'npm'
 
+      - name: Install dependencies
+        run: npm install
+
       - name: Create documentation site
         run: |
           npm run build:doc
