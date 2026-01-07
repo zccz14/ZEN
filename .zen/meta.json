@@ -2,6 +2,7 @@
   "version": "1.0.0",
   "options": {
     "verbose": true,
+    "baseUrl": "/ZEN",
     "langs": ["zh-Hans", "en-US", "es-ES", "pt-PT", "ja-JP", "de-DE", "fr-FR", "ru-RU", "ko-KR"]
   },
   "files": [
