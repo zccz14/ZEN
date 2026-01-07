@@ -13,7 +13,6 @@ export interface FileMetaData {
  */
 export interface MetaDataStore {
   version: string;
-  timestamp: string;
   options: BuildOptions;
   files: FileMetaData[];
 }

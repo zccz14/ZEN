@@ -61,7 +61,7 @@ async function storeNativeFiles(): Promise<void> {
     try {
       if (!file.hash) throw new Error(`Missing hash`);
       if (!file.metadata.inferred_lang) throw new Error(`Missing inferred language`);
-      const filePath = path.join(ZEN_SRC_DIR, file.metadata.inferred_lang, file.hash);
+      const filePath = path.join(ZEN_SRC_DIR, file.metadata.inferred_lang, file.hash + '.md');
       await fs.mkdir(path.dirname(filePath), { recursive: true });
       await fs.copyFile(path.join(INPUT_DIR, file.path), filePath);
     } catch (error) {

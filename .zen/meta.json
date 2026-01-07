@@ -1,6 +1,9 @@
 {
   "version": "1.0.0",
-  "timestamp": "2026-01-06T01:27:03.804Z",
+  "options": {
+    "verbose": true,
+    "langs": ["zh-Hans", "en-US"]
+  },
   "files": [
     {
       "hash": "1b798c44a4f353e47296ca83d5905e37e6aba3e90bbd9bc3b3d34fc12059a2ca",
@@ -8,15 +11,7 @@
       "metadata": {
         "title": "ZEN - Markdown 文档站点构建工具",
         "summary": "ZEN 是一个极简的静态站点生成工具，专注于将 Markdown 文件夹构建为 HTML 站点，支持智能导航和 AI 驱动的增量翻译，强调内容优先和跨语言支持，无需复杂配置。",
-        "tags": [
-          "Markdown",
-          "静态站点生成",
-          "AI 翻译",
-          "极简主义",
-          "多语言",
-          "文档工具",
-          "ZEN"
-        ],
+        "tags": ["Markdown", "静态站点生成", "AI 翻译", "极简主义", "多语言", "文档工具", "ZEN"],
         "inferred_lang": "zh-Hans",
         "tokens_used": {
           "prompt": 650,
@@ -32,15 +27,7 @@
       "metadata": {
         "title": "ZEN 高级用法指南",
         "summary": "本文档介绍了 ZEN 的高级功能，包括自定义 HTML 模板、配置选项（如源目录、输出目录、模板、基础 URL 和多语言支持）以及插件系统，帮助用户扩展和定制 ZEN 工具。",
-        "tags": [
-          "ZEN",
-          "高级用法",
-          "自定义模板",
-          "配置选项",
-          "插件系统",
-          "文档生成",
-          "多语言支持"
-        ],
+        "tags": ["ZEN", "高级用法", "自定义模板", "配置选项", "插件系统", "文档生成", "多语言支持"],
         "inferred_lang": "zh-Hans",
         "tokens_used": {
           "prompt": 464,
@@ -105,11 +92,7 @@
       "metadata": {
         "title": "Test Document",
         "summary": "这是一个测试文档，内容为空，仅包含标题。",
-        "tags": [
-          "测试",
-          "文档",
-          "示例"
-        ],
+        "tags": ["测试", "文档", "示例"],
         "inferred_lang": "en-US",
         "tokens_used": {
           "prompt": 265,
@@ -125,14 +108,7 @@
       "metadata": {
         "title": "GitHub Pages 部署配置",
         "summary": "本文档介绍了 ZEN 项目文档站点的 GitHub Pages 部署配置，包括工作流程、触发条件、构建步骤、自定义配置、故障排除和手动触发方法。",
-        "tags": [
-          "GitHub Pages",
-          "部署配置",
-          "工作流程",
-          "文档构建",
-          "故障排除",
-          "ZEN 项目"
-        ],
+        "tags": ["GitHub Pages", "部署配置", "工作流程", "文档构建", "故障排除", "ZEN 项目"],
         "inferred_lang": "zh-Hans",
         "tokens_used": {
           "prompt": 1091,
@@ -148,15 +124,7 @@
       "metadata": {
         "title": "ZEN 文档站点最佳实践",
         "summary": "本文档介绍了使用 ZEN 构建文档站点的最佳实践，涵盖多语言管理、性能优化、部署策略、维护建议、常见问题解决方案和高级技巧，旨在帮助用户高效开发和维护文档。",
-        "tags": [
-          "ZEN",
-          "文档站点",
-          "最佳实践",
-          "性能优化",
-          "部署策略",
-          "多语言管理",
-          "维护建议"
-        ],
+        "tags": ["ZEN", "文档站点", "最佳实践", "性能优化", "部署策略", "多语言管理", "维护建议"],
         "inferred_lang": "zh-Hans",
         "tokens_used": {
           "prompt": 1282,
@@ -172,14 +140,7 @@
       "metadata": {
         "title": "ZEN 配置指南",
         "summary": "本文档介绍了 ZEN 工具的配置和使用方法，包括基本命令如构建文档、实时预览和启动开发服务器，以及命令行选项如 --watch、--serve 和 --port 的详细说明。",
-        "tags": [
-          "ZEN",
-          "配置指南",
-          "命令行",
-          "文档构建",
-          "开发服务器",
-          "极简主义"
-        ],
+        "tags": ["ZEN", "配置指南", "命令行", "文档构建", "开发服务器", "极简主义"],
         "inferred_lang": "zh-Hans",
         "tokens_used": {
           "prompt": 669,
@@ -189,5 +150,6 @@
       },
       "lastUpdated": "2026-01-06T01:27:03.804Z"
     }
-  ]
+  ],
+  "timestamp": "2026-01-07T09:59:57.948Z"
 }

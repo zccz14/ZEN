@@ -9,7 +9,6 @@ import { AIMetadata, MetaDataStore } from './types';
 export const MetaData: MetaDataStore = {
   // 稍后覆盖
   version: '1.0.0',
-  timestamp: new Date().toISOString(),
   options: {},
   files: [],
 };
@@ -28,7 +27,6 @@ export async function loadMetaData(): Promise<void> {
   } catch (error) {
     // 如果文件不存在，初始化默认值
     MetaData.version = '1.0.0';
-    MetaData.timestamp = new Date().toISOString();
     MetaData.files = [];
   }
 }
@@ -40,9 +38,6 @@ export async function saveMetaData(): Promise<void> {
   // 确保 .zen 目录存在
   const zenDir = path.dirname(ZEN_META_PATH);
   await fs.mkdir(zenDir, { recursive: true });
-
-  // 更新时间戳
-  MetaData.timestamp = new Date().toISOString();
 
   // 保存文件
   await fs.writeFile(ZEN_META_PATH, JSON.stringify(MetaData, null, 2), 'utf-8');
