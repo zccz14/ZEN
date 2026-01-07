@@ -6,21 +6,6 @@
   },
   "files": [
     {
-      "hash": "1b798c44a4f353e47296ca83d5905e37e6aba3e90bbd9bc3b3d34fc12059a2ca",
-      "path": "README.md",
-      "metadata": {
-        "title": "ZEN - Markdown 文档站点构建工具",
-        "summary": "ZEN 是一个极简的静态站点生成工具，专注于将 Markdown 文件夹构建为 HTML 站点，支持智能导航和 AI 驱动的增量翻译，强调内容优先和跨语言支持，无需复杂配置。",
-        "tags": ["Markdown", "静态站点生成", "AI 翻译", "极简主义", "多语言", "文档工具", "ZEN"],
-        "inferred_lang": "zh-Hans",
-        "tokens_used": {
-          "prompt": 650,
-          "completion": 124,
-          "total": 774
-        }
-      }
-    },
-    {
       "hash": "5ec990146b35e00de2630559126ee07f7cdcddeb23b0e8cab3d85b4181353e26",
       "path": "docs/advanced-usage.md",
       "metadata": {
@@ -130,6 +115,21 @@
           "prompt": 265,
           "completion": 58,
           "total": 323
+        }
+      }
+    },
+    {
+      "hash": "04319611d7cde718d0e82da8e034e04b15fb3bb37c3784d8f7313577c5178b06",
+      "path": "README.md",
+      "metadata": {
+        "title": "ZEN - Markdown 文档站点构建工具",
+        "summary": "ZEN 是一个极简的 Markdown 静态站点生成工具，专注于内容写作，利用 AI 处理翻译和导航，支持多语言构建，无需复杂配置。",
+        "tags": ["Markdown", "静态站点生成器", "AI 翻译", "多语言", "极简主义", "文档工具", "ZEN"],
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 1008,
+          "completion": 115,
+          "total": 1123
         }
       }
     }
