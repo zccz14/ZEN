@@ -292,6 +292,56 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css"
     />
+    <!-- Mermaid.js for diagram rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.min.js"></script>
+    <style>
+      /* Mermaid diagram styles */
+      .mermaid-diagram {
+        margin: 1.5rem 0;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #fff;
+      }
+
+      .mermaid-placeholder {
+        padding: 2rem;
+        background: #f8f9fa;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      }
+
+      .mermaid-loading {
+        color: #6c757d;
+        font-style: italic;
+        font-size: 0.875rem;
+      }
+
+      .mermaid-error {
+        color: #dc3545;
+        padding: 1rem;
+        background: #f8d7da;
+        border-radius: 4px;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      .mermaid-source {
+        display: none;
+      }
+
+      /* Ensure Mermaid diagrams are responsive */
+      .mermaid-diagram svg {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
   </head>
   <body>
     <nav class="sidebar">
@@ -327,6 +377,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
     <script>
       hljs.highlightAll();
+    </script>
+    <!-- Mermaid initialization -->
+    <script>
+      (function () {
+        // Wait for page to fully load
+        window.addEventListener('load', function () {
+          // Initialize Mermaid with default configuration
+          if (typeof mermaid !== 'undefined') {
+            mermaid.initialize({
+              startOnLoad: false,
+              theme: 'default',
+              securityLevel: 'strict',
+              flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+              },
+              sequence: {
+                useMaxWidth: true,
+                diagramMarginX: 50,
+                diagramMarginY: 10,
+                actorMargin: 50,
+              },
+              gantt: {
+                useMaxWidth: true,
+                barHeight: 20,
+                barGap: 4,
+              },
+            });
+          }
+        });
+      })();
     </script>
   </body>
 </html>

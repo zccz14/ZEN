@@ -2,6 +2,7 @@
   "version": "1.0.0",
   "options": {
     "verbose": true,
+    "baseUrl": "/ZEN",
     "langs": [
       "zh-Hans",
       "en-US",
@@ -49,6 +50,23 @@
           "prompt": 1038,
           "completion": 163,
           "total": 1201
+        }
+      }
+    },
+    {
+      "hash": "50bf41ac6fd8ec8cd6481fd1114aaf00abed0461fc8e8c81cc0373d38ffa835c",
+      "path": "docs/test-mermaid.md",
+      "links": [],
+      "metadata": {
+        "title": "Mermaid 图表测试文档",
+        "summary": "该文档是一个测试文件，用于验证 ZEN 中的 Mermaid 图表渲染功能。它包含了多种 Mermaid 图表类型的示例，如流程图、序列图、甘特图、类图、状态图和饼图，并包括一个错误语法测试以检查错误信息显示。文档旨在展示 Mermaid 集成在 ZEN 中的正常工作状态。",
+        "tags": ["Mermaid", "图表测试", "ZEN", "流程图", "序列图", "甘特图", "类图", "状态图"],
+        "inferred_date": "2024-01-01",
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 899,
+          "completion": 156,
+          "total": 1055
         }
       }
     },
