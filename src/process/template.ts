@@ -109,7 +109,7 @@ async function renderTemplate(template: string, data: TemplateData): Promise<str
 
   // 替换导航
   const navigationHtml = await generateNavigationHtml(data);
-  result = result.replace('{{navigation}}', navigationHtml);
+  result = result.replace(/{{navigation}}/g, navigationHtml);
 
   // 替换其他变量 - 使用全局替换
   result = result.replace(/{{title}}/g, frontmatter.title || 'Untitled');
