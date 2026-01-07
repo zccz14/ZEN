@@ -1,6 +1,6 @@
 {
   "name": "zengen",
-  "version": "0.1.36",
+  "version": "0.2.0",
   "description": "ZEN - A minimalist Markdown documentation site builder",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
