@@ -56,6 +56,14 @@ export async function scanSourceFiles(): Promise<void> {
   }
   // 移除不再存在的文件元数据
   MetaData.files = MetaData.files.filter(f => hashes.has(f.hash));
+  // 按路径降序排序 (通常外层目录优先)
+  MetaData.files.sort(
+    (a, b) =>
+      // 第一级按目录排序
+      path.dirname(a.path).localeCompare(path.dirname(b.path)) ||
+      // 第二级按文件名排序
+      a.path.localeCompare(b.path)
+  );
 
   console.log(`✅ Found ${MetaData.files.length} Markdown files`);
 

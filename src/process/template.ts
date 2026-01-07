@@ -69,19 +69,18 @@ async function generateNavigationHtml(data: TemplateData): Promise<string> {
 
       return {
         title,
-        path: link,
+        link,
         isActive: data.file.hash === file.hash,
       };
     })
   );
-  navigation.sort((a, b) => b.path.localeCompare(a.path));
 
   return `<ul class="nav-list">${navigation
     .map(item => {
       const activeClass = item.isActive ? 'active' : '';
 
       let html = `<li class="nav-item">`;
-      html += `<a href="${item.path}" class="nav-link ${activeClass}">${item.title}</a>`;
+      html += `<a href="${item.link}" class="nav-link ${activeClass}">${item.title}</a>`;
 
       html += `</li>`;
       return html;
