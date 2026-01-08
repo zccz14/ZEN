@@ -14,7 +14,7 @@ export async function extractMetadataByAI(): Promise<void> {
   await Promise.all(
     files.map(async file => {
       try {
-        if (file.metadata) {
+        if (file.metadata && file.metadata.slug) {
           console.info(`ℹ️ Skipping ${file.path}, already has metadata`);
           return;
         }

@@ -1,6 +1,6 @@
 {
   "name": "czon",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "CZone - A minimalist Markdown documentation site builder",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

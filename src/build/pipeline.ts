@@ -2,7 +2,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { translateMarkdown } from '../ai/translateMarkdown';
 import { loadMetaData, MetaData, saveMetaData } from '../metadata';
-import { INPUT_DIR, CZON_DIR, CZON_DIST_DIR, CZON_SRC_DIR } from '../paths';
+import { CZON_DIR, CZON_DIST_DIR, CZON_SRC_DIR, INPUT_DIR } from '../paths';
 import { extractMetadataByAI } from '../process/extractMetadataByAI';
 import { scanSourceFiles } from '../process/scanSourceFiles';
 import { renderTemplates } from '../process/template';
@@ -45,8 +45,7 @@ async function storeNativeFiles(): Promise<void> {
         title: file.metadata.title,
         summary: file.metadata.summary,
         tags: file.metadata.tags,
-        inferred_date: file.metadata.inferred_date,
-        inferred_lang: file.metadata.inferred_lang,
+        date: file.metadata.inferred_date,
       });
       await fs.mkdir(path.dirname(filePath), { recursive: true });
 

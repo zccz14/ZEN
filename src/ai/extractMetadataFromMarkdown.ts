@@ -57,14 +57,16 @@ ${truncatedContent}
 请提取：
 1. title: 文档的标题（简洁明了，不超过 30 个字）
 2. summary: 文档摘要（控制在 300 字以内，概括主要内容）
-3. tags: 关键词列表（3-8 个关键词，使用中文或英文）
-4. inferred_date: 文档中隐含的创建日期（如果有的话，格式：YYYY-MM-DD，没有就留空字符串）
-5. inferred_lang: 文档使用的语言代码（例如：zh-Hans 表示简体中文，en-US 表示美式英语）
+3. slug: URL 友好别名（使用小写字母、数字和连字符，仅包含英文和数字）
+4. tags: 关键词列表（3-8 个关键词，使用中文或英文）
+5. inferred_date: 文档中隐含的创建日期（如果有的话，格式：YYYY-MM-DD，没有就留空字符串）
+6. inferred_lang: 文档使用的语言代码（例如：zh-Hans 表示简体中文，en-US 表示美式英语）
 
 请严格按照以下 JSON 格式返回，不要包含任何其他文本：
 {
   "title": "文档标题",
   "summary": "文档摘要...",
+  "slug": "URL 友好别名",
   "tags": ["关键词1", "关键词2", "关键词3"],
   "inferred_date": "2023-01-01",
   "inferred_lang": "zh-Hans"
@@ -82,6 +84,7 @@ function parseMetadataResponse(responseContent: string): AIMetadata {
     return {
       title: metadata.title?.trim() || '未命名文档',
       summary: metadata.summary?.trim() || '',
+      slug: metadata.slug?.trim() || '',
       tags: Array.isArray(metadata.tags)
         ? metadata.tags.map((tag: string) => tag.trim()).filter(Boolean)
         : [],

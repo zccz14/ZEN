@@ -26,6 +26,7 @@ export interface BuildOptions {
 export interface AIMetadata {
   title: string; // AI 提取的标题
   summary: string; // AI 提取的摘要，控制在 100字以内
+  slug: string; // AI 提取的 URL 友好别名
   tags: string[]; // AI 提取的关键字
   inferred_date?: string; // 正文中隐含的文档创建日期，没有就留空
   inferred_lang: string; // 文章使用的语言，例如 zh-Hans 或者 en-US

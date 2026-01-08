@@ -6,6 +6,7 @@ import { CZON_DIST_DIR, CZON_SRC_DIR } from '../paths';
 import { MetaDataStore } from '../types';
 import { convertMarkdownToHtml } from '../utils/convertMarkdownToHtml';
 import { parseFrontmatter } from '../utils/frontmatter';
+import { writeFile } from '../utils/writeFile';
 
 /**
  * 生成语言切换器 HTML
@@ -24,7 +25,7 @@ function generateLanguageSwitcher(templateData: TemplateData): string {
       const isCurrent = lang === templateData.lang;
       const activeClass = isCurrent ? 'active' : '';
 
-      const link = path.join('..', lang, templateData.file.hash + '.html');
+      const link = path.join('..', lang, templateData.file.metadata!.slug + '.html');
 
       return `<li class="lang-item ${activeClass}">
         <a href="${link}" class="lang-link">${langName}</a>
@@ -62,7 +63,7 @@ async function generateNavigationHtml(data: TemplateData): Promise<string> {
       const title = frontmatter.title || file.metadata?.title || file.path; // 优先使用提取的标题
 
       // 使用相对链接
-      const link = file.hash + '.html';
+      const link = file.metadata!.slug + '.html';
 
       return {
         title,
@@ -143,8 +144,7 @@ async function renderTemplate(template: string, data: TemplateData): Promise<str
   if (frontmatter) {
     result = result.replace(/{{summary}}/g, frontmatter.summary || '');
     result = result.replace(/{{tags}}/g, generateTagsHtml(frontmatter.tags || []));
-    result = result.replace(/{{inferred_date}}/g, frontmatter.inferred_date || '--');
-    result = result.replace(/{{inferred_lang}}/g, frontmatter.inferred_lang || '--');
+    result = result.replace(/{{date}}/g, frontmatter.date || '--');
   }
 
   // 替换语言相关变量
@@ -195,7 +195,6 @@ export async function renderTemplates(): Promise<void> {
   for (const file of files) {
     for (const lang of langs || []) {
       console.info(`📄 Preparing file for language: ${file.path} [${file.hash}] [${lang}]`);
-      const targetPath = path.join(CZON_DIST_DIR, lang, file.hash + '.html');
       const content = await fs.readFile(path.join(CZON_SRC_DIR, lang, file.hash + '.md'), 'utf-8');
       try {
         const html = await renderTemplate(layoutTemplate, {
@@ -203,9 +202,10 @@ export async function renderTemplates(): Promise<void> {
           content,
           lang,
         });
-        await fs.mkdir(path.dirname(targetPath), { recursive: true });
-        await fs.writeFile(targetPath, html, 'utf-8');
-        if (verbose) console.log(`✅ Rendered: ${targetPath}`);
+
+        if (file.metadata?.slug) {
+          await writeFile(path.join(CZON_DIST_DIR, lang, file.metadata.slug + '.html'), html);
+        }
       } catch (error) {
         console.error(`❌ Failed to render ${file.path}:`, error);
       }
@@ -215,8 +215,10 @@ export async function renderTemplates(): Promise<void> {
   for (const lang of langs || []) {
     await renderRedirectTemplate(
       path.join(lang, 'index.html'),
-      path.join(lang, files[0].hash + '.html')
+      path.join(lang, files[0].metadata!.slug + '.html')
     );
   }
   await renderRedirectTemplate('index.html', path.join(langs?.[0] || 'en-US', 'index.html'));
+  // 404 页面重定向到首页
+  await renderRedirectTemplate('404.html', 'index.html');
 }
