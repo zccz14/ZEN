@@ -33,7 +33,7 @@
   },
   "files": [
     {
-      "hash": "98a9dd72146a69d155030cb7286ea2d10e0521451de9754cbdfcde46c46f2c71",
+      "hash": "6e7ca196ba51235db30218cf9b28f92d35937b09a22411062be088a0086b29ed",
       "path": "README.md",
       "links": [
         "https://zen.zccz14.com/",
@@ -42,13 +42,13 @@
       ],
       "metadata": {
         "title": "ZEN - 极简主义 Markdown + AI 静态站点构建器",
-        "summary": "ZEN 是一个结合 AI 功能的静态站点生成器，专为 Markdown 文档设计。它允许用户将包含 Markdown 文件的 Git 文件夹转换为静态 HTML 站点，无需复杂配置，所有设置隐藏在 .zen 目录中。核心功能包括智能分类导航（使用 AI 分析内容生成站点地图）、自动增量翻译（支持多语言版本，用户可用母语写作，AI 处理翻译），以及最小化打扰的写作体验。快速开始指南要求安装 Node.js、获取 OpenAI API Key 和 Git，通过命令行构建站点，支持指定语言和基础 URL。",
-        "tags": ["静态站点生成器", "Markdown", "AI", "多语言翻译", "极简主义", "文档工具", "Git"],
+        "summary": "ZEN 是一个结合 AI 的静态站点生成器，专注于简化文档写作和构建过程。它允许用户使用 Markdown 在 git 管理的文件夹中创建静态 HTML 站点，无需复杂配置，所有设置隐藏在 .zen 目录下。核心功能包括智能分类导航（通过 AI 分析内容生成站点地图）、自动增量翻译（支持多语言版本，用户可用母语写作，AI 处理翻译），以及最小化打扰的写作体验。工具依赖 Node.js、OpenAI API Key 和 Git，通过命令行快速构建，支持指定语言参数如 zh-Hans 和 en-US。",
+        "tags": ["静态站点生成器", "Markdown", "AI", "多语言翻译", "极简主义", "文档工具", "ZEN"],
         "inferred_lang": "zh-Hans",
         "tokens_used": {
-          "prompt": 1036,
-          "completion": 207,
-          "total": 1243
+          "prompt": 1011,
+          "completion": 212,
+          "total": 1223
         }
       }
     },

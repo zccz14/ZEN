@@ -22,7 +22,6 @@ class BuildCommand extends Command {
 
   template = Option.String('-t,--template');
   verbose = Option.Boolean('-v,--verbose');
-  baseUrl = Option.String('--base-url');
   lang = Option.Array('--lang', {
     description: 'Target languages for translation (e.g., en-US, ja-JP)',
   });
@@ -44,7 +43,6 @@ class BuildCommand extends Command {
       await buildSite({
         template: this.template ? path.resolve(this.template) : undefined,
         verbose: this.verbose,
-        baseUrl: this.baseUrl,
         langs: this.lang,
       });
 

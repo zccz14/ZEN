@@ -17,7 +17,6 @@ async function validateConfig(options: BuildOptions): Promise<void> {
 
   if (verbose) {
     console.log(`🚀 Starting ZEN build...`);
-    console.log(`🔗 Base URL: ${options.baseUrl || '(not set)'}`);
     if (options.langs && options.langs.length > 0) {
       console.log(`🌐 Target languages: ${options.langs.join(', ')}`);
     }

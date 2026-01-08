@@ -15,7 +15,7 @@ import { parseFrontmatter } from '../utils/frontmatter';
  */
 function generateLanguageSwitcher(templateData: TemplateData): string {
   const {
-    options: { langs = [], baseUrl = '/' },
+    options: { langs = [] },
   } = MetaData;
 
   const items = langs
@@ -50,10 +50,7 @@ const generateTagsHtml = (tags: string[]): string => {
  * @returns 导航 HTML 字符串
  */
 async function generateNavigationHtml(data: TemplateData): Promise<string> {
-  const {
-    files,
-    options: { baseUrl = '/' },
-  } = MetaData;
+  const { files } = MetaData;
 
   const navigation = await Promise.all(
     files.map(async file => {
@@ -161,10 +158,7 @@ async function renderTemplate(template: string, data: TemplateData): Promise<str
 }
 
 const renderRedirectTemplate = async (from: string, to: string): Promise<void> => {
-  const {
-    options: { baseUrl = '/' },
-  } = MetaData;
-  const toURL = path.join(baseUrl, to);
+  const toURL = path.relative(path.dirname(from), to);
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
