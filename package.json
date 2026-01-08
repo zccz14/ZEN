@@ -1,6 +1,6 @@
 {
   "name": "zengen",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "ZEN - A minimalist Markdown documentation site builder",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -59,6 +59,7 @@
     "express": "^4.21.2",
     "highlight.js": "^11.11.1",
     "marked": "^17.0.1",
+    "marked-katex-extension": "^5.1.6",
     "minimatch": "^10.1.1",
     "yaml": "^2.8.2"
   }

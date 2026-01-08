@@ -53,6 +53,22 @@
       }
     },
     {
+      "hash": "579c3a203225b8b7aead541f42381de0619d8bc1d451d0d9c3267dbc74205503",
+      "path": "docs/test-katex.md",
+      "links": [],
+      "metadata": {
+        "title": "KaTeX 公式显示效果测试",
+        "summary": "该文档是一个用于测试KaTeX公式显示效果的示例，包含多个行内和块级数学公式，如E=mc^2、积分、导数、级数、分段函数、表格、矩阵等，旨在验证公式的正确渲染。",
+        "tags": ["KaTeX", "公式测试", "数学公式", "LaTeX", "显示效果", "文档示例"],
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 552,
+          "completion": 118,
+          "total": 670
+        }
+      }
+    },
+    {
       "hash": "50bf41ac6fd8ec8cd6481fd1114aaf00abed0461fc8e8c81cc0373d38ffa835c",
       "path": "docs/test-mermaid.md",
       "links": [],
