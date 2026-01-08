@@ -1,6 +1,6 @@
 # Mermaid 图表测试
 
-这是一个测试文件，用于验证 ZEN 中的 Mermaid 图表渲染功能。
+这是一个测试文件，用于验证 CZON 中的 Mermaid 图表渲染功能。
 
 ## 流程图示例
 
@@ -102,4 +102,4 @@ graph TD
     C --> D
 ```
 
-这个测试文件包含了多种 Mermaid 图表类型，用于验证 ZEN 的 Mermaid 集成是否正常工作。
+这个测试文件包含了多种 Mermaid 图表类型，用于验证 CZON 的 Mermaid 集成是否正常工作。

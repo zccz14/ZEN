@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { ZEN_META_PATH } from './paths';
+import { CZON_META_PATH } from './paths';
 import { MetaDataStore } from './types';
 
 /**
@@ -18,8 +18,8 @@ export const MetaData: MetaDataStore = {
  */
 export async function loadMetaData(): Promise<void> {
   try {
-    await fs.access(ZEN_META_PATH);
-    const content = await fs.readFile(ZEN_META_PATH, 'utf-8');
+    await fs.access(CZON_META_PATH);
+    const content = await fs.readFile(CZON_META_PATH, 'utf-8');
     const newData = JSON.parse(content);
 
     // 使用 Object.assign 保持同一个对象引用
@@ -35,10 +35,6 @@ export async function loadMetaData(): Promise<void> {
  * 将 MetaData 写入 store
  */
 export async function saveMetaData(): Promise<void> {
-  // 确保 .zen 目录存在
-  const zenDir = path.dirname(ZEN_META_PATH);
-  await fs.mkdir(zenDir, { recursive: true });
-
-  // 保存文件
-  await fs.writeFile(ZEN_META_PATH, JSON.stringify(MetaData, null, 2), 'utf-8');
+  await fs.mkdir(path.dirname(CZON_META_PATH), { recursive: true });
+  await fs.writeFile(CZON_META_PATH, JSON.stringify(MetaData, null, 2), 'utf-8');
 }

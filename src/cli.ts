@@ -30,11 +30,11 @@ class BuildCommand extends Command {
     description: 'Build documentation site from Markdown files in current directory',
     details: `
       This command builds a documentation site from Markdown files in the current directory.
-      The output will be placed in the .zen/dist directory.
+      The output will be placed in the .czon/dist directory.
 
       Examples:
-        $ zengen build
-        $ zengen build --lang en-US --lang ja-JP (translate to English and Japanese)
+        $ czon build
+        $ czon build --lang en-US --lang ja-JP (translate to English and Japanese)
     `,
   });
 
@@ -56,8 +56,8 @@ class BuildCommand extends Command {
 
 // 创建 CLI 应用
 const cli = new Cli({
-  binaryName: 'zengen',
-  binaryLabel: 'ZEN - A minimalist Markdown documentation site builder',
+  binaryName: 'czon',
+  binaryLabel: 'CZON - A minimalist Markdown documentation site builder',
   binaryVersion: getVersion(),
 });
 

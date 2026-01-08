@@ -6,7 +6,7 @@ const execAsync = promisify(exec);
 /**
  * 使用git命令查找所有Markdown文件
  * 使用git ls-files --others --cached --exclude-standard获取所有文件
- * 然后过滤掉.zen目录和只保留.md文件
+ * 然后过滤掉.czon目录和只保留.md文件
  *
  * @param dirPath 要扫描的目录路径
  * @returns Promise<string[]> 返回Markdown文件的相对路径数组
@@ -23,7 +23,7 @@ export const findMarkdownEntries = async (dirPath: string): Promise<string[]> =>
     const files = stdout
       .split('\n')
       .filter(line => line.trim() !== '') // 移除空行
-      .filter(file => !file.startsWith('.zen')) // 过滤掉.zen目录下的文件
+      .filter(file => !file.startsWith('.czon')) // 过滤掉.czon目录下的文件
       .filter(file => file.endsWith('.md')); // 只保留.md文件
 
     return files;

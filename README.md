@@ -1,6 +1,6 @@
-# ZEN - 极简主义 Markdown + AI 静态站点构建器
+# CZON - 极简主义 Markdown + AI 静态站点构建器
 
-[> Website Demo](https://zen.zccz14.com/)
+[> Website Demo](https://czon.zccz14.com/)
 
 ## 基本功能
 
@@ -16,7 +16,7 @@
 
   其一，我不想做图书管理员。我有时想写下一些内容，但我可能还没有想好它的标题，还没有形成特别的组织。我希望 LLM 会自动帮我生成标题、做摘要、分类、导航等整理工作。
 
-  其二，我的书房必须打扫干净。我不想要配置复杂的构建工具，折腾复杂的文档配置，不喜欢复杂的结构。每次我看到 Docusaurus、VuePress、Astro 这些工具的配置文件和项目结构，我就头疼。现在，ZEN 选择将所有的配置都隐藏到 .zen 目录下，扫到角落里，用户只需要专注于写作内容，其他的交给 ZEN 来处理。其他的目录都是您的写作空间，您可以随意组织您的 Markdown 文件。
+  其二，我的书房必须打扫干净。我不想要配置复杂的构建工具，折腾复杂的文档配置，不喜欢复杂的结构。每次我看到 Docusaurus、VuePress、Astro 这些工具的配置文件和项目结构，我就头疼。现在，CZON 选择将所有的配置都隐藏到 .czon 目录下，扫到角落里，用户只需要专注于写作内容，其他的交给 CZON 来处理。其他的目录都是您的写作空间，您可以随意组织您的 Markdown 文件。
 
 - 回归母语：用母语写作，丝滑构建多语言版本
 
@@ -40,17 +40,17 @@ export OPENAI_BASE_URL="https://api.openai.com/v1"  # 可选，默认使用 Open
 export OPENAI_MODEL="gpt-3.5-turbo"  # 可选，默认使用 gpt-3.5-turbo 模型
 ```
 
-构建站点，支持多语言翻译。使用当前目录作为源目录，输出到 `.zen/dist` 目录。
+构建站点，支持多语言翻译。使用当前目录作为源目录，输出到 `.czon/dist` 目录。
 
 - 可以通过多次使用 `--lang` 参数指定需要生成的语言版本（例如 `--lang zh-Hans --lang en-US`）。
-- 不需要配置源语言，ZEN 会自动检测。
+- 不需要配置源语言，CZON 会自动检测。
 
 ```bash
-npx zengen@latest build --lang zh-Hans --lang en-US
+npx czon@latest build --lang zh-Hans --lang en-US
 ```
 
 **查看更多参数或帮助**：
 
 ```bash
-npx zengen@latest
+npx czon@latest
 ```

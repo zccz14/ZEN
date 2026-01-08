@@ -9,7 +9,7 @@ export interface FileMetaData {
 }
 
 /**
- * .zen/meta.json 文件结构
+ * .czon/meta.json 文件结构
  */
 export interface MetaDataStore {
   version: string;

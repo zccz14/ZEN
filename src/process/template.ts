@@ -2,7 +2,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { LANGUAGE_NAMES } from '../languages';
 import { MetaData } from '../metadata';
-import { ZEN_DIST_DIR, ZEN_SRC_DIR } from '../paths';
+import { CZON_DIST_DIR, CZON_SRC_DIR } from '../paths';
 import { MetaDataStore } from '../types';
 import { convertMarkdownToHtml } from '../utils/convertMarkdownToHtml';
 import { parseFrontmatter } from '../utils/frontmatter';
@@ -55,7 +55,7 @@ async function generateNavigationHtml(data: TemplateData): Promise<string> {
   const navigation = await Promise.all(
     files.map(async file => {
       const content = await fs.readFile(
-        path.join(ZEN_SRC_DIR, data.lang, file.hash + '.md'),
+        path.join(CZON_SRC_DIR, data.lang, file.hash + '.md'),
         'utf-8'
       );
       const { frontmatter } = parseFrontmatter(content);
@@ -172,7 +172,7 @@ const renderRedirectTemplate = async (from: string, to: string): Promise<void> =
     <p>Redirecting to <a href="${toURL}">${toURL}</a></p>
 </body>
 </html>`;
-  const targetPath = path.join(ZEN_DIST_DIR, from);
+  const targetPath = path.join(CZON_DIST_DIR, from);
   await fs.mkdir(path.dirname(targetPath), { recursive: true });
   await fs.writeFile(targetPath, html, 'utf-8');
 };
@@ -195,8 +195,8 @@ export async function renderTemplates(): Promise<void> {
   for (const file of files) {
     for (const lang of langs || []) {
       console.info(`📄 Preparing file for language: ${file.path} [${file.hash}] [${lang}]`);
-      const targetPath = path.join(ZEN_DIST_DIR, lang, file.hash + '.html');
-      const content = await fs.readFile(path.join(ZEN_SRC_DIR, lang, file.hash + '.md'), 'utf-8');
+      const targetPath = path.join(CZON_DIST_DIR, lang, file.hash + '.html');
+      const content = await fs.readFile(path.join(CZON_SRC_DIR, lang, file.hash + '.md'), 'utf-8');
       try {
         const html = await renderTemplate(layoutTemplate, {
           file,
