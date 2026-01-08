@@ -1,12 +1,10 @@
 {
-  "name": "zengen",
-  "version": "0.3.2",
-  "description": "ZEN - A minimalist Markdown documentation site builder",
+  "name": "czon",
+  "version": "0.1.1",
+  "description": "CZone - A minimalist Markdown documentation site builder",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "bin": {
-    "zengen": "dist/cli.js"
-  },
+  "bin": "dist/cli.js",
   "scripts": {
     "build": "npx rimraf dist && tsc",
     "dev": "ts-node src/cli.ts",
