@@ -10,7 +10,7 @@
   "scripts": {
     "build": "npx rimraf dist && tsc",
     "dev": "ts-node src/cli.ts",
-    "build:doc": "npm run build && node dist/cli.js build --base-url /ZEN --lang zh-Hans --lang en-US --lang ja-JP --lang ko-KR --lang es-ES --lang fr-FR --lang de-DE --lang ru-RU --lang pt-PT --lang it-IT --lang nl-NL --lang pl-PL --lang sv-SE --lang fi-FI --lang da-DK --lang no-NO --lang zh-Hant --lang hi-IN --lang ar-SA --lang th-TH --lang vi-VN --lang id-ID --lang pt-BR --lang es-MX --lang tr-TR --lang uk-UA --verbose",
+    "build:doc": "npm run build && node dist/cli.js build --lang zh-Hans --lang en-US --lang ja-JP --lang ko-KR --lang es-ES --lang fr-FR --lang de-DE --lang ru-RU --lang pt-PT --lang it-IT --lang nl-NL --lang pl-PL --lang sv-SE --lang fi-FI --lang da-DK --lang no-NO --lang zh-Hant --lang hi-IN --lang ar-SA --lang th-TH --lang vi-VN --lang id-ID --lang pt-BR --lang es-MX --lang tr-TR --lang uk-UA --verbose",
     "test": "npm run build && node --test dist/**/*.test.js",
     "test:types": "tsc --noEmit",
     "test:build": "npm run build && test -f dist/index.js && test -f dist/cli.js",
