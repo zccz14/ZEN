@@ -25,7 +25,11 @@ export interface BuildOptions {
 
 export interface AIMetadata {
   title: string; // AI 提取的标题
-  summary: string; // AI 提取的摘要，控制在 100字以内
+  description: string; // AI 提取的简短描述，控制在 100字以内
+  summary: string; // AI 提取的摘要，控制在 300字以内
+  short_summary: string; // AI 提取的超短摘要，控制在 2-3 句话
+  key_points: string[]; // 文章的关键要点列表
+  audience: string; // 目标读者描述
   slug: string; // AI 提取的 URL 友好别名
   tags: string[]; // AI 提取的关键字
   inferred_date?: string; // 正文中隐含的文档创建日期，没有就留空

@@ -41,15 +41,28 @@
         "https://platform.openai.com/account/api-keys"
       ],
       "metadata": {
-        "title": "CZON - AI-Native Markdown 内容引擎",
-        "summary": "CZON 是一个 AI 驱动的 Markdown 内容引擎，旨在简化内容创作流程，让用户专注于写作。它提供自动多语言翻译、摘要提取和智能分类导航功能，通过 AI 处理标题生成、内容整理等任务，减少配置复杂性。文档介绍了其基本功能、静态站点生成能力以及快速开始指南，包括环境变量设置和构建命令。",
+        "title": "CZON - AI-Native Markdown 内容引擎介绍",
+        "description": "CZON 是一个 AI 驱动的 Markdown 内容引擎，专注于简化内容创作流程，提供自动多语言翻译、摘要提取和智能导航功能。",
+        "short_summary": "CZON 是一个 AI 驱动的 Markdown 内容引擎，专注于简化内容创作。它提供自动多语言翻译、摘要提取和智能导航，帮助用户专注于写作，减少配置和翻译的麻烦。",
+        "audience": "内容创作者、网站开发者、需要简化内容管理和多语言支持的用户",
+        "key_points": [
+          "CZON 是 AI-Native Markdown 内容引擎",
+          "自动多语言翻译，支持母语写作",
+          "自动摘要提取和智能分类导航",
+          "内置静态站点生成功能",
+          "简化配置，专注于内容创作",
+          "支持 OpenAI API 集成",
+          "适用于内容创作者和开发者",
+          "强调回归内容本质和母语写作"
+        ],
+        "summary": "CZON 是一个 AI-Native Markdown 内容引擎，旨在帮助内容创作者专注于写作，减少配置和翻译的负担。它通过 AI 自动生成标题、摘要、分类和导航，支持多语言翻译，并内置静态站点生成功能。CZON 强调回归内容本质和母语写作，简化了内容创作和发布的流程，让用户能够更高效地管理和发布内容。",
         "slug": "czon-ai-native-markdown-content-engine",
-        "tags": ["AI", "Markdown", "内容引擎", "多语言翻译", "静态站点生成", "文档工具"],
+        "tags": ["AI", "Markdown", "内容引擎", "多语言翻译", "静态站点生成", "内容创作"],
         "inferred_lang": "zh-Hans",
         "tokens_used": {
-          "prompt": 1184,
-          "completion": 166,
-          "total": 1350
+          "prompt": 1400,
+          "completion": 364,
+          "total": 1764
         }
       }
     },
@@ -59,14 +72,27 @@
       "links": [],
       "metadata": {
         "title": "KaTeX 公式显示效果测试",
-        "summary": "该文档是一个关于 KaTeX 公式显示效果的测试页面，包含多个行内和块级数学公式示例，如 E=mc^2、积分、导数、级数、分段函数、表格、矩阵等，旨在验证公式的正确渲染。",
+        "description": "本文档测试了多种 KaTeX 数学公式的显示效果，包括行内公式、块级公式、复杂公式、矩阵和表格等。",
+        "short_summary": "本文档测试了 KaTeX 数学公式的显示效果，包括行内公式、块级公式、复杂公式、矩阵和表格等。它展示了多种数学表达式的渲染示例，旨在确保公式能正确显示。",
+        "audience": "需要测试或使用 KaTeX 公式显示的技术人员、文档作者和数学内容创作者。",
+        "key_points": [
+          "测试 KaTeX 公式显示效果",
+          "包含行内公式示例",
+          "包含块级公式示例",
+          "展示复杂数学公式",
+          "包括矩阵和表格公式",
+          "验证公式正确渲染",
+          "用于文档测试目的",
+          "强调公式显示准确性"
+        ],
+        "summary": "本文档是一个 KaTeX 公式显示效果的测试页面，展示了多种数学公式的渲染示例。文档中包含了行内公式如 E=mc²，块级公式如积分和导数公式，以及复杂的求和公式、分段函数、矩阵和表格公式。每个公式都配有简要说明，旨在验证 KaTeX 在不同场景下的正确显示能力。文档以“请确保以上公式均能正确显示”结尾，强调了其测试目的。",
         "slug": "katex-formula-display-test",
-        "tags": ["KaTeX", "数学公式", "LaTeX", "公式测试", "文档测试"],
+        "tags": ["KaTeX", "数学公式", "公式测试", "LaTeX", "数学渲染", "文档测试"],
         "inferred_lang": "zh-Hans",
         "tokens_used": {
-          "prompt": 587,
-          "completion": 130,
-          "total": 717
+          "prompt": 803,
+          "completion": 354,
+          "total": 1157
         }
       }
     },
@@ -75,16 +101,31 @@
       "path": "docs/test-mermaid.md",
       "links": [],
       "metadata": {
-        "title": "Mermaid 图表测试文档",
-        "summary": "这是一个用于验证 CZON 中 Mermaid 图表渲染功能的测试文件。文档包含了多种 Mermaid 图表类型的示例，包括流程图、序列图、甘特图、类图、状态图和饼图，并提供了一个错误语法测试案例。这些示例展示了不同图表的结构和语法，旨在测试 Mermaid 集成的正常工作。文档以中文编写，内容简洁明了，适合用于功能验证和示例参考。",
-        "slug": "mermaid-chart-test",
-        "tags": ["Mermaid", "图表测试", "流程图", "序列图", "甘特图", "类图", "状态图", "饼图"],
+        "title": "Mermaid图表测试文档",
+        "description": "本文档包含多种Mermaid图表示例，用于测试CZON平台的图表渲染功能。",
+        "short_summary": "本文档提供了多种Mermaid图表示例，用于测试CZON平台的图表渲染功能。它涵盖了流程图、序列图、甘特图等常见图表类型，并包含错误语法测试。文档旨在验证CZON平台对Mermaid图表的支持，确保用户能正常创建和查看可视化内容。",
+        "audience": "CZON平台用户、开发者或对Mermaid图表感兴趣的技术人员",
+        "key_points": [
+          "文档用于测试CZON平台的Mermaid图表渲染功能",
+          "包含流程图示例，展示开始、操作、结束等流程",
+          "包含序列图示例，展示用户、系统、数据库之间的交互",
+          "包含甘特图示例，展示项目时间表和任务安排",
+          "包含类图示例，展示动物、狗、猫的继承关系",
+          "包含状态图示例，展示空闲、处理、成功、错误等状态转换",
+          "包含饼图示例，展示浏览器使用率分布",
+          "包含错误语法测试，验证错误处理机制",
+          "文档使用中文编写，语言简洁明了",
+          "目标读者是CZON平台用户或开发者"
+        ],
+        "summary": "本文档是一个测试文件，专门用于验证CZON平台中Mermaid图表的渲染功能。文档展示了流程图、序列图、甘特图、类图、状态图和饼图等多种图表类型的示例，并包含一个错误语法测试以验证错误处理机制。通过这些示例，文档旨在确保CZON平台能够正确解析和显示Mermaid图表，从而支持用户创建和分享复杂的可视化内容。文档还简要说明了测试的目的和包含的图表类型，帮助读者理解其核心价值。",
+        "slug": "mermaid-chart-test-document",
+        "tags": ["Mermaid", "图表测试", "CZON", "流程图", "序列图", "甘特图", "类图", "状态图"],
         "inferred_date": "2024-01-01",
         "inferred_lang": "zh-Hans",
         "tokens_used": {
-          "prompt": 936,
-          "completion": 184,
-          "total": 1120
+          "prompt": 1152,
+          "completion": 456,
+          "total": 1608
         }
       }
     },
@@ -93,16 +134,38 @@
       "path": "docs/tricks.md",
       "links": [],
       "metadata": {
-        "title": "CZON 文档日期声明技巧",
-        "summary": "本文档介绍了 CZON 中在正文中直接声明日期的方法，与传统 Markdown 的 YAML Frontmatter 相比，它更灵活智能，AI 会自动提取日期作为创建日期，并支持生成时间线视图，适用于日记、博客等内容。",
+        "title": "CZON文档日期声明技巧",
+        "description": "介绍CZON文档系统支持在正文中直接声明日期，相比传统Markdown的YAML Frontmatter更灵活智能，提升用户体验。",
+        "short_summary": "CZON文档系统支持在正文中直接声明日期，AI自动提取处理，比传统Markdown的YAML Frontmatter更灵活。这种方式避免了字段记忆问题，并支持生成时间线视图，适合日记和博客等内容。",
+        "audience": "使用CZON文档系统的用户、博客作者、日记记录者、内容创作者，以及对文档日期管理有需求的人群。",
+        "key_points": [
+          "CZON支持在正文中直接声明日期，格式自由",
+          "相比传统Markdown的YAML Frontmatter，避免了字段记忆问题",
+          "AI自动提取并推断正文中的日期信息",
+          "日期信息作为文档创建日期处理",
+          "方式更灵活智能，提升用户体验",
+          "具有日期的文档可生成时间线视图",
+          "适合日记、博客等需要时间线的内容类型",
+          "解决了传统方法中日期无法正确识别的风险"
+        ],
+        "summary": "本文介绍了CZON文档系统的一项使用技巧：在正文中直接声明日期。相比传统Markdown文档需要通过YAML Frontmatter声明日期（容易因忘记填写字段导致识别失败），CZON支持在正文中使用自由格式的日期声明（如“今天是2026年1月8日”），AI会自动提取并推断日期信息作为文档创建日期。这种方式更加灵活和智能，避免了Frontmatter字段记忆问题，提升了用户体验。此外，具有日期的文档可以生成时间线视图，适合日记、博客等需要时间线管理的内容类型。",
         "slug": "czon-document-date-declaration-tips",
-        "tags": ["CZON", "日期声明", "Markdown", "AI 提取", "时间线", "文档管理"],
+        "tags": [
+          "CZON",
+          "文档处理",
+          "日期声明",
+          "Markdown",
+          "AI提取",
+          "时间线",
+          "用户体验",
+          "博客工具"
+        ],
         "inferred_date": "2026-01-08",
         "inferred_lang": "zh-Hans",
         "tokens_used": {
-          "prompt": 452,
-          "completion": 148,
-          "total": 600
+          "prompt": 668,
+          "completion": 443,
+          "total": 1111
         }
       }
     }
