@@ -56,20 +56,29 @@ ${truncatedContent}
 
 请提取：
 1. title: 文档的标题（简洁明了，不超过 30 个字）
-2. summary: 文档摘要（控制在 300 字以内，概括主要内容）
-3. slug: URL 友好别名（使用小写字母、数字和连字符，仅包含英文和数字）
-4. tags: 关键词列表（3-8 个关键词，使用中文或英文）
-5. inferred_date: 文档中隐含的创建日期（如果有的话，格式：YYYY-MM-DD，没有就留空字符串）
-6. inferred_lang: 文档使用的语言代码（例如：zh-Hans 表示简体中文，en-US 表示美式英语）
+2. slug: URL 友好别名（使用小写字母、数字和连字符，仅包含英文和数字）
+3. tags: 关键词列表（3-8 个关键词，使用中文或英文）
+4. description: 文档的简短描述，微摘要（用一句话概括本文核心价值，不超过 100 字符），用于 SEO meta description，社交卡片短描述
+5. summary: 文档中型摘要（用一段话总结文章，包含关键论点和结论，控制在 300 字以内），用于 邮件推送内容，newsletter 介绍
+6. inferred_date: 文档中隐含的创建日期（如果有的话，格式：YYYY-MM-DD，没有就留空字符串）
+7. inferred_lang: 文档使用的语言代码（例如：zh-Hans 表示简体中文，en-US 表示美式英语）
+8. key_points: 文章的关键要点列表（5-10 个要点，简洁明了）
+9. audience: 目标读者描述（简短描述，50 字以内）
+10. short_summary: 文档的超短摘要（用 2-3 句话概括文章主要内容，突出核心观点），用于文章列表页摘要，RSS feed 描述
+
 
 请严格按照以下 JSON 格式返回，不要包含任何其他文本：
 {
   "title": "文档标题",
-  "summary": "文档摘要...",
+  "description": "用一句话概括本文核心价值，不超过 100 字符",
+  "summary": "中型摘要，用一段话总结文章，包含关键论点和结论",
+  "short_summary": "超短摘要，用 2-3 句话概括文章主要内容，突出核心观点",
   "slug": "URL 友好别名",
   "tags": ["关键词1", "关键词2", "关键词3"],
   "inferred_date": "2023-01-01",
-  "inferred_lang": "zh-Hans"
+  "inferred_lang": "zh-Hans",
+  "key_points": ["要点1", "要点2", "要点3"],
+  "audience": "目标读者描述"
 }`;
 }
 
@@ -83,6 +92,12 @@ function parseMetadataResponse(responseContent: string): AIMetadata {
     // 验证和清理数据
     return {
       title: metadata.title?.trim() || '未命名文档',
+      description: metadata.description?.trim() || '',
+      short_summary: metadata.short_summary?.trim() || '',
+      audience: metadata.audience?.trim() || '',
+      key_points: Array.isArray(metadata.key_points)
+        ? metadata.key_points.map((point: string) => point.trim()).filter(Boolean)
+        : [],
       summary: metadata.summary?.trim() || '',
       slug: metadata.slug?.trim() || '',
       tags: Array.isArray(metadata.tags)

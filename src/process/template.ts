@@ -173,8 +173,7 @@ const renderRedirectTemplate = async (from: string, to: string): Promise<void> =
 </body>
 </html>`;
   const targetPath = path.join(CZON_DIST_DIR, from);
-  await fs.mkdir(path.dirname(targetPath), { recursive: true });
-  await fs.writeFile(targetPath, html, 'utf-8');
+  await writeFile(targetPath, html);
 };
 
 /**
