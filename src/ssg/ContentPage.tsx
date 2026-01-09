@@ -10,12 +10,18 @@ export const ContentPage: React.FC<{
   lang: string;
   content: IRenderContext['contents'][0];
 }> = props => {
+  const frontmatter = props.content.frontmatter || {};
+  const title = frontmatter.title;
+  const summary = frontmatter.summary;
+  const date = frontmatter.date || '--';
+  const tags = frontmatter.tags || [];
+
   return (
     <html lang={props.lang}>
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{props.file.metadata!.title}</title>
+        <title>{title}</title>
         <style
           dangerouslySetInnerHTML={{
             __html: `
@@ -384,11 +390,11 @@ export const ContentPage: React.FC<{
 
         <main className="content">
           <header className="content-header">
-            <h2>{props.file.metadata!.title}</h2>
-            <blockquote>{props.file.metadata!.summary}</blockquote>
-            <div>📅 {props.file.metadata!.inferred_date || '--'}</div>
+            <h2>{title}</h2>
+            <blockquote>{summary}</blockquote>
+            <div>📅 {date}</div>
             <div className="tags">
-              <TagList tags={props.file.metadata!.tags || []} />
+              <TagList tags={tags} />
             </div>
           </header>
 
