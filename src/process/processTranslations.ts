@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { access, readFile } from 'fs/promises';
 import path from 'path';
 import { translateMarkdown } from '../ai/translateMarkdown';
 import { MetaData } from '../metadata';
@@ -43,7 +43,12 @@ export async function processTranslations(): Promise<void> {
 
             const hash = sha256(content);
 
-            if (hash === file.nativeMarkdownHash) {
+            const isTargetExists = await access(targetPath).then(
+              () => true,
+              () => false
+            );
+
+            if (hash === file.nativeMarkdownHash && isTargetExists) {
               if (verbose)
                 console.info(`ℹ️ Content unchanged for ${file.path}, skipping translation.`);
               return;
