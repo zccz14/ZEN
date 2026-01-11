@@ -9,17 +9,21 @@ export const LanguageSwitcher: React.FC<{
   file: IRenderContext['site']['files'][0];
 }> = props => {
   return (
-    <div className="language-switcher">
-      <ul className="lang-list">
+    <div aria-label="Language switcher" className="text-center my-4">
+      <ul className="lang-list grid grid-cols-2 md:grid-cols-4 gap-2 list-none p-0 m-0">
         {props.ctx.site.options.langs?.map(lang => {
           const isActive = lang === props.lang;
           const langName = LANGUAGE_NAMES[lang] || lang;
           const link = join('..', lang, `${props.file.metadata!.slug}.html`);
           return (
-            <li className={`lang-item ${isActive ? 'active' : ''}`} key={lang}>
-              <a href={link} className="lang-link">
-                {langName}
-              </a>
+            <li className={`lang-item ${isActive ? 'font-bold' : ''}`} key={lang}>
+              {isActive ? (
+                langName
+              ) : (
+                <a href={link} className="lang-link">
+                  {langName}
+                </a>
+              )}
             </li>
           );
         })}

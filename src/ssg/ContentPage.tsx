@@ -4,6 +4,31 @@ import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { Navigator } from './components/Navigator';
 import { TagList } from './components/TagList';
 
+const ContentPageLayout: React.FC<{
+  header: React.ReactNode;
+  navigator: React.ReactNode;
+  main: React.ReactNode;
+  footer: React.ReactNode;
+}> = props => {
+  return (
+    // 100% 宽度，100% 高度，垂直方向排列
+    <div className="flex flex-col w-full h-full overflow-hidden items-stretch">
+      {/* Header 由自身高度决定 */}
+      <header className="shrink-0">{props.header}</header>
+      {/* 当宽度足够时，内容进行左右分栏 */}
+      {/* 可伸缩的高度，超出的部分 scroll，左右对齐高度 */}
+      <div className="flex flex-col overflow-auto md:flex-row flex-1 md:overflow-hidden md:items-stretch">
+        {/* 宽度由自身决定 */}
+        <nav className="md:overflow-auto md:shrink-0">{props.navigator}</nav>
+        {/* 占据剩余宽度 */}
+        <main className="md:flex-1 md:overflow-auto">{props.main}</main>
+      </div>
+      {/* Footer 由自身高度决定 */}
+      <footer className="shrink-0">{props.footer}</footer>
+    </div>
+  );
+};
+
 export const ContentPage: React.FC<{
   ctx: IRenderContext;
   file: IRenderContext['site']['files'][0];
@@ -18,7 +43,7 @@ export const ContentPage: React.FC<{
   const category = props.file.category;
 
   return (
-    <html lang={props.lang}>
+    <html lang={props.lang} style={{ background: 'black', overflow: 'hidden' }}>
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,25 +52,14 @@ export const ContentPage: React.FC<{
         <style
           dangerouslySetInnerHTML={{
             __html: `
-              * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
 
       html[lang='ar-SA'] {
         direction: rtl;
       }
 
       body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        line-height: 1.6;
         color: #333;
         background: #f8f9fa;
-        display: flex;
-        align-items: stretch;
-        min-height: 100vh;
       }
 
       .sidebar {
@@ -250,30 +264,6 @@ export const ContentPage: React.FC<{
         text-align: center;
       }
 
-      .language-switcher {
-        margin-top: 2rem;
-        text-align: center;
-      }
-
-      .lang-list {
-        list-style: none;
-        padding: 0;
-        /* display: flex; */
-        /* justify-content: center; */
-        /* flex-wrap: wrap; */
-        gap: 1rem;
-      }
-
-      .lang-item a {
-        color: #495057;
-        text-decoration: none;
-        font-weight: 500;
-      }
-      .lang-item.active a {
-        font-weight: 700;
-        color: #007bff;
-      }
-
       .tags-list {
         list-style: none;
         padding: 0;
@@ -292,9 +282,6 @@ export const ContentPage: React.FC<{
       }
 
       @media (max-width: 768px) {
-        body {
-          flex-direction: column;
-        }
 
         .sidebar {
           width: 100%;
@@ -382,54 +369,57 @@ export const ContentPage: React.FC<{
         ></style>
       </head>
       <body>
-        <nav className="sidebar">
-          <Navigator ctx={props.ctx} file={props.file} lang={props.lang} />
-          <hr />
-          <div>
-            <LanguageSwitcher ctx={props.ctx} lang={props.lang} file={props.file} />
-          </div>
-        </nav>
+        <ContentPageLayout
+          header={null}
+          navigator={
+            <nav className="sidebar">
+              <Navigator ctx={props.ctx} file={props.file} lang={props.lang} />
+            </nav>
+          }
+          main={
+            <main className="content">
+              <header className="content-header">
+                <h2 className="text-2xl font-bold mb-2">{title}</h2>
+                <p className="font-semibold">{props.file.category}</p>
+                <blockquote>{summary}</blockquote>
+                <div>📅 {date}</div>
+                <div className="tags">
+                  <TagList tags={tags} />
+                </div>
+              </header>
 
-        <main className="content">
-          <header className="content-header">
-            <h2 className="text-2xl font-bold mb-2">{title}</h2>
-            <p className="font-semibold">{props.file.category}</p>
-            <blockquote>{summary}</blockquote>
-            <div>📅 {date}</div>
-            <div className="tags">
-              <TagList tags={tags} />
-            </div>
-          </header>
-
-          <div className="content-body">
-            <article dangerouslySetInnerHTML={{ __html: props.content.body }} />
-            {/* 阅读同类文章 */}
-            <h2>See Also</h2>
-            <ul>
-              {props.ctx.site.files
-                .filter(f => f.category === category && f.hash !== props.file.hash)
-                .map(f => {
-                  const theContent = props.ctx.contents.find(
-                    c => c.lang === props.lang && c.hash === f.hash
-                  );
-                  return (
-                    <li key={f.hash}>
-                      <a href={`${f.metadata?.slug}.html`}>{theContent?.frontmatter.title}</a>
-                    </li>
-                  );
-                })}
-            </ul>
-          </div>
-
-          <footer className="footer">
-            <p>
-              Generated by <strong>CZON</strong> •
-              <a href="https://github.com/zccz14/CZON" target="_blank">
-                View on GitHub
-              </a>
-            </p>
-          </footer>
-        </main>
+              <div className="content-body">
+                <article dangerouslySetInnerHTML={{ __html: props.content.body }} />
+                {/* 阅读同类文章 */}
+                <h2>See Also</h2>
+                <ul>
+                  {props.ctx.site.files
+                    .filter(f => f.category === category && f.hash !== props.file.hash)
+                    .map(f => {
+                      const theContent = props.ctx.contents.find(
+                        c => c.lang === props.lang && c.hash === f.hash
+                      );
+                      return (
+                        <li key={f.hash}>
+                          <a href={`${f.metadata?.slug}.html`}>{theContent?.frontmatter.title}</a>
+                        </li>
+                      );
+                    })}
+                </ul>
+              </div>
+              <footer className="footer">
+                <LanguageSwitcher ctx={props.ctx} lang={props.lang} file={props.file} />
+                <p>
+                  Generated by <strong>CZON</strong> •
+                  <a href="https://github.com/zccz14/CZON" target="_blank">
+                    View on GitHub
+                  </a>
+                </p>
+              </footer>
+            </main>
+          }
+          footer={null}
+        />
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
         <script dangerouslySetInnerHTML={{ __html: 'hljs.highlightAll();' }} />
