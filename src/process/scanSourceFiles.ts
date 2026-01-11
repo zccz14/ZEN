@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { access, readFile } from 'fs/promises';
 import path from 'path';
 import { findMarkdownEntries } from '../findEntries';
 import { MetaData } from '../metadata';
@@ -20,40 +20,72 @@ const extractLinksFromMarkdown = (content: string): string[] => {
  */
 export async function scanSourceFiles(): Promise<void> {
   console.log(`🔍 Scanning source directory...`);
+
+  const queue: string[] = [];
+  const isVisited = new Set<string>();
+
   const markdownFiles = await findMarkdownEntries(INPUT_DIR);
+
+  for (const filePath of markdownFiles) {
+    queue.push(filePath);
+  }
+
   const hashes = new Set<string>();
 
-  for (const relativePath of markdownFiles) {
+  while (queue.length > 0) {
+    const relativePath = queue.shift()!;
     const fullPath = path.join(INPUT_DIR, relativePath);
+    console.info(`🔍 Scanner Processing file: ${fullPath}`);
 
-    try {
-      // 检查文件是否存在
+    // 防御项目外文件访问
+    if (!fullPath.startsWith(INPUT_DIR)) {
+      console.warn(`⚠️ Skipping file outside of input directory: ${fullPath}`);
+      continue;
+    }
+    // 避免重复访问
+    if (isVisited.has(fullPath)) continue;
+    isVisited.add(fullPath);
 
-      const content = await readFile(fullPath, 'utf-8'); // 确保文件可读
+    const isExists = await access(fullPath).then(
+      () => true,
+      () => false
+    );
 
-      const hash = sha256(content);
+    if (!isExists) {
+      console.warn(`⚠️ File does not exist: ${fullPath}, skipping.`);
+      continue;
+    }
+
+    const contentBuffer = await readFile(fullPath);
+    const hash = sha256(contentBuffer);
+    hashes.add(hash);
+
+    let meta = MetaData.files.find(f => f.hash === hash);
+    if (!meta) {
+      meta = { hash, path: relativePath, links: [] };
+      MetaData.files.push(meta);
+    }
+
+    // 处理 Markdown 文件
+    if (fullPath.endsWith('.md')) {
+      const content = contentBuffer.toString('utf-8');
+
       const links = extractLinksFromMarkdown(content);
       console.info(`  - Found file: ${relativePath} (hash: ${hash})`);
       console.info(`    Links: ${links.join(', ') || 'None'}`);
+      meta.links = links;
 
-      hashes.add(hash);
-
-      const metaWithSameHash = MetaData.files.find(f => f.hash === hash);
-      if (metaWithSameHash) {
-        metaWithSameHash.path = relativePath;
-        metaWithSameHash.links = links;
-      } else {
-        // 如果没有相同哈希的元数据，则添加一个新的占位符
-        MetaData.files.push({
-          hash,
-          path: relativePath,
-          links,
-        });
+      for (const link of links) {
+        if (URL.canParse(link)) continue;
+        const resolvedPath = path.resolve(path.dirname(fullPath), link);
+        const relativePath = path.relative(INPUT_DIR, resolvedPath);
+        if (!isVisited.has(relativePath)) {
+          queue.push(relativePath);
+        }
       }
-    } catch (error) {
-      console.warn(`⚠️ File not found or inaccessible: ${fullPath}`, error);
     }
   }
+
   // 移除不再存在的文件元数据
   MetaData.files = MetaData.files.filter(f => hashes.has(f.hash));
   // 按路径降序排序 (通常外层目录优先)

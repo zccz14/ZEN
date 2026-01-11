@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { MetaData } from '../metadata';
-import { CZON_DIST_DIR, CZON_SRC_DIR } from '../paths';
+import { CZON_DIST_DIR, CZON_DIST_RAW_CONTENT_DIR, CZON_SRC_DIR } from '../paths';
 import { renderToHTML } from '../ssg';
 import { IRenderContext } from '../types';
 import { convertMarkdownToHtml } from '../utils/convertMarkdownToHtml';
@@ -24,6 +24,7 @@ export const spiderStaticSiteGenerator = async () => {
 
   // 预加载所有 Markdown 内容
   for (const file of MetaData.files) {
+    if (!file.path.endsWith('.md')) continue;
     for (const lang of MetaData.options.langs || []) {
       const markdown = await fs.readFile(path.join(CZON_SRC_DIR, lang, file.hash + '.md'), 'utf-8');
       const { frontmatter, body } = parseFrontmatter(markdown);
@@ -65,6 +66,25 @@ export const spiderStaticSiteGenerator = async () => {
         const targetPath = path.resolve('/', path.dirname(currentPath), `${slug}.html`);
         const href = path.relative(path.dirname(currentPath), targetPath);
         return `href="${href}"`;
+      }
+      return match;
+    });
+    // 替换 src 中的 czon://hash 链接
+    html = html.replace(/src="([^"]+)"/g, (match, link) => {
+      console.info(`🕷️ Processing src link: ${link} in path: ${currentPath}`);
+
+      if (link.startsWith('czon://')) {
+        const hash = link.replace('czon://', '');
+        console.info(`   🔗 Replacing internal src link for hash: ${hash}`);
+        const file = MetaData.files.find(f => f.hash === hash);
+        if (!file) {
+          console.warn(`⚠️ Src link target not found for hash ${hash} in path ${currentPath}`);
+          return match;
+        }
+        const ext = path.extname(file.path);
+        const targetPath = path.join(CZON_DIST_RAW_CONTENT_DIR, file.hash + ext);
+        const href = path.relative(path.join(CZON_DIST_DIR, path.dirname(currentPath)), targetPath);
+        return `src="${href}"`;
       }
       return match;
     });

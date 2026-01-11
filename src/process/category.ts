@@ -3,7 +3,7 @@ import { completeMessages } from '../services/openai';
 
 export const processExtractCategory = async (): Promise<void> => {
   // 如果所有文件都已经有 category，则跳过本阶段
-  const allHaveCategory = MetaData.files.every(file => file.category);
+  const allHaveCategory = MetaData.files.filter(f => f.metadata).every(file => file.category);
   if (allHaveCategory) {
     console.info('ℹ️ All files already have categories, skipping category extraction.');
     return;
@@ -33,7 +33,7 @@ export const processExtractCategory = async (): Promise<void> => {
       },
       {
         role: 'user',
-        content: JSON.stringify(MetaData.files),
+        content: JSON.stringify(MetaData.files.filter(f => f.metadata)),
       },
     ],
     { response_format: { type: 'json_object' } }

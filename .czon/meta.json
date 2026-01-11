@@ -33,31 +33,37 @@
   },
   "files": [
     {
-      "hash": "d871f4b4c1b7c36441edf7aab8f84d6cef9640b1f451aafe5565787d914f4404",
+      "hash": "3bf2cd6040060d95c43633a99e74f42293b853944580523018311c8d95d9c441",
+      "path": "logo.png",
+      "links": []
+    },
+    {
+      "hash": "f4247ffc49f4301c7db0890b68069a28f926f0bb52781591ff5ef72a1e5d1bab",
       "path": "README.md",
       "links": [
+        "logo.png",
         "https://czon.zccz14.com/",
         "https://nodejs.org/",
         "https://platform.openai.com/account/api-keys"
       ],
       "metadata": {
-        "title": "CZON - AI-Native Markdown 内容引擎介绍",
-        "description": "CZON 是一个 AI 驱动的 Markdown 内容引擎，专注于简化内容创作，提供自动翻译、摘要、分类等功能，让用户专注于写作。",
-        "short_summary": "CZON 是一个 AI 驱动的 Markdown 内容引擎，通过自动处理标题、摘要、分类和多语言翻译，简化内容创作流程。它让用户专注于写作，隐藏复杂配置，并支持静态站点生成，提升内容质量和可访问性。",
-        "audience": "网站内容创作者、Markdown 用户、寻求简化内容创作和发布流程的开发者",
+        "title": "CZON - AI-Native Markdown 内容引擎",
+        "description": "CZON 是一个 AI 驱动的 Markdown 内容引擎，专注于简化内容创作流程，通过 AI 自动处理翻译、摘要、分类等任务，让用户专注于写作。",
+        "short_summary": "CZON 是一个 AI 驱动的 Markdown 内容引擎，通过 AI 自动处理翻译、摘要和分类，让用户专注于母语写作。它简化了内容创作流程，内置静态站点生成，旨在提升内容质量和可访问性。",
+        "audience": "网站内容创作者、Markdown 用户、需要多语言内容发布者、寻求简化写作流程的开发者",
         "key_points": [
-          "CZON 是 AI-Native Markdown 内容引擎，专注于智能内容创作",
-          "自动处理标题生成、摘要提取、标签分类和导航整理",
-          "隐藏复杂配置，简化项目结构，让用户专注于写作",
-          "支持用母语写作，利用 AI 进行自动多语言翻译",
-          "内置静态站点生成功能，但非专业 SSG，专注于内容质量",
-          "快速开始需要 Node.js、OpenAI API Key 和 Git",
-          "通过环境变量配置和 npx 命令构建多语言站点",
-          "旨在回归内容本质，最小化打扰，提升创作效率",
-          "适用于网站内容创作者，简化发布流程",
-          "强调 AI 驱动，提升内容可访问性和管理"
+          "AI 自动生成标题、摘要、分类和导航",
+          "支持多语言翻译，用户用母语写作即可",
+          "内置静态站点生成功能",
+          "简化配置，专注于内容创作",
+          "基于 Git 文件夹构建站点",
+          "使用 OpenAI API 进行 AI 处理",
+          "旨在提升内容质量和可访问性",
+          "回归内容本质，最小化写作打扰",
+          "支持增量翻译和智能分类",
+          "快速开始指南包括环境配置和构建命令"
         ],
-        "summary": "CZON 是一个 AI-Native Markdown 内容引擎，旨在帮助内容创作者在 AI 时代更智能地创作和管理内容。它强调回归内容本质，最小化打扰，让用户专注于写作，而将标题生成、摘要提取、标签分类、导航整理等任务交给 LLM 自动处理。CZON 隐藏了复杂的配置，简化了项目结构，支持用母语写作并利用 AI 进行多语言翻译，内置静态站点生成功能，但专注于提升内容质量和可访问性而非复杂定制。文档还提供了快速开始的步骤，包括环境变量配置和构建命令。",
+        "summary": "CZON 是一个 AI-Native Markdown 内容引擎，旨在帮助内容创作者在 AI 时代更智能地创作和管理内容。它强调回归内容本质，最小化写作打扰，通过 AI 自动生成标题、摘要、分类、导航和多语言翻译，让用户用母语写作即可轻松构建多语言版本。CZON 内置静态站点生成功能，但主要专注于内容创作而非复杂配置，支持从 Git 文件夹构建站点，简化了发布流程。核心价值在于利用 AI 提升内容质量和可访问性，让创作者专注于写作本身。",
         "slug": "czon-ai-native-markdown-content-engine",
         "tags": [
           "AI",
@@ -66,17 +72,17 @@
           "多语言翻译",
           "静态站点生成",
           "内容创作",
-          "LLM"
+          "自动化"
         ],
         "inferred_lang": "zh-Hans",
         "tokens_used": {
-          "prompt": 1425,
-          "completion": 499,
-          "total": 1924
+          "prompt": 1435,
+          "completion": 446,
+          "total": 1881
         }
       },
       "category": "AI Content Engine",
-      "nativeMarkdownHash": "00ecd406e5ef84cbf000959938371647a30c17cdcf9e8ab6bc30031224c294f1"
+      "nativeMarkdownHash": "db166bead45d0bafe86d93d674515b5e14aa854e0818dbeb76a5296947f6cb47"
     },
     {
       "hash": "579c3a203225b8b7aead541f42381de0619d8bc1d451d0d9c3267dbc74205503",

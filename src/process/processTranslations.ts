@@ -17,6 +17,10 @@ export async function processTranslations(): Promise<void> {
 
   await Promise.all(
     files.flatMap(async file => {
+      if (!file.path.endsWith('.md')) {
+        if (verbose) console.info(`ℹ️ Skipping ${file.path}, not a Markdown file`);
+        return;
+      }
       return Promise.all(
         langs.map(async lang => {
           if (verbose) console.info(`📄 Processing file for translation: ${file.path}`);

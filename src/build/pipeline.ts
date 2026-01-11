@@ -1,7 +1,8 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { loadMetaData, MetaData, saveMetaData } from '../metadata';
-import { CZON_DIR, CZON_DIST_DIR } from '../paths';
+import { CZON_DIR, CZON_DIST_DIR, CZON_DIST_RAW_CONTENT_DIR, INPUT_DIR } from '../paths';
+import { processExtractCategory } from '../process/category';
 import { storeNativeFiles } from '../process/enhanceMarkdownSource';
 import { extractMetadataByAI } from '../process/extractMetadataByAI';
 import { processTranslations } from '../process/processTranslations';
@@ -9,7 +10,6 @@ import { scanSourceFiles } from '../process/scanSourceFiles';
 import { spiderStaticSiteGenerator } from '../process/template';
 import { BuildOptions } from '../types';
 import { writeFile } from '../utils/writeFile';
-import { processExtractCategory } from '../process/category';
 
 /**
  * 验证构建配置
@@ -43,6 +43,21 @@ async function buildPipeline(options: BuildOptions): Promise<void> {
 
   // 扫描源文件
   await scanSourceFiles();
+
+  // 写入 .raw 目录用于存储原始文件 (非翻译文件)
+  for (const file of MetaData.files) {
+    try {
+      if (!file.hash) throw new Error(`Missing hash`);
+      const ext = path.extname(file.path);
+      const targetPath = path.join(CZON_DIST_RAW_CONTENT_DIR, file.hash + ext);
+      const sourcePath = path.join(INPUT_DIR, file.path);
+      console.info(`💾 Writing raw content for file ${file.path} to ${targetPath} ...`);
+      const content = await fs.readFile(sourcePath);
+      await writeFile(targetPath, content);
+    } catch (error) {
+      console.warn(`⚠️ Failed to write raw content for file ${file.path}:`, error);
+    }
+  }
 
   // 运行 AI 元数据提取
   await extractMetadataByAI();

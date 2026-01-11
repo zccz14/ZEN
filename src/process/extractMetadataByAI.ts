@@ -13,6 +13,10 @@ export async function extractMetadataByAI(): Promise<void> {
 
   await Promise.all(
     files.map(async file => {
+      if (!file.path.endsWith('.md')) {
+        console.info(`ℹ️ Skipping ${file.path}, not a Markdown file`);
+        return;
+      }
       try {
         if (file.metadata && file.metadata.slug && file.metadata.short_summary) {
           console.info(`ℹ️ Skipping ${file.path}, already has metadata`);

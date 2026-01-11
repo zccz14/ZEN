@@ -5,7 +5,6 @@ import { CZON_SRC_DIR, INPUT_DIR } from '../paths';
 import { FileMetaData } from '../types';
 import { updateFrontmatter } from '../utils/frontmatter';
 import { writeFile } from '../utils/writeFile';
-import { sha256 } from '../utils/sha256';
 
 const replaceInnerLinks = (file: FileMetaData, markdownContent: string): string => {
   let content = markdownContent;
@@ -39,6 +38,9 @@ export async function storeNativeFiles(): Promise<void> {
     files,
   } = MetaData;
   for (const file of MetaData.files) {
+    if (!file.path.endsWith('.md')) {
+      if (verbose) console.info(`ℹ️ Skipping ${file.path}, not a Markdown file`);
+    }
     try {
       if (!file.hash) throw new Error(`Missing hash`);
       if (!file.metadata?.inferred_lang) throw new Error(`Missing inferred language`);

@@ -10,11 +10,14 @@ export const Navigator: React.FC<{
   return (
     <ul className="nav-list">
       {categories.map(category => {
-        const filesInCategory = props.ctx.site.files.filter(f => f.category === category);
+        const categoryKey = category || 'NO_CATEGORY';
+        const filesInCategory = props.ctx.site.files.filter(
+          f => f.category === category && f.metadata
+        );
         return (
-          <>
-            <li className="nav-item font-bold" key={category}>
-              {category || '未分类'}
+          <div key={categoryKey}>
+            <li className="nav-item font-bold" key={categoryKey}>
+              {category || '--'}
             </li>
             {filesInCategory.map(file => {
               const link = file.metadata!.slug + '.html';
@@ -33,7 +36,7 @@ export const Navigator: React.FC<{
                 </li>
               );
             })}
-          </>
+          </div>
         );
       })}
     </ul>

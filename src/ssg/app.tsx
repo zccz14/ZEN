@@ -11,12 +11,8 @@ export const App = (props: IRenderContext) => {
   // 每个语言的首页
   for (const lang of props.site.options.langs || []) {
     if (props.path === `/${lang}/index.html`) {
-      return (
-        <RedirectPage
-          from={props.path}
-          to={`/${lang}/${props.site.files[0].metadata!.slug}.html`}
-        />
-      );
+      const firstPage = props.site.files.find(f => f.metadata?.slug);
+      return <RedirectPage from={props.path} to={`/${lang}/${firstPage!.metadata!.slug}.html`} />;
       // TODO: 渲染多语言首页列表
       // return (
       //   <div>
