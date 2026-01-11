@@ -40,6 +40,7 @@ export async function storeNativeFiles(): Promise<void> {
   for (const file of MetaData.files) {
     if (!file.path.endsWith('.md')) {
       if (verbose) console.info(`ℹ️ Skipping ${file.path}, not a Markdown file`);
+      continue;
     }
     try {
       if (!file.hash) throw new Error(`Missing hash`);

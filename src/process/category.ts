@@ -36,7 +36,7 @@ export const processExtractCategory = async (): Promise<void> => {
         content: JSON.stringify(MetaData.files.filter(f => f.metadata)),
       },
     ],
-    { response_format: { type: 'json_object' } }
+    { response_format: { type: 'json_object' }, task_id: 'extract-categories' }
   );
 
   const json = categories.choices[0].message.content;

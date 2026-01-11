@@ -7,7 +7,11 @@ import { completeMessages, OpenAIMessage } from '../services/openai';
  * @param targetLang 目标语言代码（例如：zh-Hans, en-US）
  * @returns Promise<string> 翻译后的 Markdown 内容
  */
-export async function translateMarkdown(content: string, targetLang: string): Promise<string> {
+export async function translateMarkdown(
+  filePath: string,
+  content: string,
+  targetLang: string
+): Promise<string> {
   const langName = LANGUAGE_NAMES[targetLang];
   const lang = `${langName} (${targetLang})`;
   const messages: OpenAIMessage[] = [
@@ -49,7 +53,9 @@ export async function translateMarkdown(content: string, targetLang: string): Pr
     },
   ];
 
-  const response = await completeMessages(messages);
+  const response = await completeMessages(messages, {
+    task_id: `translate-markdown:${filePath}-${targetLang}`,
+  });
   const translatedContent = response.choices[0]?.message?.content?.trim() || '';
 
   if (!translatedContent) {

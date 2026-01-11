@@ -1,12 +1,15 @@
+import { readFile } from 'fs/promises';
 import { completeMessages, OpenAIMessage } from '../services/openai';
 import { AIMetadata } from '../types';
 
 /**
  * 从 markdown 内容中提取 metadata
- * @param content Markdown 内容
  * @returns Promise<AIMetadata> 提取的元数据，失败时抛出错误
  */
-export async function extractMetadataFromMarkdown(content: string): Promise<AIMetadata> {
+export async function extractMetadataFromMarkdown(
+  filePath: string,
+  content: string
+): Promise<AIMetadata> {
   const prompt = buildMetadataPrompt(content);
   const messages: OpenAIMessage[] = [
     {
@@ -22,6 +25,7 @@ export async function extractMetadataFromMarkdown(content: string): Promise<AIMe
 
   const response = await completeMessages(messages, {
     response_format: { type: 'json_object' },
+    task_id: `extract-metadata:${filePath}`,
   });
 
   const metadata = parseMetadataResponse(response.choices[0].message.content);

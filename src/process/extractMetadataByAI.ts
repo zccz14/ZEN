@@ -23,7 +23,7 @@ export async function extractMetadataByAI(): Promise<void> {
           return;
         }
         const content = await readFile(file.path, 'utf-8');
-        file.metadata = await extractMetadataFromMarkdown(content);
+        file.metadata = await extractMetadataFromMarkdown(file.path, content);
         console.log(`✅ Extracted AI metadata for ${file.path}`, file.metadata.tokens_used);
       } catch (error) {
         console.error(`⚠️ Failed to process file ${file.path}:`, error);

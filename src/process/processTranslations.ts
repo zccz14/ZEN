@@ -58,7 +58,7 @@ export async function processTranslations(): Promise<void> {
               return;
             }
 
-            const translatedContent = await translateMarkdown(content, lang);
+            const translatedContent = await translateMarkdown(sourcePath, content, lang);
 
             await writeFile(targetPath, translatedContent);
 
