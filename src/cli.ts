@@ -2,19 +2,12 @@
 
 import { Cli, Command, Option } from 'clipanion';
 import { config } from 'dotenv';
-import * as fs from 'fs';
 import * as path from 'path';
 import { buildSite } from './build/pipeline';
+import { CZON_VERSION } from './version';
 
 // 加载 .env 文件中的环境变量
 config();
-
-// 获取版本号 - 从 package.json 读取
-function getVersion(): string {
-  const packageJsonPath = path.join(__dirname, '..', 'package.json');
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-  return packageJson.version;
-}
 
 // Build 命令
 class BuildCommand extends Command {
@@ -60,7 +53,7 @@ class BuildCommand extends Command {
 const cli = new Cli({
   binaryName: 'czon',
   binaryLabel: 'CZON - A minimalist Markdown documentation site builder',
-  binaryVersion: getVersion(),
+  binaryVersion: CZON_VERSION,
 });
 
 // 注册命令

@@ -1,6 +1,7 @@
 import React from 'react';
 import { IRenderContext } from '../types';
 import { ContentPage } from './ContentPage';
+import { IndexPage } from './IndexPage';
 import { RedirectPage } from './RedirectPage';
 import { RootPage } from './RootPage';
 
@@ -12,20 +13,15 @@ export const App = (props: IRenderContext) => {
   // 每个语言的首页
   for (const lang of props.site.options.langs || []) {
     if (props.path === `/${lang}/index.html`) {
-      const firstPage = props.site.files.find(f => f.metadata?.slug);
-      return <RedirectPage from={props.path} to={`/${lang}/${firstPage!.metadata!.slug}.html`} />;
-      // TODO: 渲染多语言首页列表
-      // return (
-      //   <div>
-      //     {props.site.files.map(file => (
-      //       <div key={file.metadata?.slug}>
-      //         <h2>{file.metadata?.title}</h2>
-      //         <p>{file.metadata?.short_summary}</p>
-      //         <a href={`${file.metadata?.slug}.html`}>阅读更多</a>
-      //       </div>
-      //     ))}
-      //   </div>
-      // );
+      return <IndexPage ctx={props} lang={lang} />;
+    }
+
+    const categories = [...new Set(props.site.files.map(f => f.category))];
+    // 渲染分类页面
+    for (const category of categories) {
+      if (props.path === `/${lang}/categories_${category}.html`) {
+        return <IndexPage ctx={props} lang={lang} category={category} />;
+      }
     }
     // 渲染文章页面
     for (const file of props.site.files) {

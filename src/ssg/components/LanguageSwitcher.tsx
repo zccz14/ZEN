@@ -6,7 +6,7 @@ import { IRenderContext } from '../../types';
 export const LanguageSwitcher: React.FC<{
   ctx: IRenderContext;
   lang: string;
-  file: IRenderContext['site']['files'][0];
+  file?: IRenderContext['site']['files'][0];
 }> = props => {
   return (
     <div aria-label="Language switcher" className="text-center my-4">
@@ -14,7 +14,8 @@ export const LanguageSwitcher: React.FC<{
         {props.ctx.site.options.langs?.map(lang => {
           const isActive = lang === props.lang;
           const langName = LANGUAGE_NAMES[lang] || lang;
-          const link = join('..', lang, `${props.file.metadata!.slug}.html`);
+          const target = props.file ? `${props.file.metadata!.slug}.html` : 'index.html';
+          const link = join('..', lang, target);
           return (
             <li className={`lang-item ${isActive ? 'font-bold' : ''}`} key={lang}>
               {isActive ? (
