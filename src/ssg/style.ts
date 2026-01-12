@@ -243,6 +243,51 @@ export const style = `
           padding: 2rem;
         }
       }
-        
-        
+      
+      /* Mermaid diagram styles */
+      .mermaid-diagram {
+        margin: 1.5rem 0;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #fff;
+      }
+
+      .mermaid-placeholder {
+        padding: 2rem;
+        background: #f8f9fa;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      }
+
+      .mermaid-loading {
+        color: #6c757d;
+        font-style: italic;
+        font-size: 0.875rem;
+      }
+
+      .mermaid-error {
+        color: #dc3545;
+        padding: 1rem;
+        background: #f8d7da;
+        border-radius: 4px;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      .mermaid-source {
+        display: none;
+      }
+
+      /* Ensure Mermaid diagrams are responsive */
+      .mermaid-diagram svg {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+      }
         `;

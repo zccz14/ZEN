@@ -29,73 +29,19 @@ export const ContentPage: React.FC<{
         <title>{title}</title>
         <meta name="description" content={`tags: ${tags.join(', ')}`} />
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
-        <style>{style}</style>
         <link
-          rel="stylesheet"
+          rel="preload"
+          as="style"
           href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css"
         />
         <link
-          rel="stylesheet"
+          rel="preload"
+          as="style"
           href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
           integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn"
           crossOrigin="anonymous"
         />
-
-        <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.min.js"></script>
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-      /* Mermaid diagram styles */
-      .mermaid-diagram {
-        margin: 1.5rem 0;
-        border: 1px solid #e9ecef;
-        border-radius: 6px;
-        overflow: hidden;
-        background: #fff;
-      }
-
-      .mermaid-placeholder {
-        padding: 2rem;
-        background: #f8f9fa;
-        min-height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-      }
-
-      .mermaid-loading {
-        color: #6c757d;
-        font-style: italic;
-        font-size: 0.875rem;
-      }
-
-      .mermaid-error {
-        color: #dc3545;
-        padding: 1rem;
-        background: #f8d7da;
-        border-radius: 4px;
-        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-        font-size: 0.875rem;
-        line-height: 1.5;
-      }
-
-      .mermaid-source {
-        display: none;
-      }
-
-      /* Ensure Mermaid diagrams are responsive */
-      .mermaid-diagram svg {
-        max-width: 100%;
-        height: auto;
-        display: block;
-        margin: 0 auto;
-      }
-        
-        
-        `,
-          }}
-        ></style>
+        <style>{style}</style>
       </head>
       <body>
         <PageLayout
@@ -137,19 +83,27 @@ export const ContentPage: React.FC<{
           footer={null}
         />
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-        <script dangerouslySetInnerHTML={{ __html: 'hljs.highlightAll();' }} />
         <script
-          dangerouslySetInnerHTML={{
-            __html: `
-        
-      (function () {
-        // Wait for page to fully load
-        window.addEventListener('load', function () {
-          // Initialize Mermaid with default configuration
-          if (typeof mermaid !== 'undefined') {
+          id="hljs-lib"
+          src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+          defer
+        ></script>
+        <script>{`
+        document.getElementById('hljs-lib').addEventListener('load', () => {
+            console.log('Highlight.js loaded');
+            hljs.highlightAll();
+        });
+        `}</script>
+        <script
+          id="mermaid-lib"
+          src="https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.min.js"
+          defer
+        ></script>
+        <script>{`
+        document.getElementById('mermaid-lib').addEventListener('load', () => {
+            console.log('Mermaid loaded');
             mermaid.initialize({
-              startOnLoad: false,
+              startOnLoad: true,
               theme: 'default',
               securityLevel: 'strict',
               flowchart: {
@@ -169,15 +123,8 @@ export const ContentPage: React.FC<{
                 barGap: 4,
               },
             });
-          }
         });
-      })();
-    
-        
-        
-        `,
-          }}
-        ></script>
+        `}</script>
       </body>
     </html>
   );
