@@ -2,10 +2,11 @@ import React from 'react';
 import { IRenderContext } from '../types';
 import { ContentPage } from './ContentPage';
 import { RedirectPage } from './RedirectPage';
+import { RootPage } from './RootPage';
 
 export const App = (props: IRenderContext) => {
   if (props.path === '/index.html') {
-    return <RedirectPage from={props.path} to={`/${props.site.options.langs![0]}/index.html`} />;
+    return <RootPage ctx={props} />;
   }
 
   // 每个语言的首页
