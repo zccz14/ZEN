@@ -44,11 +44,13 @@ export const spiderStaticSiteGenerator = async () => {
     if (isVisited.has(currentPath)) continue;
     isVisited.add(currentPath);
 
-    let html = renderToHTML({
-      path: currentPath,
-      site: MetaData,
-      contents,
-    });
+    let html =
+      '<!DOCTYPE html>\n' +
+      renderToHTML({
+        path: currentPath,
+        site: MetaData,
+        contents,
+      });
 
     // 内部链接: czon://hash 格式的链接替换为 /{lang}/{slug}.html
     html = html.replace(/href="([^"]+)"/g, (match, link) => {
