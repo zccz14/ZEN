@@ -35,9 +35,10 @@ export const IndexPage: React.FC<{
     <html>
       <head>
         <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Index of {props.lang}</title>
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content={`Index page for language ${props.lang}`} />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
         <style>{style}</style>
       </head>
       <body>
