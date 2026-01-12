@@ -1,5 +1,6 @@
 import React from 'react';
 import { IRenderContext } from '../../types';
+import { toSortedBy } from '../../utils/sortBy';
 
 export const Navigator: React.FC<{
   ctx: IRenderContext;
@@ -11,9 +12,18 @@ export const Navigator: React.FC<{
     <ul className="nav-list">
       {categories.map(category => {
         const categoryKey = category || 'NO_CATEGORY';
-        const filesInCategory = props.ctx.site.files.filter(
-          f => f.category === category && f.metadata
+        const filesInCategory = toSortedBy(
+          props.ctx.site.files.filter(f => f.category === category && f.metadata),
+          [
+            // 无日期的排前面
+            [x => (x.metadata?.inferred_date ? 1 : 0), 'asc'],
+            // 日期降序
+            [x => x.metadata?.inferred_date || '', 'desc'],
+          ]
         );
+
+        if (filesInCategory.length === 0) return null;
+
         return (
           <div key={categoryKey}>
             <li className="nav-item font-bold" key={categoryKey}>
