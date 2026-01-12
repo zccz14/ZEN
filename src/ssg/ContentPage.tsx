@@ -21,6 +21,9 @@ export const ContentPage: React.FC<{
   const tags = frontmatter.tags || [];
   const category = props.file.category;
 
+  const relatedContents = props.ctx.site.files.filter(
+    f => f.category === category && f.hash !== props.file.hash
+  );
   return (
     <html lang={props.lang} style={{ background: 'black', overflow: 'hidden' }}>
       <head>
@@ -29,18 +32,6 @@ export const ContentPage: React.FC<{
         <title>{title}</title>
         <meta name="description" content={`tags: ${tags.join(', ')}`} />
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
-        <link
-          rel="preload"
-          as="style"
-          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css"
-        />
-        <link
-          rel="preload"
-          as="style"
-          href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
-          integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn"
-          crossOrigin="anonymous"
-        />
         <style>{style}</style>
       </head>
       <body>
@@ -58,21 +49,23 @@ export const ContentPage: React.FC<{
               <div className="content-body">
                 <article dangerouslySetInnerHTML={{ __html: props.content.body }} />
                 {/* 阅读同类文章 */}
-                <h2>See Also</h2>
-                <ul>
-                  {props.ctx.site.files
-                    .filter(f => f.category === category && f.hash !== props.file.hash)
-                    .map(f => {
-                      const theContent = props.ctx.contents.find(
-                        c => c.lang === props.lang && c.hash === f.hash
-                      );
-                      return (
-                        <li key={f.hash}>
-                          <a href={`${f.metadata?.slug}.html`}>{theContent?.frontmatter.title}</a>
-                        </li>
-                      );
-                    })}
-                </ul>
+                {relatedContents.length > 0 && (
+                  <>
+                    <h2>See Also</h2>
+                    <ul>
+                      {relatedContents.map(f => {
+                        const theContent = props.ctx.contents.find(
+                          c => c.lang === props.lang && c.hash === f.hash
+                        );
+                        return (
+                          <li key={f.hash}>
+                            <a href={`${f.metadata?.slug}.html`}>{theContent?.frontmatter.title}</a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </>
+                )}
               </div>
               <footer className="footer">
                 <LanguageSwitcher ctx={props.ctx} lang={props.lang} file={props.file} />
@@ -124,6 +117,35 @@ export const ContentPage: React.FC<{
               },
             });
         });
+        `}</script>
+        <script>{`
+        // 异步加载CSS函数
+        function loadCSS(href, id) {
+          return new Promise((resolve) => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = href;
+            if (id) link.id = id;
+            link.onload = resolve;
+            document.head.appendChild(link);
+          });
+        }
+        
+        // 页面主要内容加载完成后加载非关键CSS
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', loadNonCriticalCSS);
+        } else {
+          loadNonCriticalCSS();
+        }
+        
+        function loadNonCriticalCSS() {
+          // 延迟一点，确保首屏渲染完成
+          setTimeout(() => {
+            loadCSS("https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css", 'katex-css');
+            loadCSS("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css", 'hljs-css');
+          }, 300);
+        }
+        
         `}</script>
       </body>
     </html>
