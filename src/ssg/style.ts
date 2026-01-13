@@ -431,4 +431,15 @@ export const style = `
           transform: rotate(180deg);
         }
       }
+
+.embla {
+  overflow: hidden;
+}
+.embla__container {
+  display: flex;
+}
+.embla__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
         `;

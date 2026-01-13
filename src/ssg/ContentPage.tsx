@@ -147,6 +147,53 @@ export const ContentPage: React.FC<{
         }
         
         `}</script>
+        <script
+          id="embla-lib"
+          src="https://unpkg.com/embla-carousel/embla-carousel.umd.js"
+          defer
+        ></script>
+        <script
+          id="embla-autoplay-lib"
+          src="https://unpkg.com/embla-carousel-autoplay/embla-carousel-autoplay.umd.js"
+          defer
+        ></script>
+        <script>
+          {`
+          Promise.all([
+            new Promise(resolve => {document.getElementById('embla-lib').addEventListener('load', resolve)}),
+            new Promise(resolve => {document.getElementById('embla-autoplay-lib').addEventListener('load', resolve)}),
+          ]).then(() => {
+            console.log('Embla Carousel and Autoplay loaded');
+            renderEmblaCarousels();
+          });
+
+          function renderEmblaCarousels() {
+            // Detect image groups, make them carousels automatically
+            Map.groupBy(document.querySelectorAll('img'), x => x.parentNode).entries().forEach(([container, images]) => {
+                const outer = document.createElement('div');
+                outer.classList.add('embla');
+                container.appendChild(outer);
+                
+                const inner = document.createElement('div');
+                inner.classList.add('embla__container');
+                outer.appendChild(inner);
+
+                images.forEach(img => {
+                    container.removeChild(img);
+
+                    const slide = document.createElement('div');
+                    slide.classList.add('embla__slide');
+                    
+                    slide.appendChild(img);
+                    inner.appendChild(slide);
+                });
+
+                EmblaCarousel(outer, { loop: true }, [EmblaCarouselAutoplay()]);
+            });
+
+          }
+            `}
+        </script>
       </body>
     </html>
   );

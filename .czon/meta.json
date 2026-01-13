@@ -411,6 +411,378 @@
       "nativeMarkdownHash": "8097920e3bfba026dec42ac5c8f24617b762dcbba4c8bc847f8400045240aa47"
     },
     {
+      "hash": "069babfab1044d915eabca9cec9a1d138d3bd1177191907d6a64f2383df9a2e2",
+      "path": "docs/test-embla.md",
+      "links": [
+        "../logo.png",
+        "../logo.png",
+        "../logo.png",
+        "../logo.png",
+        "../logo.png"
+      ],
+      "metadata": {
+        "title": "Embla 轮播图效果测试文档",
+        "description": "本文档介绍 Embla 轮播图效果的测试方法，包括连续图片展示和文本打断的处理。",
+        "short_summary": "本文档测试 Embla 轮播图效果，展示连续图片如何形成轮播图，并说明文本插入会打断连续性。用户可通过点击或拖动切换视图。",
+        "audience": "前端开发者、网页设计师、测试人员，以及对 Embla 轮播图感兴趣的技术人员。",
+        "key_points": [
+          "Embla 轮播图效果测试",
+          "连续图片展示为轮播图",
+          "用户可通过点击箭头切换视图",
+          "用户可通过拖动图片切换视图",
+          "文本内容会打断轮播图连续性",
+          "形成新的一组轮播图",
+          "用于前端开发测试",
+          "涉及用户交互设计"
+        ],
+        "summary": "本文档是一个用于测试 Embla 轮播图效果的说明文档。它描述了如何通过连续展示多张图片形成轮播图，用户可以通过点击箭头或拖动图片来切换视图。文档还指出，如果在图片之间插入文本内容，会打断轮播图的连续性，形成新的一组轮播图。这有助于理解 Embla 轮播图的基本功能和布局规则。",
+        "slug": "embla-carousel-effect-test",
+        "tags": [
+          "Embla",
+          "轮播图",
+          "测试",
+          "前端开发",
+          "图片展示",
+          "用户交互"
+        ],
+        "inferred_lang": "zh-Hans",
+        "tokens_used": {
+          "prompt": 612,
+          "completion": 334,
+          "total": 946
+        }
+      },
+      "category": "Technical Testing",
+      "translations": {
+        "en-US": {
+          "content_length": 1409,
+          "token_used": {
+            "prompt_tokens": 496,
+            "completion_tokens": 426,
+            "total_tokens": 922,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 432
+          }
+        },
+        "zh-Hant": {
+          "content_length": 788,
+          "token_used": {
+            "prompt_tokens": 499,
+            "completion_tokens": 445,
+            "total_tokens": 944,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 435
+          }
+        },
+        "es-MX": {
+          "content_length": 1519,
+          "token_used": {
+            "prompt_tokens": 502,
+            "completion_tokens": 501,
+            "total_tokens": 1003,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 438
+          }
+        },
+        "es-ES": {
+          "content_length": 1529,
+          "token_used": {
+            "prompt_tokens": 497,
+            "completion_tokens": 503,
+            "total_tokens": 1000,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 433
+          }
+        },
+        "fr-FR": {
+          "content_length": 1573,
+          "token_used": {
+            "prompt_tokens": 497,
+            "completion_tokens": 505,
+            "total_tokens": 1002,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 433
+          }
+        },
+        "sv-SE": {
+          "content_length": 1323,
+          "token_used": {
+            "prompt_tokens": 497,
+            "completion_tokens": 515,
+            "total_tokens": 1012,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 433
+          }
+        },
+        "id-ID": {
+          "content_length": 1451,
+          "token_used": {
+            "prompt_tokens": 497,
+            "completion_tokens": 495,
+            "total_tokens": 992,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 433
+          }
+        },
+        "it-IT": {
+          "content_length": 1529,
+          "token_used": {
+            "prompt_tokens": 498,
+            "completion_tokens": 520,
+            "total_tokens": 1018,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 434
+          }
+        },
+        "pl-PL": {
+          "content_length": 1380,
+          "token_used": {
+            "prompt_tokens": 497,
+            "completion_tokens": 521,
+            "total_tokens": 1018,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 433
+          }
+        },
+        "ru-RU": {
+          "content_length": 1550,
+          "token_used": {
+            "prompt_tokens": 498,
+            "completion_tokens": 537,
+            "total_tokens": 1035,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 434
+          }
+        },
+        "no-NO": {
+          "content_length": 1404,
+          "token_used": {
+            "prompt_tokens": 498,
+            "completion_tokens": 528,
+            "total_tokens": 1026,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 434
+          }
+        },
+        "pt-PT": {
+          "content_length": 1551,
+          "token_used": {
+            "prompt_tokens": 499,
+            "completion_tokens": 530,
+            "total_tokens": 1029,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 435
+          }
+        },
+        "pt-BR": {
+          "content_length": 1509,
+          "token_used": {
+            "prompt_tokens": 504,
+            "completion_tokens": 530,
+            "total_tokens": 1034,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 440
+          }
+        },
+        "ja-JP": {
+          "content_length": 944,
+          "token_used": {
+            "prompt_tokens": 731,
+            "completion_tokens": 537,
+            "total_tokens": 1268,
+            "prompt_tokens_details": {
+              "cached_tokens": 320
+            },
+            "prompt_cache_hit_tokens": 320,
+            "prompt_cache_miss_tokens": 411
+          }
+        },
+        "de-DE": {
+          "content_length": 1526,
+          "token_used": {
+            "prompt_tokens": 497,
+            "completion_tokens": 539,
+            "total_tokens": 1036,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 433
+          }
+        },
+        "da-DK": {
+          "content_length": 1415,
+          "token_used": {
+            "prompt_tokens": 498,
+            "completion_tokens": 543,
+            "total_tokens": 1041,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 434
+          }
+        },
+        "ar-SA": {
+          "content_length": 1300,
+          "token_used": {
+            "prompt_tokens": 496,
+            "completion_tokens": 555,
+            "total_tokens": 1051,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 432
+          }
+        },
+        "nl-NL": {
+          "content_length": 1570,
+          "token_used": {
+            "prompt_tokens": 497,
+            "completion_tokens": 545,
+            "total_tokens": 1042,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 433
+          }
+        },
+        "th-TH": {
+          "content_length": 1278,
+          "token_used": {
+            "prompt_tokens": 498,
+            "completion_tokens": 552,
+            "total_tokens": 1050,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 434
+          }
+        },
+        "ko-KR": {
+          "content_length": 942,
+          "token_used": {
+            "prompt_tokens": 498,
+            "completion_tokens": 565,
+            "total_tokens": 1063,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 434
+          }
+        },
+        "fi-FI": {
+          "content_length": 1375,
+          "token_used": {
+            "prompt_tokens": 497,
+            "completion_tokens": 570,
+            "total_tokens": 1067,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 433
+          }
+        },
+        "vi-VN": {
+          "content_length": 1476,
+          "token_used": {
+            "prompt_tokens": 501,
+            "completion_tokens": 643,
+            "total_tokens": 1144,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 437
+          }
+        },
+        "uk-UA": {
+          "content_length": 1477,
+          "token_used": {
+            "prompt_tokens": 500,
+            "completion_tokens": 645,
+            "total_tokens": 1145,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 436
+          }
+        },
+        "tr-TR": {
+          "content_length": 1561,
+          "token_used": {
+            "prompt_tokens": 500,
+            "completion_tokens": 665,
+            "total_tokens": 1165,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 436
+          }
+        },
+        "hi-IN": {
+          "content_length": 1414,
+          "token_used": {
+            "prompt_tokens": 498,
+            "completion_tokens": 783,
+            "total_tokens": 1281,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 434
+          }
+        }
+      },
+      "nativeMarkdownHash": "6d797bcfa6838a49c382fd015f9d4665dcd97eee03d16a13711d5f1b8c2cc7db"
+    },
+    {
       "hash": "579c3a203225b8b7aead541f42381de0619d8bc1d451d0d9c3267dbc74205503",
       "path": "docs/test-katex.md",
       "links": [],
@@ -447,7 +819,7 @@
         }
       },
       "nativeMarkdownHash": "27bfad2b83cfad8843bb0c6faf42cf33590de4b2b29d4e02e0973d9dab2a0f23",
-      "category": "Documentation Testing"
+      "category": "Technical Testing"
     },
     {
       "hash": "311a2865c8366b40236040925041711a2214598b5434e90248987b69766abc36",
@@ -487,7 +859,7 @@
           "total": 885
         }
       },
-      "category": "Documentation Testing",
+      "category": "Technical Testing",
       "nativeMarkdownHash": "433172b27eb4486e24511af7486743205ad36e0bd584bec4063f622fc2753f64"
     },
     {
@@ -532,7 +904,7 @@
         }
       },
       "nativeMarkdownHash": "f094148f381b9f703a6464ac2f42e4eae3f78660ea1829b56fbde09c7c85d4db",
-      "category": "Documentation Testing"
+      "category": "Technical Testing"
     },
     {
       "hash": "0a45691830406b3e23e4b7a96e8cf09fba179e96e3c0e97af8dfd502ba22e057",
@@ -574,7 +946,7 @@
         }
       },
       "nativeMarkdownHash": "8f9418713e4d075d310bec5dae0ee81a38aa0b57238d783a24941e1ee209632e",
-      "category": "Technical Features"
+      "category": "User Guide"
     }
   ]
 }
