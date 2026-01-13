@@ -1,6 +1,6 @@
 {
   "name": "czon",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "CZone - AI enhanced Markdown content engine",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
