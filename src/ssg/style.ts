@@ -298,37 +298,71 @@ export const style = `
         margin: 0 auto;
       }
 
-      /* LanguageSwitch dropdown styles */
-      .language-switch-button {
+      /* LanguageSwitch dropdown styles - Pure CSS version */
+      .language-switch-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      .language-switch-trigger {
         transition: all 0.2s ease;
       }
 
-      .language-switch-button:hover {
+      .language-switch-trigger:hover {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
-      .language-switch-button:focus {
+      .language-switch-trigger:focus {
         outline: 2px solid #3b82f6;
         outline-offset: 2px;
       }
 
-      .language-option {
+      .language-switch-icon {
+        transition: transform 0.2s ease;
+      }
+
+      .language-switch-option {
         transition: all 0.15s ease;
       }
 
-      .language-option:hover {
+      .language-switch-option:hover {
         transform: translateY(-1px);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
-      .language-option:focus {
+      .language-switch-option:focus {
         outline: 2px solid #3b82f6;
         outline-offset: 2px;
       }
 
+      /* Pure CSS dropdown using :focus-within */
+      .language-switch-dropdown {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+      }
+
+      .language-switch-container:focus-within .language-switch-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .language-switch-container:focus-within .language-switch-icon {
+        transform: rotate(180deg);
+      }
+
+      /* Ensure dropdown stays visible when focusing inside it */
+      .language-switch-dropdown:focus-within {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
       /* Mobile responsiveness for language dropdown */
       @media (max-width: 768px) {
-        .language-switch-button {
+        .language-switch-trigger {
           padding: 0.5rem 0.75rem;
           font-size: 0.875rem;
         }
@@ -342,20 +376,37 @@ export const style = `
           margin-right: 0;
         }
 
-        .language-option {
+        .language-switch-option {
           padding: 0.5rem 0.75rem;
           font-size: 0.8125rem;
+        }
+
+        .language-switch-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .language-switch-grid {
+          grid-template-columns: 1fr;
         }
       }
 
       /* RTL language support for dropdown */
-      html[lang='ar-SA'] .language-switch-button {
+      html[lang='ar-SA'] .language-switch-trigger {
         flex-direction: row-reverse;
       }
 
       html[lang='ar-SA'] .language-switch-dropdown {
         left: auto;
         right: 0;
+      }
+
+      @media (max-width: 768px) and html[lang='ar-SA'] {
+        .language-switch-dropdown {
+          left: 0;
+          right: auto;
+        }
       }
 
       /* Scrollbar styling for dropdown */
@@ -377,19 +428,23 @@ export const style = `
         background: #a8a8a8;
       }
 
-      /* Animation for dropdown */
-      @keyframes dropdownFadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(-10px);
+      /* Browser compatibility fallback for :focus-within */
+      @supports not selector(:focus-within) {
+        .language-switch-dropdown {
+          display: none;
         }
-        to {
+
+        .language-switch-container:hover .language-switch-dropdown,
+        .language-switch-container:focus .language-switch-dropdown {
+          display: block;
           opacity: 1;
+          visibility: visible;
           transform: translateY(0);
         }
-      }
 
-      .language-switch-dropdown {
-        animation: dropdownFadeIn 0.2s ease-out;
+        .language-switch-container:hover .language-switch-icon,
+        .language-switch-container:focus .language-switch-icon {
+          transform: rotate(180deg);
+        }
       }
         `;
