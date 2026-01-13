@@ -42,7 +42,7 @@ export const IndexPage: React.FC<{
       </head>
       <body>
         <PageLayout
-          header={<CZONHeader ctx={props.ctx} />}
+          header={<CZONHeader ctx={props.ctx} lang={props.lang} />}
           navigator={undefined}
           main={
             <div className="p-6 max-w-3xl mx-auto">
