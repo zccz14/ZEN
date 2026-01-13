@@ -58,7 +58,13 @@ export async function processTranslations(): Promise<void> {
               return;
             }
 
-            const translatedContent = await translateMarkdown(sourcePath, content, lang);
+            const translatedResponse = await translateMarkdown(sourcePath, content, lang);
+            const translatedContent = translatedResponse.choices?.[0].message.content?.trim() || '';
+
+            const translationMeta = ((file.translations ??= {})[lang] ??= {});
+
+            translationMeta.content_length = translatedContent.length; // 记录翻译后内容长度
+            translationMeta.token_used = translatedResponse.usage; // 记录 token 使用情况
 
             await writeFile(targetPath, translatedContent);
 

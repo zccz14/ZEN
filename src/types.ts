@@ -14,6 +14,12 @@ export interface FileMetaData {
    * 记录翻译所用的(增强后)母语文件的哈希值
    */
   nativeMarkdownHash?: string;
+
+  /**
+   * 翻译信息
+   * lang -> translation metadata 映射
+   */
+  translations?: Record<string, { content_length?: number; token_used?: any }>;
 }
 
 /**
