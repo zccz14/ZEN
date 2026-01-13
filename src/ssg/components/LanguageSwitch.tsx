@@ -46,7 +46,7 @@ export const LanguageSwitch: React.FC<{
       {/* 下拉菜单 - 使用CSS :focus-within 控制显示 */}
       <div
         id="language-dropdown"
-        className="language-switch-dropdown absolute top-full left-0 mt-1 w-96 max-h-96 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg z-50"
+        className="language-switch-dropdown absolute top-full mt-1 w-96 md:w-2xl lg:w-3xl max-h-96 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg z-50"
         role="menu"
         aria-label="Available languages"
       >
@@ -62,9 +62,10 @@ export const LanguageSwitch: React.FC<{
                   href={getLanguageLink(lang)}
                   className={`
                     language-switch-option block px-3 py-2 rounded text-sm text-center
-                    ${isActive
-                      ? 'bg-blue-100 text-blue-700 font-semibold'
-                      : 'text-gray-700 hover:bg-gray-100'
+                    ${
+                      isActive
+                        ? 'bg-blue-100 text-blue-700 font-semibold'
+                        : 'text-gray-700 hover:bg-gray-100'
                     }
                     transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500
                   `}

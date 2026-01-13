@@ -360,6 +360,15 @@ export const style = `
         transform: translateY(0);
       }
 
+      .language-switch-dropdown {
+        max-width: 80vw;
+        inset-inline-start: auto;
+        inset-inline-end: 0;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+      }
+
+
       /* Mobile responsiveness for language dropdown */
       @media (max-width: 768px) {
         .language-switch-trigger {
@@ -367,14 +376,6 @@ export const style = `
           font-size: 0.875rem;
         }
 
-        .language-switch-dropdown {
-          width: 100%;
-          max-width: 100vw;
-          left: 0;
-          right: 0;
-          margin-left: 0;
-          margin-right: 0;
-        }
 
         .language-switch-option {
           padding: 0.5rem 0.75rem;
@@ -389,23 +390,6 @@ export const style = `
       @media (max-width: 480px) {
         .language-switch-grid {
           grid-template-columns: 1fr;
-        }
-      }
-
-      /* RTL language support for dropdown */
-      html[lang='ar-SA'] .language-switch-trigger {
-        flex-direction: row-reverse;
-      }
-
-      html[lang='ar-SA'] .language-switch-dropdown {
-        left: auto;
-        right: 0;
-      }
-
-      @media (max-width: 768px) and html[lang='ar-SA'] {
-        .language-switch-dropdown {
-          left: 0;
-          right: auto;
         }
       }
 
