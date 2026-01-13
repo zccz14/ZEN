@@ -39,8 +39,6 @@ class BuildCommand extends Command {
         langs: this.lang,
       });
 
-      process.exit(0);
-
       return 0;
     } catch (error) {
       this.context.stderr.write(`❌ Build failed: ${error}\n`);

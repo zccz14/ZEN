@@ -34,7 +34,7 @@ const startTime = Date.now();
 let totalContentGenerated = 0;
 const processingTaskIds = new Set<string>();
 
-setInterval(() => {
+const printReport = () => {
   const speed = (totalContentGenerated / ((Date.now() - startTime) / 1000)).toFixed(2);
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
   console.error(
@@ -46,7 +46,19 @@ setInterval(() => {
     if (i-- <= 0) break;
     console.error(` - processing task: ${id}`);
   }
-}, 1000);
+};
+
+let isReporting = false;
+const setupReport = async () => {
+  if (isReporting) return;
+  isReporting = true;
+  while (processingTaskIds.size > 0) {
+    try {
+      printReport();
+    } catch (e) {}
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+};
 
 /**
  * 使用 OpenAI API 补全消息
@@ -66,11 +78,13 @@ export const completeMessages = async (
 ): Promise<OpenAIResponse> => {
   if (options?.task_id) {
     processingTaskIds.add(options.task_id);
+    setupReport();
   }
   // 从环境变量读取配置
   const apiKey = process.env.OPENAI_API_KEY || '';
   const baseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
   const model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+  const max_tokens = process.env.OPENAI_MAX_TOKENS ? +process.env.OPENAI_MAX_TOKENS : undefined; // 不填就使用模型默认值
 
   if (!apiKey) {
     throw new Error('OPENAI_API_KEY environment variable is not set');
@@ -88,13 +102,20 @@ export const completeMessages = async (
       messages,
       temperature: 0, // 总是设置为 0，提取内容不需要随机性
       stream: true, // 启用流式响应
-      // 不设置 max_tokens，让API自动决定
+      max_tokens, // 可选的最大 token 数量
     };
 
     // 添加可选的response_format
     if (options?.response_format) {
       requestBody.response_format = options.response_format;
     }
+
+    // 打印请求信息 (for debug)
+    // if (MetaData.options.verbose) {
+    //   for (const msg of messages) {
+    //     console.info(`💬 [${msg.role}] ${msg.content}`);
+    //   }
+    // }
 
     const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',

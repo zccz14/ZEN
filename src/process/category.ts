@@ -1,5 +1,15 @@
 import { MetaData } from '../metadata';
 import { completeMessages } from '../services/openai';
+import { FileMetaData } from '../types';
+
+const formatFileForCategoryExtraction = (file: FileMetaData): string => {
+  return [
+    //
+    `Hash: ${file.hash}`,
+    `Path: ${file.path}`,
+    `Metadata: ${JSON.stringify(file.metadata)}`,
+  ].join('\n');
+};
 
 export const processExtractCategory = async (): Promise<void> => {
   const verbose = MetaData.options.verbose;
@@ -14,8 +24,6 @@ export const processExtractCategory = async (): Promise<void> => {
 
   // 如果是内容改动导致的呢？
   const markdownFiles = MetaData.files.filter(f => f.path.endsWith('.md') && f.metadata);
-
-  const markdownFilesWithoutCategory = markdownFiles.filter(f => !f.category);
 
   if (verbose) {
     console.info(`📂 Extracting categories for ${markdownFiles.length} markdown files...`);
@@ -51,9 +59,16 @@ export const processExtractCategory = async (): Promise<void> => {
           `目前已有的标签有: `,
           JSON.stringify([...new Set(markdownFiles.map(f => f.category).filter(Boolean))]),
           `目前尚未分类的文件有:`,
-          JSON.stringify(markdownFilesWithoutCategory),
+          markdownFiles
+            .filter(f => !f.category)
+            .map(f => formatFileForCategoryExtraction(f))
+            .join('\n\n'),
+          '',
           `已经分类的文件有:`,
-          JSON.stringify(markdownFiles.filter(f => f.category)),
+          markdownFiles
+            .filter(f => f.category)
+            .map(f => formatFileForCategoryExtraction(f))
+            .join('\n\n'),
         ].join('\n'),
       },
     ],

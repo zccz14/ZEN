@@ -7,19 +7,15 @@ import { completeMessages, OpenAIMessage } from '../services/openai';
  * @param targetLang 目标语言代码（例如：zh-Hans, en-US）
  * @returns Promise<string> 翻译后的 Markdown 内容
  */
-export async function translateMarkdown(
-  filePath: string,
-  content: string,
-  targetLang: string
-): Promise<string> {
+export async function translateMarkdown(filePath: string, content: string, targetLang: string) {
   const langName = LANGUAGE_NAMES[targetLang];
   const lang = `${langName} (${targetLang})`;
   const messages: OpenAIMessage[] = [
     {
       role: 'system',
       content: [
-        `You are a professional document translator.`,
-        `Translate the following markdown content into ${lang}`,
+        `你是一名专业的翻译人员，精通多种语言之间的翻译。`,
+        `将以下 Markdown 内容翻译成 ${lang}`,
         targetLang === 'ja-JP'
           ? [
               //
@@ -41,10 +37,10 @@ export async function translateMarkdown(
               '10. “験” - 使用“験”而非“驗”',
             ].join('\n')
           : ``,
-        `Preserve the original markdown formatting, including headings, lists, code blocks, links, and images.`,
-        `Do not change any non-text elements or their formatting.`,
-        `Ensure that technical terms and code snippets remain unchanged.`,
-        `Provide a natural and fluent translation suitable for readers familiar with the subject matter.`,
+        '保留原有的 Markdown 格式，包括标题、列表、代码块、链接和图片。',
+        '不要更改任何非文本元素或其格式。',
+        '确保技术术语和代码片段保持不变。',
+        '提供自然流畅的翻译，适合熟悉该主题的读者阅读。',
       ].join('\n'),
     },
     {
@@ -53,14 +49,7 @@ export async function translateMarkdown(
     },
   ];
 
-  const response = await completeMessages(messages, {
+  return completeMessages(messages, {
     task_id: `translate-markdown:${filePath}-${targetLang}`,
   });
-  const translatedContent = response.choices[0]?.message?.content?.trim() || '';
-
-  if (!translatedContent) {
-    throw new Error('Empty translation response');
-  }
-
-  return translatedContent;
 }

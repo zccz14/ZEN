@@ -38,7 +38,7 @@
       "links": []
     },
     {
-      "hash": "f4247ffc49f4301c7db0890b68069a28f926f0bb52781591ff5ef72a1e5d1bab",
+      "hash": "95f4ce36ab09cdd25e678497af061f1f476a5a03d432cabb0e91bd3b9daa9c8b",
       "path": "README.md",
       "links": [
         "logo.png",
@@ -48,22 +48,22 @@
       ],
       "metadata": {
         "title": "CZON - AI-Native Markdown 内容引擎",
-        "description": "CZON 是一个 AI 驱动的 Markdown 内容引擎，专注于简化内容创作流程，通过 AI 自动处理翻译、摘要、分类等任务，让用户专注于写作。",
-        "short_summary": "CZON 是一个 AI 驱动的 Markdown 内容引擎，通过 AI 自动处理翻译、摘要和分类，让用户专注于母语写作。它简化了内容创作流程，内置静态站点生成，旨在提升内容质量和可访问性。",
-        "audience": "网站内容创作者、Markdown 用户、需要多语言内容发布者、寻求简化写作流程的开发者",
+        "description": "CZON 是一个 AI 驱动的 Markdown 内容引擎，专注于简化内容创作流程，通过 AI 实现自动翻译、摘要、分类等功能。",
+        "short_summary": "CZON 是一个 AI 驱动的 Markdown 内容引擎，专注于让创作者回归内容本质，用母语写作并自动生成多语言版本。它通过 AI 实现自动翻译、摘要、分类等功能，简化内容创作和发布流程。",
+        "audience": "网站内容创作者、开发者，希望简化内容创作和多语言发布流程的用户。",
         "key_points": [
-          "AI 自动生成标题、摘要、分类和导航",
-          "支持多语言翻译，用户用母语写作即可",
-          "内置静态站点生成功能",
-          "简化配置，专注于内容创作",
-          "基于 Git 文件夹构建站点",
-          "使用 OpenAI API 进行 AI 处理",
-          "旨在提升内容质量和可访问性",
-          "回归内容本质，最小化写作打扰",
-          "支持增量翻译和智能分类",
-          "快速开始指南包括环境配置和构建命令"
+          "CZON 是 AI-Native 的 Markdown 内容引擎，专注于内容创作",
+          "支持自动多语言翻译，用户可用母语写作",
+          "提供自动摘要提取、标签分类和智能导航功能",
+          "内置静态站点生成，简化发布流程",
+          "零配置设计，减少写作干扰",
+          "适用于网站内容创作者和开发者",
+          "强调回归内容本质，最小化打扰",
+          "可集成其他 SSG 方案生成个性化站点",
+          "需要 OpenAI API Key 等前提条件",
+          "快速开始指南包括环境变量配置和构建命令"
         ],
-        "summary": "CZON 是一个 AI-Native Markdown 内容引擎，旨在帮助内容创作者在 AI 时代更智能地创作和管理内容。它强调回归内容本质，最小化写作打扰，通过 AI 自动生成标题、摘要、分类、导航和多语言翻译，让用户用母语写作即可轻松构建多语言版本。CZON 内置静态站点生成功能，但主要专注于内容创作而非复杂配置，支持从 Git 文件夹构建站点，简化了发布流程。核心价值在于利用 AI 提升内容质量和可访问性，让创作者专注于写作本身。",
+        "summary": "CZON 是一个 AI-Native 的 Markdown 内容引擎，旨在帮助内容创作者专注于写作，减少配置和翻译的负担。它通过 AI 技术自动处理多语言翻译、摘要提取、标签分类和智能导航，让用户用母语写作即可生成多语言版本。CZON 内置静态站点生成功能，但强调其核心是内容创作而非复杂定制，适合希望简化工作流程的创作者。",
         "slug": "czon-ai-native-markdown-content-engine",
         "tags": [
           "AI",
@@ -71,18 +71,344 @@
           "内容引擎",
           "多语言翻译",
           "静态站点生成",
-          "内容创作",
-          "自动化"
+          "内容创作"
         ],
         "inferred_lang": "zh-Hans",
         "tokens_used": {
-          "prompt": 1435,
-          "completion": 446,
-          "total": 1881
+          "prompt": 1577,
+          "completion": 422,
+          "total": 1999
         }
       },
-      "category": "AI Content Engine",
-      "nativeMarkdownHash": "db166bead45d0bafe86d93d674515b5e14aa854e0818dbeb76a5296947f6cb47"
+      "category": "Product Introduction",
+      "translations": {
+        "en-US": {
+          "content_length": 5930,
+          "token_used": {
+            "prompt_tokens": 1333,
+            "completion_tokens": 1336,
+            "total_tokens": 2669,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1269
+          }
+        },
+        "zh-Hant": {
+          "content_length": 2587,
+          "token_used": {
+            "prompt_tokens": 1336,
+            "completion_tokens": 1408,
+            "total_tokens": 2744,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1272
+          }
+        },
+        "id-ID": {
+          "content_length": 6259,
+          "token_used": {
+            "prompt_tokens": 1334,
+            "completion_tokens": 1751,
+            "total_tokens": 3085,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1270
+          }
+        },
+        "pt-BR": {
+          "content_length": 6376,
+          "token_used": {
+            "prompt_tokens": 1341,
+            "completion_tokens": 1795,
+            "total_tokens": 3136,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1277
+          }
+        },
+        "es-ES": {
+          "content_length": 6667,
+          "token_used": {
+            "prompt_tokens": 1334,
+            "completion_tokens": 1797,
+            "total_tokens": 3131,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1270
+          }
+        },
+        "es-MX": {
+          "content_length": 6759,
+          "token_used": {
+            "prompt_tokens": 1339,
+            "completion_tokens": 1813,
+            "total_tokens": 3152,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1275
+          }
+        },
+        "nl-NL": {
+          "content_length": 6275,
+          "token_used": {
+            "prompt_tokens": 1334,
+            "completion_tokens": 1801,
+            "total_tokens": 3135,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1270
+          }
+        },
+        "pt-PT": {
+          "content_length": 6513,
+          "token_used": {
+            "prompt_tokens": 1336,
+            "completion_tokens": 1822,
+            "total_tokens": 3158,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1272
+          }
+        },
+        "ja-JP": {
+          "content_length": 3300,
+          "token_used": {
+            "prompt_tokens": 1568,
+            "completion_tokens": 1844,
+            "total_tokens": 3412,
+            "prompt_tokens_details": {
+              "cached_tokens": 320
+            },
+            "prompt_cache_hit_tokens": 320,
+            "prompt_cache_miss_tokens": 1248
+          }
+        },
+        "it-IT": {
+          "content_length": 6751,
+          "token_used": {
+            "prompt_tokens": 1335,
+            "completion_tokens": 1873,
+            "total_tokens": 3208,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1271
+          }
+        },
+        "fr-FR": {
+          "content_length": 6817,
+          "token_used": {
+            "prompt_tokens": 1334,
+            "completion_tokens": 1876,
+            "total_tokens": 3210,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1270
+          }
+        },
+        "de-DE": {
+          "content_length": 6816,
+          "token_used": {
+            "prompt_tokens": 1334,
+            "completion_tokens": 1903,
+            "total_tokens": 3237,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1270
+          }
+        },
+        "ru-RU": {
+          "content_length": 6413,
+          "token_used": {
+            "prompt_tokens": 1335,
+            "completion_tokens": 1911,
+            "total_tokens": 3246,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1271
+          }
+        },
+        "ko-KR": {
+          "content_length": 3420,
+          "token_used": {
+            "prompt_tokens": 1335,
+            "completion_tokens": 1956,
+            "total_tokens": 3291,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1271
+          }
+        },
+        "no-NO": {
+          "content_length": 6060,
+          "token_used": {
+            "prompt_tokens": 1335,
+            "completion_tokens": 1993,
+            "total_tokens": 3328,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1271
+          }
+        },
+        "th-TH": {
+          "content_length": 5384,
+          "token_used": {
+            "prompt_tokens": 1335,
+            "completion_tokens": 1988,
+            "total_tokens": 3323,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1271
+          }
+        },
+        "da-DK": {
+          "content_length": 6093,
+          "token_used": {
+            "prompt_tokens": 1335,
+            "completion_tokens": 2010,
+            "total_tokens": 3345,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1271
+          }
+        },
+        "pl-PL": {
+          "content_length": 6192,
+          "token_used": {
+            "prompt_tokens": 1334,
+            "completion_tokens": 2069,
+            "total_tokens": 3403,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1270
+          }
+        },
+        "ar-SA": {
+          "content_length": 5483,
+          "token_used": {
+            "prompt_tokens": 1333,
+            "completion_tokens": 2094,
+            "total_tokens": 3427,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1269
+          }
+        },
+        "sv-SE": {
+          "content_length": 6314,
+          "token_used": {
+            "prompt_tokens": 1334,
+            "completion_tokens": 2059,
+            "total_tokens": 3393,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1270
+          }
+        },
+        "fi-FI": {
+          "content_length": 6172,
+          "token_used": {
+            "prompt_tokens": 1334,
+            "completion_tokens": 2316,
+            "total_tokens": 3650,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1270
+          }
+        },
+        "tr-TR": {
+          "content_length": 5886,
+          "token_used": {
+            "prompt_tokens": 1337,
+            "completion_tokens": 2397,
+            "total_tokens": 3734,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1273
+          }
+        },
+        "vi-VN": {
+          "content_length": 6001,
+          "token_used": {
+            "prompt_tokens": 1338,
+            "completion_tokens": 2484,
+            "total_tokens": 3822,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1274
+          }
+        },
+        "uk-UA": {
+          "content_length": 6311,
+          "token_used": {
+            "prompt_tokens": 1337,
+            "completion_tokens": 2596,
+            "total_tokens": 3933,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1273
+          }
+        },
+        "hi-IN": {
+          "content_length": 5988,
+          "token_used": {
+            "prompt_tokens": 1335,
+            "completion_tokens": 3299,
+            "total_tokens": 4634,
+            "prompt_tokens_details": {
+              "cached_tokens": 64
+            },
+            "prompt_cache_hit_tokens": 64,
+            "prompt_cache_miss_tokens": 1271
+          }
+        }
+      },
+      "nativeMarkdownHash": "8097920e3bfba026dec42ac5c8f24617b762dcbba4c8bc847f8400045240aa47"
     },
     {
       "hash": "579c3a203225b8b7aead541f42381de0619d8bc1d451d0d9c3267dbc74205503",
