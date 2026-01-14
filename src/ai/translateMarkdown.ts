@@ -41,6 +41,7 @@ export async function translateMarkdown(filePath: string, content: string, targe
         '不要更改任何非文本元素或其格式。',
         '确保技术术语和代码片段保持不变。',
         '提供自然流畅的翻译，适合熟悉该主题的读者阅读。',
+        `面对术语或短语时，挑选 ${lang} 中最常用和易懂的表达方式，避免保留原语言短语，避免短语级别的翻译遗漏。`,
       ].join('\n'),
     },
     {
