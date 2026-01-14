@@ -335,100 +335,161 @@ export const style = `
         outline-offset: 2px;
       }
 
-      /* Pure CSS dropdown using :focus-within */
-      .language-switch-dropdown {
+      /* Pure CSS modal using checkbox + label pattern */
+      /* Hide the checkbox */
+      .language-modal-toggle {
+        display: none;
+      }
+
+      /* Modal overlay - hidden by default */
+      .language-modal-overlay {
         opacity: 0;
         visibility: hidden;
-        transform: translateY(-10px);
-        transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
       }
 
-      .language-switch-container:focus-within .language-switch-dropdown {
+      /* Modal dialog - hidden by default */
+      .language-modal {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      /* Modal content animation */
+      .language-modal-content {
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+      }
+
+      /* When checkbox is checked, show modal */
+      .language-modal-toggle:checked ~ .language-modal-overlay,
+      .language-modal-toggle:checked ~ .language-modal {
         opacity: 1;
         visibility: visible;
-        transform: translateY(0);
       }
 
-      .language-switch-container:focus-within .language-switch-icon {
+      .language-modal-toggle:checked ~ .language-modal .language-modal-content {
+        transform: scale(1);
+      }
+
+      /* Rotate icon when modal is open */
+      .language-modal-toggle:checked ~ .language-switch-trigger .language-switch-icon {
         transform: rotate(180deg);
       }
 
-      /* Ensure dropdown stays visible when focusing inside it */
-      .language-switch-dropdown:focus-within {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
+      /* Modal header styling */
+      .language-modal-header {
+        background: #fff;
       }
 
-      .language-switch-dropdown {
-        max-width: 80vw;
-        inset-inline-start: auto;
-        inset-inline-end: 0;
-        margin-inline-start: 0;
-        margin-inline-end: 0;
+      /* Modal body styling */
+      .language-modal-body {
+        max-height: 60vh;
+      }
+
+      /* Modal close button */
+      .language-modal-close {
+        transition: background-color 0.2s ease;
+      }
+
+      .language-modal-close:hover {
+        background-color: #f3f4f6;
+      }
+
+      .language-modal-close:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
       }
 
 
-      /* Mobile responsiveness for language dropdown */
-      @media (max-width: 768px) {
-        .language-switch-trigger {
-          padding: 0.5rem 0.75rem;
-          font-size: 0.875rem;
+      /* Mobile responsiveness for language modal */
+      /* Small screens: full-screen modal */
+      @media (max-width: 640px) {
+        .language-modal-content {
+          margin: 0;
+          border-radius: 0;
+          max-height: 100vh;
+          max-width: 100vw;
         }
 
-
-        .language-switch-option {
-          padding: 0.5rem 0.75rem;
-          font-size: 0.8125rem;
+        .language-modal {
+          padding: 0;
         }
 
         .language-switch-grid {
           grid-template-columns: repeat(2, 1fr);
         }
-      }
 
-      @media (max-width: 480px) {
-        .language-switch-grid {
-          grid-template-columns: 1fr;
+        .language-switch-trigger {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.875rem;
+        }
+
+        .language-switch-option {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.8125rem;
         }
       }
 
-      /* Scrollbar styling for dropdown */
-      .language-switch-dropdown::-webkit-scrollbar {
+      /* Medium screens: moderate modal */
+      @media (min-width: 641px) and (max-width: 1024px) {
+        .language-modal-content {
+          max-width: 90vw;
+        }
+
+        .language-switch-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      /* Large screens: standard modal */
+      @media (min-width: 1025px) {
+        .language-modal-content {
+          max-width: 4xl;
+        }
+
+        .language-switch-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      /* Extra large screens: more columns */
+      @media (min-width: 1280px) {
+        .language-switch-grid {
+          grid-template-columns: repeat(5, 1fr);
+        }
+      }
+
+      /* Scrollbar styling for modal body */
+      .language-modal-body::-webkit-scrollbar {
         width: 8px;
       }
 
-      .language-switch-dropdown::-webkit-scrollbar-track {
+      .language-modal-body::-webkit-scrollbar-track {
         background: #f1f1f1;
         border-radius: 4px;
       }
 
-      .language-switch-dropdown::-webkit-scrollbar-thumb {
+      .language-modal-body::-webkit-scrollbar-thumb {
         background: #c1c1c1;
         border-radius: 4px;
       }
 
-      .language-switch-dropdown::-webkit-scrollbar-thumb:hover {
+      .language-modal-body::-webkit-scrollbar-thumb:hover {
         background: #a8a8a8;
       }
 
-      /* Browser compatibility fallback for :focus-within */
-      @supports not selector(:focus-within) {
-        .language-switch-dropdown {
+      /* Browser compatibility fallback for older browsers */
+      /* Simple display toggle for browsers that don't support :checked properly */
+      @supports not selector(:checked) {
+        .language-modal-overlay,
+        .language-modal {
           display: none;
         }
 
-        .language-switch-container:hover .language-switch-dropdown,
-        .language-switch-container:focus .language-switch-dropdown {
+        .language-modal-toggle:checked ~ .language-modal-overlay,
+        .language-modal-toggle:checked ~ .language-modal {
           display: block;
-          opacity: 1;
-          visibility: visible;
-          transform: translateY(0);
-        }
-
-        .language-switch-container:hover .language-switch-icon,
-        .language-switch-container:focus .language-switch-icon {
-          transform: rotate(180deg);
         }
       }
 
