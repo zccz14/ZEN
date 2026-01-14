@@ -360,6 +360,41 @@ export const style = `
         transform: translateY(0);
       }
 
+      /* Mobile touch device enhancement for :focus-within */
+      @media (hover: none) and (pointer: coarse) {
+        /* 触摸设备专用规则 */
+        .language-switch-container[data-touch="true"]:focus-within .language-switch-dropdown,
+        .language-switch-container[data-touch="true"] .language-switch-trigger:active + .language-switch-dropdown,
+        .language-switch-container[data-touch="true"] .language-switch-trigger.touch-active + .language-switch-dropdown {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .language-switch-container[data-touch="true"]:focus-within .language-switch-icon,
+        .language-switch-container[data-touch="true"] .language-switch-trigger:active ~ .language-switch-icon,
+        .language-switch-container[data-touch="true"] .language-switch-trigger.touch-active ~ .language-switch-icon {
+          transform: rotate(180deg);
+        }
+
+        /* 改善触摸设备上的点击反馈 */
+        .language-switch-trigger:active {
+          background-color: #eff6ff;
+          border-color: #3b82f6;
+        }
+      }
+
+      /* Add :focus-visible support for modern browsers */
+      .language-switch-container:focus-visible .language-switch-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .language-switch-container:focus-visible .language-switch-icon {
+        transform: rotate(180deg);
+      }
+
       .language-switch-dropdown {
         max-width: 80vw;
         inset-inline-start: auto;
@@ -393,6 +428,36 @@ export const style = `
         }
       }
 
+      /* Touch device interaction optimization */
+      @media (hover: none) and (pointer: coarse) {
+        /* 确保下拉菜单在触摸设备上可滚动 */
+        .language-switch-dropdown {
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+        }
+
+        /* 改善触摸目标大小 */
+        .language-switch-trigger {
+          min-height: 44px; /* iOS 推荐的最小触摸目标 */
+          min-width: 44px;
+        }
+
+        .language-switch-option {
+          min-height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+
+      /* Add prefers-reduced-motion support */
+      @media (prefers-reduced-motion: reduce) {
+        .language-switch-dropdown,
+        .language-switch-icon {
+          transition: none;
+        }
+      }
+
       /* Scrollbar styling for dropdown */
       .language-switch-dropdown::-webkit-scrollbar {
         width: 8px;
@@ -419,7 +484,9 @@ export const style = `
         }
 
         .language-switch-container:hover .language-switch-dropdown,
-        .language-switch-container:focus .language-switch-dropdown {
+        .language-switch-container:focus .language-switch-dropdown,
+        .language-switch-container:focus-within .language-switch-dropdown,
+        .language-switch-container .language-switch-trigger:active + .language-switch-dropdown {
           display: block;
           opacity: 1;
           visibility: visible;
@@ -427,8 +494,24 @@ export const style = `
         }
 
         .language-switch-container:hover .language-switch-icon,
-        .language-switch-container:focus .language-switch-icon {
+        .language-switch-container:focus .language-switch-icon,
+        .language-switch-container:focus-within .language-switch-icon,
+        .language-switch-container .language-switch-trigger:active ~ .language-switch-icon {
           transform: rotate(180deg);
+        }
+
+        /* Mobile touch device fallback */
+        @media (hover: none) and (pointer: coarse) {
+          .language-switch-container .language-switch-trigger:active + .language-switch-dropdown {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+          }
+
+          .language-switch-container .language-switch-trigger:active ~ .language-switch-icon {
+            transform: rotate(180deg);
+          }
         }
       }
 

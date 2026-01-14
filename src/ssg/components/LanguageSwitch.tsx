@@ -21,11 +21,24 @@ export const LanguageSwitch: React.FC<{
   };
 
   return (
-    <div className="language-switch-container relative inline-block">
-      {/* 当前语言按钮 - 使用纯CSS :focus-within 实现下拉菜单 */}
+    <div
+      className="language-switch-container relative inline-block"
+      // 添加 data-touch 属性用于 CSS 触摸设备检测
+      data-touch="true"
+    >
+      {/* 当前语言按钮 - 增强触摸交互支持 */}
       <button
         type="button"
-        className="language-switch-trigger px-4 py-2 border border-gray-300 rounded-md flex items-center gap-2 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        className="language-switch-trigger px-4 py-2 border border-gray-300 rounded-md flex items-center gap-2 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 active:bg-blue-50 active:border-blue-500 transition-colors"
+        // 添加触摸事件处理
+        onTouchStart={(e) => {
+          // 添加触摸反馈类
+          e.currentTarget.classList.add('touch-active');
+        }}
+        onTouchEnd={(e) => {
+          // 移除触摸反馈类
+          e.currentTarget.classList.remove('touch-active');
+        }}
         aria-label={`Language switcher. Current language: ${currentLangName}`}
         aria-haspopup="true"
         aria-expanded="false"
