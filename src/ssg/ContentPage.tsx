@@ -1,3 +1,4 @@
+import { dirname, resolve } from 'node:path';
 import React from 'react';
 import { IRenderContext } from '../types';
 import { ContentMeta } from './components/ContentMeta';
@@ -24,6 +25,13 @@ export const ContentPage: React.FC<{
   const relatedContents = props.ctx.site.files.filter(
     f => f.category === category && f.hash !== props.file.hash
   );
+
+  // 查找指向当前文章的其他文章
+  const thisPath = resolve('/', props.file.path);
+  const referencedFiles = props.ctx.site.files.filter(f =>
+    f.links.some(link => resolve('/', dirname(f.path), link) === thisPath)
+  );
+
   return (
     <html lang={props.lang} style={{ background: 'black', overflow: 'hidden' }}>
       <head>
@@ -54,6 +62,24 @@ export const ContentPage: React.FC<{
                     <h2>See Also</h2>
                     <ul>
                       {relatedContents.map(f => {
+                        const theContent = props.ctx.contents.find(
+                          c => c.lang === props.lang && c.hash === f.hash
+                        );
+                        return (
+                          <li key={f.hash}>
+                            <a href={`${f.metadata?.slug}.html`}>{theContent?.frontmatter.title}</a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </>
+                )}
+                {/* 反向引用 */}
+                {referencedFiles.length > 0 && (
+                  <>
+                    <h2>Referenced By</h2>
+                    <ul>
+                      {referencedFiles.map(f => {
                         const theContent = props.ctx.contents.find(
                           c => c.lang === props.lang && c.hash === f.hash
                         );
