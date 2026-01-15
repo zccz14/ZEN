@@ -52,6 +52,11 @@ export const RootPage: React.FC<{ ctx: IRenderContext }> = props => {
                 window.location.href = mapUserLangToSupported[lang] + '/index.html';
                 return;
               }
+              const shortLang = lang.split('-')[0];
+              if (mapUserLangToSupported[shortLang]) {
+                window.location.href = mapUserLangToSupported[shortLang] + '/index.html';
+                return;
+              }
             }
             window.location.href = '${props.ctx.site.options.langs![0]}/index.html'; // 默认语言
           })();
