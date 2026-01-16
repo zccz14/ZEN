@@ -46,7 +46,7 @@ export const ContentPage: React.FC<{
         <PageLayout
           header={<CZONHeader ctx={props.ctx} lang={props.lang} file={props.file} />}
           navigator={
-            <nav className="sidebar">
+            <nav className="sidebar hidden md:block">
               <Navigator ctx={props.ctx} file={props.file} lang={props.lang} />
             </nav>
           }

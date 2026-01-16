@@ -20,6 +20,7 @@ const style = `
 
 .language-switch-icon {
   transition: transform 0.2s ease;
+  max-width: 1rem;
 }
 
 .language-switch-dropdown {

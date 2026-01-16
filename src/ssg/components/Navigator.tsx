@@ -41,7 +41,7 @@ export const Navigator: React.FC<{
               return (
                 <li className="nav-item" key={file.hash}>
                   <a href={link} className={`nav-link ${isActive ? 'active' : ''}`}>
-                    {theTitle}
+                    {theTitle} {file.metadata?.inferred_date && `(${file.metadata.inferred_date})`}
                   </a>
                 </li>
               );

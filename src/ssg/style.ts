@@ -44,10 +44,6 @@ export const style = `
         margin-top: 0.5rem;
       }
 
-      .nav-list {
-        list-style: none;
-      }
-
       .nav-item {
         margin-bottom: 0.5rem;
       }
