@@ -31,6 +31,22 @@ export const RootPage: React.FC<{ ctx: IRenderContext }> = props => {
           hrefLang="x-default"
           href={`${props.ctx.site.options.langs![0]}/index.html`}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+          (function() {
+            const saved = localStorage.getItem('theme');
+            const theme = saved || 'auto';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = theme === 'auto' ? prefersDark : theme === 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            if (isDark) {
+              document.documentElement.classList.add('dark');
+            }
+          })();
+        `,
+          }}
+        />
       </head>
       <body>
         <h1>Welcome to CZON Multilingual Site</h1>

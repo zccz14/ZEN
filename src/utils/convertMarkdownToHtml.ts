@@ -37,7 +37,7 @@ export const convertMarkdownToHtml = (mdContent: string): string => {
       const chartId = 'mermaid-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
       return `
 <div class="mermaid-diagram" data-mermaid-id="${chartId}">
-  <pre class="mermaid">${escapeHtml(codeText)}</pre>
+  <pre class="mermaid" data-mermaid-content="${encodeURIComponent(codeText)}">${escapeHtml(codeText)}</pre>
 </div>
 `;
     }

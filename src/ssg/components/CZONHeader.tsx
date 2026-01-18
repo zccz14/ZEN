@@ -1,5 +1,6 @@
 import React from 'react';
 import { IRenderContext } from '../../types';
+import { DarkModeSwitch } from './DarkModeSwitch';
 import { LanguageSwitch } from './LanguageSwitch';
 
 export const CZONHeader: React.FC<{
@@ -12,9 +13,10 @@ export const CZONHeader: React.FC<{
       <h1 className="text-2xl font-bold">
         <a href="index.html">CZON</a>
       </h1>
-      {props.lang && (
-        <LanguageSwitch ctx={props.ctx} lang={props.lang} file={props.file} />
-      )}
+      <div className="flex items-center gap-4">
+        <DarkModeSwitch />
+        {props.lang && <LanguageSwitch ctx={props.ctx} lang={props.lang} file={props.file} />}
+      </div>
     </header>
   );
 };

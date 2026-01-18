@@ -41,6 +41,22 @@ export const ContentPage: React.FC<{
         <meta name="description" content={`tags: ${tags.join(', ')}`} />
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
         <style>{style}</style>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+          (function() {
+            const saved = localStorage.getItem('theme');
+            const theme = saved || 'auto';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = theme === 'auto' ? prefersDark : theme === 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            if (isDark) {
+              document.documentElement.classList.add('dark');
+            }
+          })();
+        `,
+          }}
+        />
       </head>
       <body>
         <PageLayout
@@ -119,11 +135,10 @@ export const ContentPage: React.FC<{
           defer
         ></script>
         <script>{`
-        document.getElementById('mermaid-lib').addEventListener('load', () => {
-            console.log('Mermaid loaded');
+        function runMermaid() {
             mermaid.initialize({
               startOnLoad: true,
-              theme: 'default',
+              theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
               securityLevel: 'strict',
               flowchart: {
                 useMaxWidth: true,
@@ -142,6 +157,13 @@ export const ContentPage: React.FC<{
                 barGap: 4,
               },
             });
+            mermaid.run().catch(err => {
+              console.error('Mermaid render error:', err);
+            });
+        }
+        document.getElementById('mermaid-lib').addEventListener('load', () => {
+            console.log('Mermaid loaded');
+            runMermaid();
         });
         `}</script>
         <script>{`
@@ -168,7 +190,11 @@ export const ContentPage: React.FC<{
           // 延迟一点，确保首屏渲染完成
           setTimeout(() => {
             loadCSS("https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css", 'katex-css');
-            loadCSS("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css", 'hljs-css');
+            const isDark = document.documentElement.classList.contains('dark');
+            const hljsTheme = isDark
+              ? "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+              : "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css";
+            loadCSS(hljsTheme, 'hljs-css');
           }, 300);
         }
         
