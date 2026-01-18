@@ -33,7 +33,7 @@ jobs:
       - name: Install opencode
         run: |
           mkdir -p $HOME/.opencode/bin
-          curl -fsSL https://opencode.ai/install.sh | bash
+          curl -fsSL https://opencode.ai/install | bash
           echo "$HOME/.opencode/bin" >> $GITHUB_PATH
 
       - name: Run opencode
