@@ -58,6 +58,7 @@ const setupReport = async () => {
     } catch (e) {}
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
+  isReporting = false;
 };
 
 /**
@@ -76,27 +77,27 @@ export const completeMessages = async (
     response_format?: { type: 'json_object' | 'text' };
   }
 ): Promise<OpenAIResponse> => {
-  if (options?.task_id) {
-    processingTaskIds.add(options.task_id);
-    setupReport();
-  }
-  // 从环境变量读取配置
-  const apiKey = process.env.OPENAI_API_KEY || '';
-  const baseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
-  const model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
-  const max_tokens = process.env.OPENAI_MAX_TOKENS ? +process.env.OPENAI_MAX_TOKENS : undefined; // 不填就使用模型默认值
-
-  if (!apiKey) {
-    throw new Error('OPENAI_API_KEY environment variable is not set');
-  }
-
-  let finishReason: string | null = null;
-  let responseId: string | null = null;
-  let responseModel: string | null = null;
-  let responseCreated: number | null = null;
-  let usage: OpenAIResponse['usage'] | null = null;
-
   try {
+    if (options?.task_id) {
+      processingTaskIds.add(options.task_id);
+      setupReport();
+    }
+    // 从环境变量读取配置
+    const apiKey = process.env.OPENAI_API_KEY || '';
+    const baseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
+    const model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+    const max_tokens = process.env.OPENAI_MAX_TOKENS ? +process.env.OPENAI_MAX_TOKENS : undefined; // 不填就使用模型默认值
+
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY environment variable is not set');
+    }
+
+    let finishReason: string | null = null;
+    let responseId: string | null = null;
+    let responseModel: string | null = null;
+    let responseCreated: number | null = null;
+    let usage: OpenAIResponse['usage'] | null = null;
+
     const requestBody: any = {
       model,
       messages,
