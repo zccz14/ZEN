@@ -1,0 +1,43 @@
+name: OpenCode AI Summary
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'Prompt to send to opencode'
+        required: false
+        default: '总结所有 markdown'
+        type: string
+      model:
+        description: 'Model to use'
+        required: false
+        default: 'opencode/minimax-m2.1-free'
+        type: string
+
+jobs:
+  opencode:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install opencode
+        run: |
+          mkdir -p $HOME/.opencode/bin
+          curl -fsSL https://opencode.ai/install.sh | bash
+          echo "$HOME/.opencode/bin" >> $GITHUB_PATH
+
+      - name: Run opencode
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+        run: |
+          echo "${{ github.event.inputs.prompt }}" | xargs -I {} opencode run {} --model ${{ github.event.inputs.model }}
