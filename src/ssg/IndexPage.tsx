@@ -39,6 +39,22 @@ export const IndexPage: React.FC<{
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content={`Index page for language ${props.lang}`} />
         <style>{style}</style>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+          (function() {
+            const saved = localStorage.getItem('theme');
+            const theme = saved || 'auto';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = theme === 'auto' ? prefersDark : theme === 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            if (isDark) {
+              document.documentElement.classList.add('dark');
+            }
+          })();
+        `,
+          }}
+        />
       </head>
       <body>
         <PageLayout

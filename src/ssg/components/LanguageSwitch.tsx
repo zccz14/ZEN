@@ -12,15 +12,20 @@ const style = `
 
 .language-switch-trigger {
   transition: all 0.2s ease;
+  background: var(--ls-bg-primary);
+  border-color: var(--ls-border-color);
+  color: var(--ls-text-primary);
 }
 
 .language-switch-trigger:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--ls-bg-hover);
 }
 
 .language-switch-icon {
   transition: transform 0.2s ease;
   max-width: 1rem;
+  color: var(--ls-text-secondary);
 }
 
 .language-switch-dropdown {
@@ -49,18 +54,67 @@ const style = `
 
 .language-switch-option {
   transition: all 0.15s ease;
+  background: var(--ls-bg-primary);
+  color: var(--ls-text-secondary);
 }
 
 .language-switch-option:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--ls-bg-hover);
+}
+
+.language-switch-option.active {
+  background: var(--ls-bg-active);
+  color: var(--ls-text-active);
 }
 
 .language-switch-option:focus {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
+
+.language-switch-info {
+  border-color: var(--ls-border-color);
+}
+
+.language-switch-count {
+  color: var(--ls-text-muted);
+}
+
+html.dark .language-switch-trigger {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html.dark .language-switch-trigger:hover {
+  background: var(--border-color);
+}
+
+html.dark .language-switch-dropdown {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+html.dark .language-switch-option:hover {
+  background: var(--border-color);
+}
+
+html.dark .language-switch-option.active {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
 `;
+
+const triggerClasses =
+  'language-switch-trigger px-4 py-2 border rounded-md flex items-center gap-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors';
+
+const dropdownClasses =
+  'language-switch-dropdown absolute top-full mt-1 w-96 md:w-2xl lg:w-3xl max-h-96 overflow-y-auto border rounded-md shadow-lg z-50';
+
+const optionActiveClasses = 'language-switch-option active font-semibold';
+const optionInactiveClasses = 'language-switch-option';
 export const LanguageSwitch: React.FC<{
   ctx: IRenderContext;
   lang: string;
@@ -81,12 +135,10 @@ export const LanguageSwitch: React.FC<{
   return (
     <div className="language-switch-container relative inline-block">
       <style>{style}</style>
-      {/* 使用一个隐藏的 checkbox 记录状态 */}
       <input id="language-switch-toggle" type="checkbox" className="hidden" aria-hidden="true" />
-      {/* 当前语言按钮 - 使用纯CSS :focus-within 实现下拉菜单 */}
       <label
         htmlFor="language-switch-toggle"
-        className="language-switch-trigger px-4 py-2 border border-gray-300 rounded-md flex items-center gap-2 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        className={triggerClasses}
         aria-label={`Language switcher. Current language: ${currentLangName}`}
         aria-haspopup="true"
         aria-expanded="false"
@@ -104,10 +156,9 @@ export const LanguageSwitch: React.FC<{
         </svg>
       </label>
 
-      {/* 下拉菜单 - 使用CSS :focus-within 控制显示 */}
       <div
         id="language-dropdown"
-        className="language-switch-dropdown absolute top-full mt-1 w-96 md:w-2xl lg:w-3xl max-h-96 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg z-50"
+        className={dropdownClasses}
         role="menu"
         aria-label="Available languages"
       >
@@ -122,12 +173,7 @@ export const LanguageSwitch: React.FC<{
                   key={lang}
                   href={getLanguageLink(lang)}
                   className={`
-                    language-switch-option block px-3 py-2 rounded text-sm text-center
-                    ${
-                      isActive
-                        ? 'bg-blue-100 text-blue-700 font-semibold'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }
+                    ${isActive ? optionActiveClasses : optionInactiveClasses} block px-3 py-2 rounded text-center
                     transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500
                   `}
                   role="menuitem"
@@ -140,9 +186,8 @@ export const LanguageSwitch: React.FC<{
             })}
           </div>
 
-          {/* 语言数量提示 */}
-          <div className="language-switch-info mt-3 pt-3 border-t border-gray-200">
-            <p className="language-switch-count text-xs text-gray-500 text-center">
+          <div className="language-switch-info mt-3 pt-3 border-t">
+            <p className="language-switch-count text-xs text-center">
               {languages.length} languages available
             </p>
           </div>
