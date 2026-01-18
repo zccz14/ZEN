@@ -29,7 +29,8 @@
       "es-MX",
       "tr-TR",
       "uk-UA"
-    ]
+    ],
+    "baseUrl": "https://czon.zccz14.com/"
   },
   "files": [
     {

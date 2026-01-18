@@ -2,6 +2,12 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { MetaData } from '../metadata';
 import { CZON_DIST_DIR, CZON_DIST_RAW_CONTENT_DIR, CZON_SRC_DIR } from '../paths';
+import {
+  collectCategoryPage,
+  collectIndexPage,
+  collectUrl,
+  clearSitemapCollection,
+} from '../build/sitemap';
 import { renderToHTML } from '../ssg';
 import { IRenderContext } from '../types';
 import { convertMarkdownToHtml } from '../utils/convertMarkdownToHtml';
@@ -12,6 +18,8 @@ import { writeFile } from '../utils/writeFile';
  * 使用简单的爬虫抓取生成的站点页面
  */
 export const spiderStaticSiteGenerator = async () => {
+  clearSitemapCollection();
+
   const queue = ['/index.html', '/404.html'];
 
   // 将每个语言的首页加入队列
@@ -92,6 +100,22 @@ export const spiderStaticSiteGenerator = async () => {
     });
 
     console.info(`🕷️ Crawled ${currentPath}`);
+
+    // 收集 URL 用于 sitemap
+    const urlMatch = currentPath.match(/^\/([^/]+)\/(.+)\.html$/);
+    if (urlMatch) {
+      const lang = urlMatch[1];
+      const page = urlMatch[2];
+
+      if (page === 'index') {
+        collectIndexPage(lang);
+      } else if (page.startsWith('categories_')) {
+        const category = page.replace('categories_', '');
+        collectCategoryPage(lang, category);
+      } else {
+        collectUrl(lang, page);
+      }
+    }
 
     await writeFile(path.join(CZON_DIST_DIR, currentPath), html);
 

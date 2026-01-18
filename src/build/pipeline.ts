@@ -11,6 +11,7 @@ import { spiderStaticSiteGenerator } from '../process/template';
 import { BuildOptions } from '../types';
 import { writeFile } from '../utils/writeFile';
 import { generateRobotsTxt } from './robots';
+import { generateSitemap } from './sitemap';
 
 /**
  * 验证构建配置
@@ -77,6 +78,13 @@ async function buildPipeline(options: BuildOptions): Promise<void> {
 
   // 生成 robots.txt
   await generateRobotsTxt();
+
+  // 生成 sitemap.xml
+  if (MetaData.options.baseUrl) {
+    await generateSitemap(MetaData.options.baseUrl);
+  } else {
+    console.log('ℹ️ Skipping sitemap generation (--baseUrl not provided)');
+  }
 }
 
 /**
