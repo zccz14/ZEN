@@ -69,6 +69,8 @@ Disallow:
 User-agent: KHTML, like Gecko
 Disallow:
 
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
+
 Sitemap: /sitemap.xml
 `;
 
