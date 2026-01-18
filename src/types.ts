@@ -32,7 +32,6 @@ export interface MetaDataStore {
 }
 
 export interface BuildOptions {
-  template?: string;
   verbose?: boolean;
   langs?: string[]; // 目标语言数组
 }

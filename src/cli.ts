@@ -13,7 +13,6 @@ config();
 class BuildCommand extends Command {
   static paths = [['build']];
 
-  template = Option.String('-t,--template');
   verbose = Option.Boolean('-v,--verbose');
   lang = Option.Array('--lang', {
     description: 'Target languages for translation (e.g., en-US, ja-JP)',
@@ -34,7 +33,6 @@ class BuildCommand extends Command {
   async execute() {
     try {
       await buildSite({
-        template: this.template ? path.resolve(this.template) : undefined,
         verbose: this.verbose,
         langs: this.lang,
       });
