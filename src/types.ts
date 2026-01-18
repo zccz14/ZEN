@@ -33,7 +33,8 @@ export interface MetaDataStore {
 
 export interface BuildOptions {
   verbose?: boolean;
-  langs?: string[]; // 目标语言数组
+  langs?: string[];
+  baseUrl?: string;
 }
 
 export interface AIMetadata {

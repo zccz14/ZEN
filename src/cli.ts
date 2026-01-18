@@ -17,6 +17,10 @@ class BuildCommand extends Command {
   lang = Option.Array('--lang', {
     description: 'Target languages for translation (e.g., en-US, ja-JP)',
   });
+  baseUrl = Option.String('--baseUrl', {
+    description:
+      'Base URL for sitemap generation (e.g., https://yoursite.com). If not provided, sitemap will not be generated.',
+  });
 
   static usage = Command.Usage({
     description: 'Build documentation site from Markdown files in current directory',
@@ -27,6 +31,7 @@ class BuildCommand extends Command {
       Examples:
         $ czon build
         $ czon build --lang en-US --lang ja-JP (translate to English and Japanese)
+        $ czon build --baseUrl https://yoursite.com (generate sitemap.xml)
     `,
   });
 
@@ -35,6 +40,7 @@ class BuildCommand extends Command {
       await buildSite({
         verbose: this.verbose,
         langs: this.lang,
+        baseUrl: this.baseUrl,
       });
 
       return 0;
