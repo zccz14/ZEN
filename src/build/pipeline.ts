@@ -10,6 +10,7 @@ import { scanSourceFiles } from '../process/scanSourceFiles';
 import { spiderStaticSiteGenerator } from '../process/template';
 import { BuildOptions } from '../types';
 import { writeFile } from '../utils/writeFile';
+import { generateRobotsTxt } from './robots';
 
 /**
  * 验证构建配置
@@ -73,6 +74,9 @@ async function buildPipeline(options: BuildOptions): Promise<void> {
 
   // 渲染模板
   await spiderStaticSiteGenerator();
+
+  // 生成 robots.txt
+  await generateRobotsTxt();
 }
 
 /**
